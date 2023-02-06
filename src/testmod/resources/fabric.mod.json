@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "testmod",
+  "version": "1.0.0",
+  "name": "TestMod",
+  "description": "Test Mod",
+  "license": "LGPL-3.0-or-later",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.xpple.betterconfig.TestMod"
+    ],
+    "client": [
+      "dev.xpple.betterconfig.TestModClient"
+    ]
+  },
+  "mixins": [
+  ]
+}

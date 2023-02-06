@@ -1,0 +1,7 @@
+{
+  "betterconfig.commands.config.get": "%s is currently set to %s.",
+  "betterconfig.commands.config.set": "%s has been set to %s.",
+  "betterconfig.commands.config.add": "%s has been added to %s.",
+  "betterconfig.commands.config.put": "The mapping %s=%s has been added to %s.",
+  "betterconfig.commands.config.remove": "%s has been removed from %s."
+}

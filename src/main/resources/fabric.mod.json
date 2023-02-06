@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "betterconfig",
+  "version": "${version}",
+  "name": "BetterConfig",
+  "description": "A very powerful and easy to use command based configuration library for servers and clients.",
+  "authors": [
+    "xpple"
+  ],
+  "contact": {
+    "homepage": "https://xpple.dev/",
+    "sources": "https://github.com/xpple/BetterConfig/"
+  },
+  "license": "LGPL-3.0-or-later",
+  "icon": "assets/betterconfig/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.xpple.betterconfig.BetterConfig"
+    ],
+    "client": [
+      "dev.xpple.betterconfig.BetterConfigClient"
+    ]
+  },
+  "mixins": [
+    "betterconfig.mixins.json",
+    {
+      "config": "betterconfig.mixins.client.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "minecraft": "~1.19.3",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
+  }
+}
