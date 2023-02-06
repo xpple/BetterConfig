@@ -26,6 +26,8 @@ public class BetterConfig implements ModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        ConfigCommand.register(dispatcher);
+        if (environment.dedicated) {
+            ConfigCommand.register(dispatcher);
+        }
     }
 }
