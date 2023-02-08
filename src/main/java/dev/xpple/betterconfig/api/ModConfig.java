@@ -26,7 +26,7 @@ public interface ModConfig {
     /**
      * Get a config value based on the key.
      * @param config the config's key
-     * @return
+     * @return the config value
      */
     Object get(String config);
 

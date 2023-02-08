@@ -3,11 +3,13 @@ package dev.xpple.betterconfig.api;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
-import dev.xpple.betterconfig.impl.CommandContextBiFunction;
+import dev.xpple.betterconfig.util.CheckedBiFunction;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.Pair;
 
@@ -41,7 +43,7 @@ public class ModConfigBuilder {
      * as well.
      * @see ModConfigBuilder#registerTypeHierarchyWithArgument
      */
-    public <T> ModConfigBuilder registerTypeWithArgument(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<? extends ArgumentType<T>>, CommandContextBiFunction<T>> argument) {
+    public <T> ModConfigBuilder registerTypeWithArgument(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> argument) {
         this.builder.registerTypeAdapter(type, adapter);
         this.arguments.put(type, argument);
         return this;
@@ -58,7 +60,7 @@ public class ModConfigBuilder {
      * instead. To use this method on servers, operators need to register the brigadier argument type
      * as well.
      */
-    public <T> ModConfigBuilder registerTypeHierarchyWithArgument(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<? extends ArgumentType<T>>, CommandContextBiFunction<T>> argument) {
+    public <T> ModConfigBuilder registerTypeHierarchyWithArgument(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> argument) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
         this.arguments.put(type, argument);
         return this;
@@ -74,7 +76,7 @@ public class ModConfigBuilder {
      * @implNote On clients, use {@link ModConfigBuilder#registerTypeWithArgument} instead.
      * @see ModConfigBuilder#registerTypeHierarchyWithSuggestor
      */
-    public <T> ModConfigBuilder registerTypeWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CommandContextBiFunction<T>> suggestor) {
+    public <T> ModConfigBuilder registerTypeWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> suggestor) {
         this.builder.registerTypeAdapter(type, adapter);
         this.suggestors.put(type, suggestor);
         return this;
@@ -89,7 +91,7 @@ public class ModConfigBuilder {
      * @return the current builder instance
      * @implNote On clients, use {@link ModConfigBuilder#registerTypeHierarchyWithArgument} instead.
      */
-    public <T> ModConfigBuilder registerTypeHierarchyWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CommandContextBiFunction<T>> suggestor) {
+    public <T> ModConfigBuilder registerTypeHierarchyWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> suggestor) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
         this.suggestors.put(type, suggestor);
         return this;

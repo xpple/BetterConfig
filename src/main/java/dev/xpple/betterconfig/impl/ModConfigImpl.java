@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.api.ModConfig;
+import dev.xpple.betterconfig.util.*;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.Pair;
 
@@ -27,17 +29,17 @@ import static dev.xpple.betterconfig.BetterConfig.MOD_PATH;
 public class ModConfigImpl implements ModConfig {
 
     private static final Map<Class<?>, Pair<?, ?>> defaultArguments = ImmutableMap.<Class<?>, Pair<?, ?>>builder()
-        .put(boolean.class, new Pair<>((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CommandContextBiFunction<Boolean>) BoolArgumentType::getBool))
-        .put(Boolean.class, new Pair<>((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CommandContextBiFunction<Boolean>) BoolArgumentType::getBool))
-        .put(double.class, new Pair<>((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CommandContextBiFunction<Double>) DoubleArgumentType::getDouble))
-        .put(Double.class, new Pair<>((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CommandContextBiFunction<Double>) DoubleArgumentType::getDouble))
-        .put(float.class, new Pair<>((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CommandContextBiFunction<Float>) FloatArgumentType::getFloat))
-        .put(Float.class, new Pair<>((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CommandContextBiFunction<Float>) FloatArgumentType::getFloat))
-        .put(int.class, new Pair<>((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CommandContextBiFunction<Integer>) IntegerArgumentType::getInteger))
-        .put(Integer.class, new Pair<>((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CommandContextBiFunction<Integer>) IntegerArgumentType::getInteger))
-        .put(long.class, new Pair<>((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CommandContextBiFunction<Long>) LongArgumentType::getLong))
-        .put(Long.class, new Pair<>((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CommandContextBiFunction<Long>) LongArgumentType::getLong))
-        .put(String.class, new Pair<>((Supplier<ArgumentType<String>>) StringArgumentType::string, (CommandContextBiFunction<String>) StringArgumentType::getString))
+        .put(boolean.class, new Pair<>((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
+        .put(Boolean.class, new Pair<>((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
+        .put(double.class, new Pair<>((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Double, CommandSyntaxException>) DoubleArgumentType::getDouble))
+        .put(Double.class, new Pair<>((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Double, CommandSyntaxException>) DoubleArgumentType::getDouble))
+        .put(float.class, new Pair<>((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Float, CommandSyntaxException>) FloatArgumentType::getFloat))
+        .put(Float.class, new Pair<>((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Float, CommandSyntaxException>) FloatArgumentType::getFloat))
+        .put(int.class, new Pair<>((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Integer, CommandSyntaxException>) IntegerArgumentType::getInteger))
+        .put(Integer.class, new Pair<>((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Integer, CommandSyntaxException>) IntegerArgumentType::getInteger))
+        .put(long.class, new Pair<>((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Long, CommandSyntaxException>) LongArgumentType::getLong))
+        .put(Long.class, new Pair<>((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, Long, CommandSyntaxException>) LongArgumentType::getLong))
+        .put(String.class, new Pair<>((Supplier<ArgumentType<String>>) StringArgumentType::string, (CheckedBiFunction<CommandContext<? extends CommandSource>, String, String, CommandSyntaxException>) StringArgumentType::getString))
         .build();
 
     private final String modId;
@@ -72,13 +74,13 @@ public class ModConfigImpl implements ModConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Pair<Supplier<? extends ArgumentType<T>>, CommandContextBiFunction<T>> getArgument(Class<T> type) {
-        return (Pair<Supplier<? extends ArgumentType<T>>, CommandContextBiFunction<T>>) this.arguments.getOrDefault(type, defaultArguments.get(type));
+    public <T> Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> getArgument(Class<T> type) {
+        return (Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>>) this.arguments.getOrDefault(type, defaultArguments.get(type));
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CommandContextBiFunction<T>> getSuggestor(Class<T> type) {
-        return (Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CommandContextBiFunction<T>>) this.suggestors.get(type);
+    public <T> Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> getSuggestor(Class<T> type) {
+        return (Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>>) this.suggestors.get(type);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public void set(String config, Object value) throws CommandSyntaxException {
-        CommandContextConsumer<Object> setter = this.setters.get(config);
+        CheckedConsumer<Object, CommandSyntaxException> setter = this.setters.get(config);
         if (setter == null) {
             throw new IllegalArgumentException();
         }
@@ -121,7 +123,7 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public void add(String config, Object value) throws CommandSyntaxException {
-        CommandContextConsumer<Object> adder = this.adders.get(config);
+        CheckedConsumer<Object, CommandSyntaxException> adder = this.adders.get(config);
         if (adder == null) {
             throw new IllegalArgumentException();
         }
@@ -131,7 +133,7 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public void put(String config, Object key, Object value) throws CommandSyntaxException {
-        CommandContextBiConsumer<Object, Object> putter = this.putters.get(config);
+        CheckedBiConsumer<Object, Object, CommandSyntaxException> putter = this.putters.get(config);
         if (putter == null) {
             throw new IllegalArgumentException();
         }
@@ -141,7 +143,7 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public void remove(String config, Object value) throws CommandSyntaxException {
-        CommandContextConsumer<Object> remover = this.removers.get(config);
+        CheckedConsumer<Object, CommandSyntaxException> remover = this.removers.get(config);
         if (remover == null) {
             throw new IllegalArgumentException();
         }
@@ -185,25 +187,25 @@ public class ModConfigImpl implements ModConfig {
         return this.configs;
     }
 
-    public Map<String, CommandContextConsumer<Object>> getSetters() {
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
         return this.setters;
     }
 
-    public Map<String, CommandContextConsumer<Object>> getAdders() {
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getAdders() {
         return this.adders;
     }
 
-    public Map<String, CommandContextBiConsumer<Object, Object>> getPutters() {
+    public Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> getPutters() {
         return this.putters;
     }
 
-    public Map<String, CommandContextConsumer<Object>> getRemovers() {
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getRemovers() {
         return this.removers;
     }
 
     private final Map<String, Field> configs = new HashMap<>();
-    private final Map<String, CommandContextConsumer<Object>> setters = new HashMap<>();
-    private final Map<String, CommandContextConsumer<Object>> adders = new HashMap<>();
-    private final Map<String, CommandContextBiConsumer<Object, Object>> putters = new HashMap<>();
-    private final Map<String, CommandContextConsumer<Object>> removers = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
+    private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
 }
