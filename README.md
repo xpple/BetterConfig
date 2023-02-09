@@ -47,7 +47,7 @@ public static void customMapAdder(Object string) {
 }
 ```
 The value of `"none"` for `putter` indicates that no putter will be available. This way, you can use this `Map` in your
-code like usual, and add values to it using `/(c)onfig <mod id> exampleMapAdder add <string>`. For more details, see
+code like usual, and add values to it using `/(c)config <mod id> exampleMapAdder add <string>`. For more details, see
 [the JavaDocs for `@Config`](src/main/java/dev/xpple/betterconfig/api/Config.java).
 
 ## Installation
