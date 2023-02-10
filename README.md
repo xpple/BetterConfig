@@ -40,15 +40,25 @@ Furthermore, you can completely change the behaviour of updating your config val
 add one or more of `setter`, `adder`, `putter` or `remover` as attribute to your `@Config` annotation. A great use for
 this would be adding key-pair entries to a `Map` based on a single value. Consider the following configuration.
 ```java
-@Config(putter = "none", adder = "customMapAdder")
+@Config(putter = @Config.Putter("none"), adder = @Config.Adder("customMapAdder"))
 public static Map<String, String> exampleMapAdder = new HashMap<>(Map.of("a", "A", "b", "B"));
-public static void customMapAdder(Object string) {
-    exampleMapAdder.put(((String) string).toLowerCase(Locale.ROOT), ((String) string).toUpperCase(Locale.ROOT));
+public static void customMapAdder(String string) {
+    exampleMapAdder.put(string.toLowerCase(Locale.ROOT), string.toUpperCase(Locale.ROOT));
 }
 ```
-The value of `"none"` for `putter` indicates that no putter will be available. This way, you can use this `Map` in your
+The value of `"none"` for the putter indicates that no putter will be available. This way, you can use this `Map` in your
 code like usual, and add values to it using `/(c)config <mod id> exampleMapAdder add <string>`. For more details, see
 [the JavaDocs for `@Config`](src/main/java/dev/xpple/betterconfig/api/Config.java).
+
+The parameters of the update method can also be customised.
+```java
+@Config(adder = @Config.Adder(value = "customTypeAdder", type = int.class))
+public static Collection<String> exampleCustomType = new ArrayList<>(List.of("%", "@"));
+public static void customTypeAdder(int codepoint) {
+    exampleCustomType.add(Character.toString(codepoint));
+}
+```
+For putters, there are separate key and value type attributes.
 
 ## Installation
 Replace `${version}` with the artifact version.
