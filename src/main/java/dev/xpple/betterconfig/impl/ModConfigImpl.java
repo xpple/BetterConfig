@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.api.ModConfig;
 import dev.xpple.betterconfig.util.*;
 import net.minecraft.command.CommandSource;
@@ -174,9 +175,9 @@ public class ModConfigImpl implements ModConfig {
             JsonObject root = new JsonObject();
             this.getConfigs().keySet().forEach(config -> {
                 Object value = this.get(config);
-                root.add(config, gson.toJsonTree(value));
+                root.add(config, this.gson.toJsonTree(value));
             });
-            writer.write(gson.toJson(root));
+            writer.write(this.gson.toJson(root));
         } catch (IOException e) {
             LOGGER.error("Could not save config file.");
             e.printStackTrace();
@@ -203,9 +204,14 @@ public class ModConfigImpl implements ModConfig {
         return this.removers;
     }
 
+    public Map<String, Config> getAnnotations() {
+        return this.annotations;
+    }
+
     private final Map<String, Field> configs = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Config> annotations = new HashMap<>();
 }

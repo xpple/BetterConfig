@@ -21,20 +21,26 @@ public class Configs {
     @Config
     public static Map<Block, String> exampleBlockStringMap = new HashMap<>(Map.of(Blocks.NETHERRACK, "nether", Blocks.END_STONE, "end"));
 
-    @Config(adder = "customAdder")
+    @Config(adder = @Config.Adder("customAdder"))
     public static Collection<String> exampleCustomAdder = new ArrayList<>(List.of("1", "2"));
-    public static void customAdder(Object string) throws CommandSyntaxException {
+    public static void customAdder(String string) throws CommandSyntaxException {
         try {
-            Integer.parseInt((String) string);
+            Integer.parseInt(string);
         } catch (NumberFormatException e) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().create(string);
         }
-        exampleCustomAdder.add((String) string);
+        exampleCustomAdder.add(string);
     }
 
-    @Config(putter = "none", adder = "customMapAdder")
+    @Config(putter = @Config.Putter("none"), adder = @Config.Adder("customMapAdder"))
     public static Map<String, String> exampleMapAdder = new HashMap<>(Map.of("a", "A", "b", "B"));
-    public static void customMapAdder(Object string) {
-        exampleMapAdder.put(((String) string).toLowerCase(Locale.ROOT), ((String) string).toUpperCase(Locale.ROOT));
+    public static void customMapAdder(String string) {
+        exampleMapAdder.put(string.toLowerCase(Locale.ROOT), string.toUpperCase(Locale.ROOT));
+    }
+
+    @Config(adder = @Config.Adder(value = "customTypeAdder", type = int.class))
+    public static Collection<String> exampleCustomType = new ArrayList<>(List.of("%", "@"));
+    public static void customTypeAdder(int codepoint) {
+        exampleCustomType.add(Character.toString(codepoint));
     }
 }

@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Map;
@@ -43,6 +45,7 @@ public class BetterConfigInternals {
             }
 
             Config annotation = field.getAnnotation(Config.class);
+            modConfig.getAnnotations().put(fieldName, annotation);
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {
                 initCollection(modConfig, field, annotation);
@@ -56,10 +59,12 @@ public class BetterConfigInternals {
 
     private static void initCollection(ModConfigImpl modConfig, Field field, Config annotation) {
         String fieldName = field.getName();
-        String adder = annotation.adder();
+        Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+        Config.Adder adder = annotation.adder();
+        String adderMethodName = adder.value();
         //noinspection StatementWithEmptyBody
-        if (adder.equals("none")) {
-        } else if (adder.isEmpty()) {
+        if (adderMethodName.equals("none")) {
+        } else if (adderMethodName.isEmpty()) {
             Method add;
             try {
                 add = Collection.class.getDeclaredMethod("add", Object.class);
@@ -74,9 +79,10 @@ public class BetterConfigInternals {
                 }
             });
         } else {
+            Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) types[0] : adder.type();
             Method adderMethod;
             try {
-                adderMethod = modConfig.getConfigsClass().getDeclaredMethod(adder, Object.class);
+                adderMethod = modConfig.getConfigsClass().getDeclaredMethod(adderMethodName, type);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
@@ -91,10 +97,11 @@ public class BetterConfigInternals {
                 }
             });
         }
-        String remover = annotation.remover();
+        Config.Remover remover = annotation.remover();
+        String removerMethodName = remover.value();
         //noinspection StatementWithEmptyBody
-        if (remover.equals("none")) {
-        } else if (remover.isEmpty()) {
+        if (removerMethodName.equals("none")) {
+        } else if (removerMethodName.isEmpty()) {
             Method remove;
             try {
                 remove = Collection.class.getDeclaredMethod("remove", Object.class);
@@ -109,9 +116,10 @@ public class BetterConfigInternals {
                 }
             });
         } else {
+            Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) types[0] : remover.type();
             Method removerMethod;
             try {
-                removerMethod = modConfig.getConfigsClass().getDeclaredMethod(adder, Object.class);
+                removerMethod = modConfig.getConfigsClass().getDeclaredMethod(removerMethodName, type);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
@@ -130,13 +138,16 @@ public class BetterConfigInternals {
 
     private static void initMap(ModConfigImpl modConfig, Field field, Config annotation) {
         String fieldName = field.getName();
-        String adder = annotation.adder();
+        Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+        Config.Adder adder = annotation.adder();
+        String adderMethodName = adder.value();
         //noinspection StatementWithEmptyBody
-        if (adder.equals("none")) {
-        } else if (!adder.isEmpty()) {
+        if (adderMethodName.equals("none")) {
+        } else if (!adderMethodName.isEmpty()) {
+            Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) types[0] : adder.type();
             Method adderMethod;
             try {
-                adderMethod = modConfig.getConfigsClass().getDeclaredMethod(adder, Object.class);
+                adderMethod = modConfig.getConfigsClass().getDeclaredMethod(adderMethodName, type);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
@@ -151,10 +162,11 @@ public class BetterConfigInternals {
                 }
             });
         }
-        String putter = annotation.putter();
+        Config.Putter putter = annotation.putter();
+        String putterMethodName = putter.value();
         //noinspection StatementWithEmptyBody
-        if (putter.equals("none")) {
-        } else if (putter.isEmpty()) {
+        if (putterMethodName.equals("none")) {
+        } else if (putterMethodName.isEmpty()) {
             Method put;
             try {
                 put = Map.class.getDeclaredMethod("put", Object.class, Object.class);
@@ -169,9 +181,11 @@ public class BetterConfigInternals {
                 }
             });
         } else {
+            Class<?> keyType = putter.keyType() == Config.EMPTY.class ? (Class<?>) types[0] : putter.keyType();
+            Class<?> valueType = putter.valueType() == Config.EMPTY.class ? (Class<?>) types[1] : putter.valueType();
             Method putterMethod;
             try {
-                putterMethod = modConfig.getConfigsClass().getDeclaredMethod(putter, Object.class, Object.class);
+                putterMethod = modConfig.getConfigsClass().getDeclaredMethod(putterMethodName, keyType, valueType);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
@@ -186,10 +200,11 @@ public class BetterConfigInternals {
                 }
             });
         }
-        String remover = annotation.remover();
+        Config.Remover remover = annotation.remover();
+        String removerMethodName = remover.value();
         //noinspection StatementWithEmptyBody
-        if (remover.equals("none")) {
-        } else if (remover.isEmpty()) {
+        if (removerMethodName.equals("none")) {
+        } else if (removerMethodName.isEmpty()) {
             Method remove;
             try {
                 remove = Map.class.getDeclaredMethod("remove", Object.class);
@@ -204,9 +219,10 @@ public class BetterConfigInternals {
                 }
             });
         } else {
+            Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) types[0] : remover.type();
             Method removerMethod;
             try {
-                removerMethod = modConfig.getConfigsClass().getDeclaredMethod(putter, Object.class);
+                removerMethod = modConfig.getConfigsClass().getDeclaredMethod(removerMethodName, type);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
@@ -225,10 +241,11 @@ public class BetterConfigInternals {
 
     private static void initObject(ModConfigImpl modConfig, Field field, Config annotation) {
         String fieldName = field.getName();
-        String setter = annotation.setter();
+        Config.Setter setter = annotation.setter();
+        String setterMethodName = setter.value();
         //noinspection StatementWithEmptyBody
-        if (setter.equals("none")) {
-        } else if (setter.isEmpty()) {
+        if (setterMethodName.equals("none")) {
+        } else if (setterMethodName.isEmpty()) {
             modConfig.getSetters().put(fieldName, value -> {
                 try {
                     field.set(null, value);
@@ -237,9 +254,10 @@ public class BetterConfigInternals {
                 }
             });
         } else {
+            Class<?> type = setter.type() == Config.EMPTY.class ? field.getType() : setter.type();
             Method setterMethod;
             try {
-                setterMethod = modConfig.getConfigsClass().getDeclaredMethod(setter, Object.class);
+                setterMethod = modConfig.getConfigsClass().getDeclaredMethod(setterMethodName, type);
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }

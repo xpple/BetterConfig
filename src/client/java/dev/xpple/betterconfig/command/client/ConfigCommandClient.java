@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import dev.xpple.betterconfig.util.CheckedFunction;
@@ -22,6 +23,7 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.lit
 public class ConfigCommandClient {
 
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
+        LiteralArgumentBuilder<FabricClientCommandSource> rootLiteral = literal("cconfig");
         for (ModConfigImpl modConfig : BetterConfigImpl.getModConfigs().values()) {
             Map<String, LiteralArgumentBuilder<FabricClientCommandSource>> literals = new HashMap<>();
             for (String config : modConfig.getConfigs().keySet()) {
@@ -32,7 +34,9 @@ public class ConfigCommandClient {
             }
 
             modConfig.getSetters().keySet().forEach(config -> {
-                Class<?> type = modConfig.getType(config);
+                Config annotation = modConfig.getAnnotations().get(config);
+                Config.Setter setter = annotation.setter();
+                Class<?> type = setter.type() == Config.EMPTY.class ? modConfig.getType(config) : setter.type();
                 var pair = modConfig.getArgument(type);
                 if (pair == null) {
                     return;
@@ -41,16 +45,10 @@ public class ConfigCommandClient {
                 literals.get(config).then(literal("set").then(subCommand));
             });
             modConfig.getAdders().keySet().forEach(config -> {
-                Type[] types = modConfig.getParameterTypes(config);
-                Type type;
-                if (types.length == 1) {
-                    type = types[0];
-                } else if (types.length == 2) {
-                    type = types[0];
-                } else {
-                    return;
-                }
-                var pair = modConfig.getArgument((Class<?>) type);
+                Config annotation = modConfig.getAnnotations().get(config);
+                Config.Adder adder = annotation.adder();
+                Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) modConfig.getParameterTypes(config)[0] : adder.type();
+                var pair = modConfig.getArgument(type);
                 if (pair == null) {
                     return;
                 }
@@ -58,19 +56,18 @@ public class ConfigCommandClient {
                 literals.get(config).then(literal("add").then(subCommand));
             });
             modConfig.getPutters().keySet().forEach(config -> {
+                Config annotation = modConfig.getAnnotations().get(config);
+                Config.Putter putter = annotation.putter();
                 Type[] types = modConfig.getParameterTypes(config);
-                if (types.length != 2) {
-                    return;
-                }
-                Type keyType = types[0];
-                var keyPair = modConfig.getArgument((Class<?>) keyType);
+                Class<?> keyType = putter.keyType() == Config.EMPTY.class ? (Class<?>) types[0] : putter.keyType();
+                var keyPair = modConfig.getArgument(keyType);
                 if (keyPair == null) {
                     return;
                 }
                 RequiredArgumentBuilder<FabricClientCommandSource, ?> subCommand = argument("key", keyPair.getLeft().get());
                 CheckedFunction<CommandContext<FabricClientCommandSource>, ?, CommandSyntaxException> getKey = ctx -> keyPair.getRight().apply(ctx, "key");
-                Type valueType = types[1];
-                var valuePair = modConfig.getArgument((Class<?>) valueType);
+                Class<?> valueType = putter.valueType() == Config.EMPTY.class ? (Class<?>) types[1] : putter.valueType();
+                var valuePair = modConfig.getArgument(valueType);
                 if (valuePair == null) {
                     return;
                 }
@@ -78,23 +75,16 @@ public class ConfigCommandClient {
                 literals.get(config).then(literal("put").then(subCommand.then(subSubCommand)));
             });
             modConfig.getRemovers().keySet().forEach(config -> {
-                Type[] types = modConfig.getParameterTypes(config);
-                Type type;
-                if (types.length == 1) {
-                    type = types[0];
-                } else if (types.length == 2) {
-                    type = types[0];
-                } else {
-                    return;
-                }
-                var pair = modConfig.getArgument((Class<?>) type);
+                Config annotation = modConfig.getAnnotations().get(config);
+                Config.Remover remover = annotation.remover();
+                Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) modConfig.getParameterTypes(config)[0] : remover.type();
+                var pair = modConfig.getArgument(type);
                 if (pair == null) {
                     return;
                 }
                 RequiredArgumentBuilder<FabricClientCommandSource, ?> subCommand = argument("value", pair.getLeft().get()).executes(ctx -> remove(ctx.getSource(), modConfig, config, pair.getRight().apply(ctx, "value")));
                 literals.get(config).then(literal("remove").then(subCommand));
             });
-            LiteralArgumentBuilder<FabricClientCommandSource> rootLiteral = literal("cconfig");
             literals.values().forEach(literal -> rootLiteral.then(literal(modConfig.getModId()).then(literal)));
             dispatcher.register(rootLiteral);
         }

@@ -1,5 +1,7 @@
 package dev.xpple.betterconfig.api;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,13 +22,13 @@ import java.lang.annotation.Target;
  *
  * <p>
  *     For each of the attributes of this annotation, its value represents the name of a
- *     method. See below for an example.
+ *     method along with optionally type parameters. See below for an example.
  *     <pre>
  *     {@code
- *     @Config(setter = "exampleSetter")
+ *     @Config(setter = @Config.Setter("exampleSetter"))
  *     public static String exampleString = "defaultString";
- *     public static void exampleSetter(Object string) {
- *         exampleString = ((String) string).toLowerCase(Locale.ROOT);
+ *     public static void exampleSetter(String string) {
+ *         exampleString = string.toLowerCase(Locale.ROOT);
  *     }
  *     }
  *     </pre>
@@ -45,16 +47,47 @@ import java.lang.annotation.Target;
  *     define an adder for a {@link java.util.Map}, in which you can create a key-value
  *     pair based on the single parameter. The {@link Config#putter()} attribute is solely
  *     used for {@code Map}s. Lastly, the {@link Config#remover()} is used for both
- *     {@code Collection}s and {@code Map}s. In the case of a {@code Map}, an entry will be
- *     removed based on its key.
+ *     {@code Collection}s and {@code Map}s. In the case of a {@code Map}, by default an
+ *     entry will be removed based on its key.
  * </p>
  *
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Config {
-    String setter() default "";
-    String adder() default "";
-    String putter() default "";
-    String remover() default "";
+    Setter setter() default @Setter;
+    Adder adder() default @Adder;
+    Putter putter() default @Putter;
+    Remover remover() default @Remover;
+
+    @Target({})
+    @interface Setter {
+        String value() default "";
+        Class<?> type() default EMPTY.class;
+    }
+
+    @Target({})
+    @interface Adder {
+        String value() default "";
+        Class<?> type() default EMPTY.class;
+    }
+
+    @Target({})
+    @interface Putter {
+        String value() default "";
+        Class<?> keyType() default EMPTY.class;
+        Class<?> valueType() default EMPTY.class;
+    }
+
+    @Target({})
+    @interface Remover {
+        String value() default "";
+        Class<?> type() default EMPTY.class;
+    }
+
+    @ApiStatus.Internal
+    final class EMPTY {
+        private EMPTY() {
+        }
+    }
 }
