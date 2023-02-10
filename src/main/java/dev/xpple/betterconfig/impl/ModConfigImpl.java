@@ -168,7 +168,8 @@ public class ModConfigImpl implements ModConfig {
         return ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
     }
 
-    private void save() {
+    @Override
+    public boolean save() {
         //noinspection ResultOfMethodCallIgnored
         this.getConfigsPath().getParent().toFile().mkdirs();
         try (BufferedWriter writer = Files.newBufferedWriter(this.getConfigsPath())) {
@@ -181,7 +182,9 @@ public class ModConfigImpl implements ModConfig {
         } catch (IOException e) {
             LOGGER.error("Could not save config file.");
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     public Map<String, Field> getConfigs() {

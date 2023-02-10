@@ -41,6 +41,8 @@ public interface ModConfig {
      * Set the value for the config associated with this config key.
      * @param config the config's key
      * @param value the new value
+     * @throws IllegalArgumentException when there is no setter for this config
+     * @throws CommandSyntaxException when a custom setter has failed to execute
      */
     void set(String config, Object value) throws CommandSyntaxException;
 
@@ -48,6 +50,8 @@ public interface ModConfig {
      * Add a value to the config associated with this config key.
      * @param config the config's key
      * @param value the value
+     * @throws IllegalArgumentException when there is no adder for this config
+     * @throws CommandSyntaxException when a custom adder has failed to execute
      */
     void add(String config, Object value) throws CommandSyntaxException;
 
@@ -56,6 +60,8 @@ public interface ModConfig {
      * @param config the config's key
      * @param key the mapping's key
      * @param value the mapping's value
+     * @throws IllegalArgumentException when there is no putter for this config
+     * @throws CommandSyntaxException when a custom putter has failed to execute
      */
     void put(String config, Object key, Object value) throws CommandSyntaxException;
 
@@ -63,6 +69,14 @@ public interface ModConfig {
      * Remove a value from the config associated with this config key.
      * @param config the config's key
      * @param value the value
+     * @throws IllegalArgumentException when there is no remover for this config
+     * @throws CommandSyntaxException when a custom remover has failed to execute
      */
     void remove(String config, Object value) throws CommandSyntaxException;
+
+    /**
+     * Save this configuration.
+     * @return {@code true} if the configuration was successfully saved, {@code false} otherwise
+     */
+    boolean save();
 }
