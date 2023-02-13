@@ -43,4 +43,7 @@ public class Configs {
     public static void customTypeAdder(int codepoint) {
         exampleCustomType.add(Character.toString(codepoint));
     }
+
+    @Config
+    public static TestEnum exampleEnum = TestEnum.ONE;
 }

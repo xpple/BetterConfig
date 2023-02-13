@@ -15,6 +15,6 @@ public class BetterConfigClient implements ClientModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
-        ConfigCommandClient.register(dispatcher);
+        new ConfigCommandClient().register(dispatcher);
     }
 }

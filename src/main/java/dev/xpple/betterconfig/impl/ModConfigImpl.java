@@ -9,7 +9,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.api.ModConfig;
-import dev.xpple.betterconfig.util.*;
+import dev.xpple.betterconfig.util.CheckedBiConsumer;
+import dev.xpple.betterconfig.util.CheckedBiFunction;
+import dev.xpple.betterconfig.util.CheckedConsumer;
 import net.minecraft.command.CommandSource;
 import net.minecraft.util.Pair;
 

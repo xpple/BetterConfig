@@ -73,7 +73,7 @@ public class ModConfigBuilder {
      * @param suggestor a pair of a custom suggestions provider and parser
      * @param <T> the type
      * @return the current builder instance
-     * @implNote On clients, use {@link ModConfigBuilder#registerTypeWithArgument} instead.
+     * @implNote On clients, consider using {@link ModConfigBuilder#registerTypeWithArgument} instead.
      * @see ModConfigBuilder#registerTypeHierarchyWithSuggestor
      */
     public <T> ModConfigBuilder registerTypeWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> suggestor) {
@@ -89,7 +89,7 @@ public class ModConfigBuilder {
      * @param suggestor a pair of a custom suggestions provider and parser
      * @param <T> the type
      * @return the current builder instance
-     * @implNote On clients, use {@link ModConfigBuilder#registerTypeHierarchyWithArgument} instead.
+     * @implNote On clients, consider using {@link ModConfigBuilder#registerTypeHierarchyWithArgument} instead.
      */
     public <T> ModConfigBuilder registerTypeHierarchyWithSuggestor(Class<T> type, TypeAdapter<T> adapter, Pair<Supplier<SuggestionProvider<? extends CommandSource>>, CheckedBiFunction<CommandContext<? extends CommandSource>, String, T, CommandSyntaxException>> suggestor) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
