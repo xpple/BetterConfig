@@ -46,4 +46,7 @@ public class Configs {
 
     @Config
     public static TestEnum exampleEnum = TestEnum.ONE;
+
+    @Config(readOnly = true)
+    public static double exampleReadOnly = Math.PI;
 }

@@ -21,8 +21,8 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <p>
- *     For each of the attributes of this annotation, its value represents the name of a
- *     method along with optionally type parameters. See below for an example.
+ *     For each of the update attributes of this annotation, its value represents the name
+ *     of a method along with optionally type parameters. See below for an example.
  *     <pre>
  *     {@code
  *     @Config(setter = @Config.Setter("exampleSetter"))
@@ -51,6 +51,9 @@ import java.lang.annotation.Target;
  *     entry will be removed based on its key.
  * </p>
  *
+ * <p>
+ *     To make a configuration unmodifiable by commands, mark it with {@code readOnly = true}.
+ * </p>
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -59,6 +62,8 @@ public @interface Config {
     Adder adder() default @Adder;
     Putter putter() default @Putter;
     Remover remover() default @Remover;
+
+    boolean readOnly() default false;
 
     @Target({})
     @interface Setter {

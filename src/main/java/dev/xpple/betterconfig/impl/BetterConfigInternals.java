@@ -46,6 +46,9 @@ public class BetterConfigInternals {
 
             Config annotation = field.getAnnotation(Config.class);
             modConfig.getAnnotations().put(fieldName, annotation);
+            if (annotation.readOnly()) {
+                return;
+            }
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {
                 initCollection(modConfig, field, annotation);
