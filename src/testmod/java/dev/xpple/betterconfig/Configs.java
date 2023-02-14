@@ -49,4 +49,7 @@ public class Configs {
 
     @Config(readOnly = true)
     public static double exampleReadOnly = Math.PI;
+
+    @Config(temporary = true)
+    public static double exampleTemporary = Math.random();
 }

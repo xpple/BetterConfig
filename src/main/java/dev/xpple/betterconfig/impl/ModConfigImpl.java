@@ -177,6 +177,9 @@ public class ModConfigImpl implements ModConfig {
         try (BufferedWriter writer = Files.newBufferedWriter(this.getConfigsPath())) {
             JsonObject root = new JsonObject();
             this.getConfigs().keySet().forEach(config -> {
+                if (this.getAnnotations().get(config).temporary()) {
+                    return;
+                }
                 Object value = this.get(config);
                 root.add(config, this.gson.toJsonTree(value));
             });

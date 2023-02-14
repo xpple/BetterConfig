@@ -29,13 +29,16 @@ public class BetterConfigInternals {
         }
 
         for (Field field : modConfig.getConfigsClass().getDeclaredFields()) {
-            if (!field.isAnnotationPresent(Config.class)) {
+            Config annotation = field.getAnnotation(Config.class);
+            if (annotation == null) {
                 continue;
             }
 
             String fieldName = field.getName();
             modConfig.getConfigs().put(fieldName, field);
-            if (root != null && root.has(fieldName)) {
+            modConfig.getAnnotations().put(fieldName, annotation);
+
+            if (!annotation.temporary() && root != null && root.has(fieldName)) {
                 try {
                     Object value = modConfig.getGson().fromJson(root.get(fieldName), field.getGenericType());
                     field.set(null, value);
@@ -44,10 +47,8 @@ public class BetterConfigInternals {
                 }
             }
 
-            Config annotation = field.getAnnotation(Config.class);
-            modConfig.getAnnotations().put(fieldName, annotation);
             if (annotation.readOnly()) {
-                return;
+                continue;
             }
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {

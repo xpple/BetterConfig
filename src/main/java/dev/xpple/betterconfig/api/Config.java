@@ -53,6 +53,9 @@ import java.lang.annotation.Target;
  *
  * <p>
  *     To make a configuration unmodifiable by commands, mark it with {@code readOnly = true}.
+ *     Enabling this will ignore all update annotations. To make a configuration temporary,
+ *     that is, to disable loading and saving from a config file, set {@code temporary} to
+ *     {@code true}.
  * </p>
  */
 @Target(ElementType.FIELD)
@@ -64,6 +67,7 @@ public @interface Config {
     Remover remover() default @Remover;
 
     boolean readOnly() default false;
+    boolean temporary() default false;
 
     @Target({})
     @interface Setter {
