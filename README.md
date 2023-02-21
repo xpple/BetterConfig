@@ -85,8 +85,8 @@ repositories {
 }
 ```
 Import it:
-```
+```gradle
 dependencies {
-    modImplementation 'dev.xpple:betterconfig:${version}'
+    include modImplementation('dev.xpple:betterconfig:${version}')
 }
 ```
