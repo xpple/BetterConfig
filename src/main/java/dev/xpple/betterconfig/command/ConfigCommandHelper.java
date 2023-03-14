@@ -27,7 +27,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
     private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(value -> Text.translatable("argument.enum.invalid", value));
 
     protected LiteralArgumentBuilder<S> create(String rootLiteral) {
-        LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.<S>literal(rootLiteral).requires(source -> source.hasPermissionLevel(4));
+        LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.literal(rootLiteral);
         for (ModConfigImpl modConfig : BetterConfigImpl.getModConfigs().values()) {
             Map<String, LiteralArgumentBuilder<S>> literals = new HashMap<>();
             for (String config : modConfig.getConfigs().keySet()) {

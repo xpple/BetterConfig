@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 
 public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(this.create("config"));
+        dispatcher.register(this.create("config").requires(source -> source.hasPermissionLevel(4)));
     }
 
     @Override
