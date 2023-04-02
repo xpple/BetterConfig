@@ -196,6 +196,10 @@ public class ModConfigImpl implements ModConfig {
         return this.configs;
     }
 
+    public Map<String, Object> getDefaults() {
+        return this.defaults;
+    }
+
     public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
         return this.setters;
     }
@@ -217,6 +221,7 @@ public class ModConfigImpl implements ModConfig {
     }
 
     private final Map<String, Field> configs = new HashMap<>();
+    private final Map<String, Object> defaults = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();

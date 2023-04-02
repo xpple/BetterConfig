@@ -35,6 +35,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                 literals.put(config, configLiteral);
 
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("get").executes(ctx -> get(ctx.getSource(), modConfig, config)));
+                configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), modConfig, config)));
             }
 
             modConfig.getSetters().keySet().forEach(config -> {
@@ -167,6 +168,8 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
     }
 
     protected abstract int get(S source, ModConfigImpl modConfig, String config);
+
+    protected abstract int reset(S source, ModConfigImpl modConfig, String config) throws CommandSyntaxException;
 
     protected abstract int set(S source, ModConfigImpl modConfig, String config, Object value) throws CommandSyntaxException;
 

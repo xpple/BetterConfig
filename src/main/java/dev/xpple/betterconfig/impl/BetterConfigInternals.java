@@ -39,6 +39,11 @@ public class BetterConfigInternals {
 
             String fieldName = field.getName();
             modConfig.getConfigs().put(fieldName, field);
+            try {
+                modConfig.getDefaults().put(fieldName, field.get(null));
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
             modConfig.getAnnotations().put(fieldName, annotation);
 
             if (!annotation.temporary() && root != null && root.has(fieldName)) {

@@ -19,6 +19,13 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     }
 
     @Override
+    protected int reset(ServerCommandSource source, ModConfigImpl modConfig, String config) throws CommandSyntaxException {
+        modConfig.set(config, modConfig.getDefaults().get(config));
+        source.sendFeedback(Text.translatable("betterconfig.commands.config.reset", config, modConfig.asString(config)), true);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int set(ServerCommandSource source, ModConfigImpl modConfig, String config, Object value) throws CommandSyntaxException {
         modConfig.set(config, value);
         source.sendFeedback(Text.translatable("betterconfig.commands.config.set", config, modConfig.asString(config)), true);
