@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 
 import java.util.*;
 
-@SuppressWarnings({"FieldMayBeFinal", "unused"})
+@SuppressWarnings({"FieldMayBeFinal", "unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Configs {
     @Config
     public static Block exampleBlock = Blocks.STONE;
