@@ -4,13 +4,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
+import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
+import sun.misc.Unsafe;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Map;
@@ -18,6 +17,8 @@ import java.util.Map;
 import static dev.xpple.betterconfig.BetterConfig.LOGGER;
 
 public class BetterConfigInternals {
+
+    private static final Unsafe unsafe = UnsafeAccess.UNSAFE;
 
     public static void init(ModConfigImpl modConfig) {
         JsonObject root;
@@ -34,6 +35,8 @@ public class BetterConfigInternals {
                 continue;
             }
 
+            field.setAccessible(true);
+
             String fieldName = field.getName();
             modConfig.getConfigs().put(fieldName, field);
             modConfig.getAnnotations().put(fieldName, annotation);
@@ -41,7 +44,11 @@ public class BetterConfigInternals {
             if (!annotation.temporary() && root != null && root.has(fieldName)) {
                 try {
                     Object value = modConfig.getGson().fromJson(root.get(fieldName), field.getGenericType());
-                    field.set(null, value);
+                    if (Modifier.isFinal(field.getModifiers())) {
+                        unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+                    } else {
+                        field.set(null, value);
+                    }
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }

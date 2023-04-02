@@ -4,8 +4,7 @@ A very powerful and easy to use command based configuration library for servers 
 ## Creating a simple configuration
 To start, create a new class. This will be the class where all your configurations are stored. For this example, we'll
 call this class `Configs`. Make sure that this class is `public`! Next, create a field for your configuration entry.
-Mark this field with the annotation `@Config`. Like the `Configs` class, this field also needs to be `public` and 
-additionally may **not** be declared final. The initial value of the field will be used as default (fallback) value.
+Mark this field with the annotation `@Config`. The initial value of the field will be used as default (fallback) value.
 ```java
 public class Configs {
     @Config

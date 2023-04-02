@@ -52,4 +52,10 @@ public class Configs {
 
     @Config(temporary = true)
     public static double exampleTemporary = Math.random();
+
+    @Config
+    private static boolean examplePrivate = false;
+
+    @Config
+    private static final Collection<String> examplePrivateFinal = new ArrayList<>(List.of("xpple"));
 }
