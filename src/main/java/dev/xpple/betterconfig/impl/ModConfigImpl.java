@@ -115,6 +115,19 @@ public class ModConfigImpl implements ModConfig {
     }
 
     @Override
+    public void reset(String config) {
+        Field field = this.configs.get(config);
+        if (field == null) {
+            throw new IllegalArgumentException();
+        }
+        try {
+            field.set(null, this.defaults.get(config));
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    @Override
     public void set(String config, Object value) throws CommandSyntaxException {
         CheckedConsumer<Object, CommandSyntaxException> setter = this.setters.get(config);
         if (setter == null) {
@@ -152,6 +165,15 @@ public class ModConfigImpl implements ModConfig {
         }
         remover.accept(value);
         this.save();
+    }
+
+    @Override
+    public void resetTemporaryConfigs() {
+        for (String config : this.configs.keySet()) {
+            if (this.annotations.get(config).temporary()) {
+                this.reset(config);
+            }
+        }
     }
 
     public Class<?> getType(String config) {

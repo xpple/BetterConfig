@@ -38,6 +38,13 @@ public interface ModConfig {
     String asString(String config);
 
     /**
+     * Reset the value for the config associated with this config key.
+     * @param config the config's key
+     * @throws IllegalArgumentException when there is no config associated to this key
+     */
+    void reset(String config);
+
+    /**
      * Set the value for the config associated with this config key.
      * @param config the config's key
      * @param value the new value
@@ -73,6 +80,11 @@ public interface ModConfig {
      * @throws CommandSyntaxException when a custom remover has failed to execute
      */
     void remove(String config, Object value) throws CommandSyntaxException;
+
+    /**
+     * Reset all the {@link Config#temporary()} configs.
+     */
+    void resetTemporaryConfigs();
 
     /**
      * Save this configuration.

@@ -20,8 +20,8 @@ public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommand
     }
 
     @Override
-    protected int reset(FabricClientCommandSource source, ModConfigImpl modConfig, String config) throws CommandSyntaxException {
-        modConfig.set(config, modConfig.getDefaults().get(config));
+    protected int reset(FabricClientCommandSource source, ModConfigImpl modConfig, String config) {
+        modConfig.reset(config);
         source.sendFeedback(Text.translatable("betterconfig.commands.config.reset", config, modConfig.asString(config)));
         return Command.SINGLE_SUCCESS;
     }

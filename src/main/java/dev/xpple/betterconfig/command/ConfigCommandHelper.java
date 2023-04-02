@@ -169,7 +169,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
 
     protected abstract int get(S source, ModConfigImpl modConfig, String config);
 
-    protected abstract int reset(S source, ModConfigImpl modConfig, String config) throws CommandSyntaxException;
+    protected abstract int reset(S source, ModConfigImpl modConfig, String config);
 
     protected abstract int set(S source, ModConfigImpl modConfig, String config, Object value) throws CommandSyntaxException;
 
