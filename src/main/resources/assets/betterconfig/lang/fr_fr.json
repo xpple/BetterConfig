@@ -1,0 +1,8 @@
+{
+    "betterconfig.commands.config.get": "%s est actuellement défini sur %s.",
+    "betterconfig.commands.config.reset": "%s a été réinitialisé à %s.",
+    "betterconfig.commands.config.set": "%s a été défini sur %s.",
+    "betterconfig.commands.config.add": "%s a été ajouté à %s.",
+    "betterconfig.commands.config.put": "La correspondance %s=%s a été ajoutée à %s.",
+    "betterconfig.commands.config.remove": "%s a été supprimé de %s."
+}
