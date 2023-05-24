@@ -4,7 +4,11 @@
 # against bad commits.
 
 name: build
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    tags-ignore:
+      - '**'
 
 jobs:
   build:
@@ -27,6 +31,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'microsoft'
+          cache: 'gradle'
       - name: make gradle wrapper executable
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
