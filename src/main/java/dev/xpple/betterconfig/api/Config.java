@@ -10,9 +10,7 @@ import java.lang.annotation.Target;
 /**
  * <p>
  *     An annotation that specifies that this field should be treated as a configuration.
- *     The class in which this field is defined, as well as the field itself, must be
- *     defined as {@code public}. Moreover, fields annotated with this annotation must not
- *     be declared {@code final}.
+ *     The class in which this field is defined must be defined as {@code public}.
  * </p>
  *
  * <p>
