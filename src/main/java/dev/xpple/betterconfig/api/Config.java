@@ -66,6 +66,7 @@ public @interface Config {
 
     boolean readOnly() default false;
     boolean temporary() default false;
+    String condition() default "";
 
     @Target({})
     @interface Setter {
