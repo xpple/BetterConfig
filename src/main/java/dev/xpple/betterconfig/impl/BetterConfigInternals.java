@@ -64,28 +64,31 @@ public class BetterConfigInternals {
                 modConfig.getConditions().put(fieldName, source -> true);
             } else {
                 Method predicateMethod;
+                boolean hasParameter = false;
                 try {
                     predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition());
                 } catch (ReflectiveOperationException e) {
-                    throw new AssertionError(e);
+                    hasParameter = true;
+                    try {
+                        predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition(), CommandSource.class);
+                    } catch (ReflectiveOperationException e1) {
+                        throw new AssertionError(e1);
+                    }
                 }
                 if (predicateMethod.getReturnType() != boolean.class) {
                     throw new AssertionError("Condition method " + annotation.condition() + " does not return boolean");
-                }
-                if (predicateMethod.getParameterTypes().length > 1) {
-                    throw new AssertionError("Condition method " + annotation.condition() + " has too many parameters");
-                }
-                if (predicateMethod.getParameterTypes().length == 1 && predicateMethod.getParameterTypes()[0] != CommandSource.class) {
-                    throw new AssertionError("Condition method " + annotation.condition() + " must have a command source as an argument");
                 }
                 if (!Modifier.isStatic(predicateMethod.getModifiers())) {
                     throw new AssertionError("Condition method " + annotation.condition() + " is not static");
                 }
                 predicateMethod.setAccessible(true);
-                if (predicateMethod.getParameterTypes().length == 0) {
+
+                Method predicateMethod_f = predicateMethod;
+
+                if (hasParameter) {
                     modConfig.getConditions().put(fieldName, source -> {
                         try {
-                            return (Boolean) predicateMethod.invoke(null);
+                            return (Boolean) predicateMethod_f.invoke(null, source);
                         } catch (ReflectiveOperationException e) {
                             throw new AssertionError(e);
                         }
@@ -93,7 +96,7 @@ public class BetterConfigInternals {
                 } else {
                     modConfig.getConditions().put(fieldName, source -> {
                         try {
-                            return (Boolean) predicateMethod.invoke(null, source);
+                            return (Boolean) predicateMethod_f.invoke(null);
                         } catch (ReflectiveOperationException e) {
                             throw new AssertionError(e);
                         }

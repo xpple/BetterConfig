@@ -4,6 +4,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.CommandSource;
+import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.*;
 
@@ -58,4 +60,10 @@ public class Configs {
 
     @Config
     private static final Collection<String> examplePrivateFinal = new ArrayList<>(List.of("xpple"));
+
+    @Config(condition = "isServer")
+    public static boolean exampleServerOnlyConfig;
+    public static boolean isServer(CommandSource source) {
+        return source instanceof ServerCommandSource;
+    }
 }
