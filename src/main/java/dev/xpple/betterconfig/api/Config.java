@@ -55,6 +55,20 @@ import java.lang.annotation.Target;
  *     that is, to disable loading and saving from a config file, set {@code temporary} to
  *     {@code true}.
  * </p>
+ *
+ * <p>
+ *     To make a configuration's visibility conditional on the {@code CommandSource}, use {@link Config#condition()}.
+ *     The {@code CommandSource} parameter is optional.
+ *     <pre>
+ *     {@code
+ *     @Config(condition = "myCondition")
+ *     public static String myConfig = "";
+ *     public static boolean myCondition(CommandSource source) {
+ *         return Boolean.getBoolean("enableMyConfig");
+ *     }
+ *     }
+ *     </pre>
+ * </p>
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
