@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
@@ -31,7 +32,10 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
         for (ModConfigImpl modConfig : BetterConfigImpl.getModConfigs().values()) {
             Map<String, LiteralArgumentBuilder<S>> literals = new HashMap<>();
             for (String config : modConfig.getConfigs().keySet()) {
-                LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.literal(config);
+                @SuppressWarnings("unchecked")
+                Predicate<S> condition = (Predicate<S>) modConfig.getConditions().get(config);
+
+                LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(config).requires(condition);
                 literals.put(config, configLiteral);
 
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("get").executes(ctx -> get(ctx.getSource(), modConfig, config)));

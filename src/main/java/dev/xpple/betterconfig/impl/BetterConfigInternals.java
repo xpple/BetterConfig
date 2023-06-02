@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
 import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
+import net.minecraft.command.CommandSource;
 import sun.misc.Unsafe;
 
 import java.io.BufferedReader;
@@ -56,6 +57,50 @@ public class BetterConfigInternals {
                     }
                 } catch (Exception e) {
                     throw new AssertionError(e);
+                }
+            }
+
+            if (annotation.condition().isEmpty()) {
+                modConfig.getConditions().put(fieldName, source -> true);
+            } else {
+                Method predicateMethod;
+                boolean hasParameter = false;
+                try {
+                    predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition());
+                } catch (ReflectiveOperationException e) {
+                    hasParameter = true;
+                    try {
+                        predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition(), CommandSource.class);
+                    } catch (ReflectiveOperationException e1) {
+                        throw new AssertionError(e1);
+                    }
+                }
+                if (predicateMethod.getReturnType() != boolean.class) {
+                    throw new AssertionError("Condition method " + annotation.condition() + " does not return boolean");
+                }
+                if (!Modifier.isStatic(predicateMethod.getModifiers())) {
+                    throw new AssertionError("Condition method " + annotation.condition() + " is not static");
+                }
+                predicateMethod.setAccessible(true);
+
+                Method predicateMethod_f = predicateMethod;
+
+                if (hasParameter) {
+                    modConfig.getConditions().put(fieldName, source -> {
+                        try {
+                            return (Boolean) predicateMethod_f.invoke(null, source);
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
+                } else {
+                    modConfig.getConditions().put(fieldName, source -> {
+                        try {
+                            return (Boolean) predicateMethod_f.invoke(null);
+                        } catch (ReflectiveOperationException e) {
+                            throw new AssertionError(e);
+                        }
+                    });
                 }
             }
 

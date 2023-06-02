@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static dev.xpple.betterconfig.BetterConfig.LOGGER;
@@ -238,6 +239,10 @@ public class ModConfigImpl implements ModConfig {
         return this.removers;
     }
 
+    public Map<String, Predicate<CommandSource>> getConditions() {
+        return this.conditions;
+    }
+
     public Map<String, Config> getAnnotations() {
         return this.annotations;
     }
@@ -248,5 +253,6 @@ public class ModConfigImpl implements ModConfig {
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Predicate<CommandSource>> conditions = new HashMap<>();
     private final Map<String, Config> annotations = new HashMap<>();
 }
