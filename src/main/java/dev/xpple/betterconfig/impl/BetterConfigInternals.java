@@ -9,6 +9,7 @@ import net.minecraft.command.CommandSource;
 import sun.misc.Unsafe;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.nio.file.Files;
@@ -26,7 +27,7 @@ public class BetterConfigInternals {
         try (BufferedReader reader = Files.newBufferedReader(modConfig.getConfigsPath())) {
             root = JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException e) {
-            root = null;
+            root = new JsonObject();
             LOGGER.warn("Could not read config file, default values will be used.");
         }
 
@@ -47,13 +48,17 @@ public class BetterConfigInternals {
             }
             modConfig.getAnnotations().put(fieldName, annotation);
 
-            if (!annotation.temporary() && root != null && root.has(fieldName)) {
+            if (!annotation.temporary()) {
                 try {
-                    Object value = modConfig.getGson().fromJson(root.get(fieldName), field.getGenericType());
-                    if (Modifier.isFinal(field.getModifiers())) {
-                        unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+                    if (root.has(fieldName)) {
+                        Object value = modConfig.getGson().fromJson(root.get(fieldName), field.getGenericType());
+                        if (Modifier.isFinal(field.getModifiers())) {
+                            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
+                        } else {
+                            field.set(null, value);
+                        }
                     } else {
-                        field.set(null, value);
+                        root.add(fieldName, modConfig.getGson().toJsonTree(field.get(null)));
                     }
                 } catch (Exception e) {
                     throw new AssertionError(e);
@@ -115,6 +120,13 @@ public class BetterConfigInternals {
             } else {
                 initObject(modConfig, field, annotation);
             }
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(modConfig.getConfigsPath())) {
+            writer.write(modConfig.getGson().toJson(root));
+        } catch (IOException e) {
+            LOGGER.error("Could not save config file.");
+            e.printStackTrace();
         }
     }
 
