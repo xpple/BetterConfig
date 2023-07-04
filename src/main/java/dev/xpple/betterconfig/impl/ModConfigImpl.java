@@ -126,6 +126,7 @@ public class ModConfigImpl implements ModConfig {
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }
+        this.save();
     }
 
     @Override
