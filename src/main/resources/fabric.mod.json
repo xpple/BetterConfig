@@ -15,7 +15,7 @@
   "icon": "assets/betterconfig/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "server": [
       "dev.xpple.betterconfig.BetterConfig"
     ],
     "client": [

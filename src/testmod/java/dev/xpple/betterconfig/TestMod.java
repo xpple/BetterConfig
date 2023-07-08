@@ -2,7 +2,7 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.ModConfigBuilder;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
@@ -10,9 +10,9 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-public class TestMod implements ModInitializer {
+public class TestMod implements DedicatedServerModInitializer {
     @Override
-    public void onInitialize() {
+    public void onInitializeServer() {
         //ArgumentTypeRegistry.registerArgumentType(new Identifier("testmod", "block"), BlockArgumentType.class, ConstantArgumentSerializer.of(BlockArgumentType::block));
 
         new ModConfigBuilder("testmod", Configs.class)

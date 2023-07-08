@@ -7,7 +7,7 @@
   "license": "LGPL-3.0-or-later",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "server": [
       "dev.xpple.betterconfig.TestMod"
     ],
     "client": [
