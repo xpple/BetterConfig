@@ -58,11 +58,8 @@ public class Configs {
     @Config
     private static boolean examplePrivate = false;
 
-    @Config
-    private static final Collection<String> examplePrivateFinal = new ArrayList<>(List.of("xpple"));
-
     @Config(condition = "isServer")
-    public static boolean exampleServerOnlyConfig;
+    public static boolean exampleServerOnlyConfig = true;
     public static boolean isServer(CommandSource source) {
         return source instanceof ServerCommandSource;
     }

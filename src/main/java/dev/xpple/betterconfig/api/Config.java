@@ -15,7 +15,9 @@ import java.lang.annotation.Target;
  *
  * <p>
  *     The name of the field will be used as the name of the config as well. The initial
- *     value given to the field will be used as default (fallback) value.
+ *     value given to the field will be used as default (fallback) value. Note that the
+ *     field should not be final! Immutable in-code behaviour can be achieved by making the
+ *     field private and adding a getter method.
  * </p>
  *
  * <p>

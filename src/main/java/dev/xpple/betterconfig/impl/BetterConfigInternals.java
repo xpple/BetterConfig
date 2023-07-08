@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
-import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import net.minecraft.command.CommandSource;
-import sun.misc.Unsafe;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,8 +17,6 @@ import java.util.Map;
 import static dev.xpple.betterconfig.BetterConfig.LOGGER;
 
 public class BetterConfigInternals {
-
-    private static final Unsafe unsafe = UnsafeAccess.UNSAFE;
 
     public static void init(ModConfigImpl modConfig) {
         JsonObject root;
@@ -53,10 +49,9 @@ public class BetterConfigInternals {
                     if (root.has(fieldName)) {
                         Object value = modConfig.getGson().fromJson(root.get(fieldName), field.getGenericType());
                         if (Modifier.isFinal(field.getModifiers())) {
-                            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), value);
-                        } else {
-                            field.set(null, value);
+                            throw new AssertionError("Config field '" + fieldName + "' should not be final");
                         }
+                        field.set(null, value);
                     } else {
                         root.add(fieldName, modConfig.getGson().toJsonTree(field.get(null)));
                     }
@@ -81,10 +76,10 @@ public class BetterConfigInternals {
                     }
                 }
                 if (predicateMethod.getReturnType() != boolean.class) {
-                    throw new AssertionError("Condition method " + annotation.condition() + " does not return boolean");
+                    throw new AssertionError("Condition method '" + annotation.condition() + "' does not return boolean");
                 }
                 if (!Modifier.isStatic(predicateMethod.getModifiers())) {
-                    throw new AssertionError("Condition method " + annotation.condition() + " is not static");
+                    throw new AssertionError("Condition method '" + annotation.condition() + "' is not static");
                 }
                 predicateMethod.setAccessible(true);
 
