@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  *     }
  *     }
  *     </pre>
- *     This method is allowed to throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException},
+ *     This method can be private and is allowed to throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException},
  *     which will be caught and dealt with as usual. <br />
  *     If an attribute equals the empty string (the default value), the Java built-in
  *     method will be used. For instance, the method {@link java.util.Collection#add} for

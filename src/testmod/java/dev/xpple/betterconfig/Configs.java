@@ -63,4 +63,10 @@ public class Configs {
     public static boolean isServer(CommandSource source) {
         return source instanceof ServerCommandSource;
     }
+
+    @Config(setter = @Config.Setter("privateSetter"))
+    public static String examplePrivateSetter = "nice";
+    private static void privateSetter(String string) {
+        examplePrivateSetter = string + '!';
+    }
 }

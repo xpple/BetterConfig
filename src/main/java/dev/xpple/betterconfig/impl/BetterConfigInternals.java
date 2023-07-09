@@ -154,6 +154,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            adderMethod.setAccessible(true);
             modConfig.getAdders().put(fieldName, value -> {
                 try {
                     adderMethod.invoke(null, value);
@@ -191,6 +192,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            removerMethod.setAccessible(true);
             modConfig.getRemovers().put(fieldName, value -> {
                 try {
                     removerMethod.invoke(null, value);
@@ -219,6 +221,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            adderMethod.setAccessible(true);
             modConfig.getAdders().put(fieldName, key -> {
                 try {
                     adderMethod.invoke(null, key);
@@ -257,6 +260,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            putterMethod.setAccessible(true);
             modConfig.getPutters().put(fieldName, (key, value) -> {
                 try {
                     putterMethod.invoke(null, key, value);
@@ -294,6 +298,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            removerMethod.setAccessible(true);
             modConfig.getRemovers().put(fieldName, key -> {
                 try {
                     removerMethod.invoke(null, key);
@@ -329,6 +334,7 @@ public class BetterConfigInternals {
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
+            setterMethod.setAccessible(true);
             modConfig.getSetters().put(fieldName, value -> {
                 try {
                     setterMethod.invoke(null, value);
