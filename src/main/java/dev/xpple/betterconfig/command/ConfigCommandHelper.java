@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
 public abstract class ConfigCommandHelper<S extends CommandSource>  {
 
@@ -61,7 +60,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                     subCommand.executes(ctx -> set(ctx.getSource(), modConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
                 } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", string());
+                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> set(ctx.getSource(), modConfig, config, suggestorPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
@@ -86,7 +85,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                     subCommand.executes(ctx -> add(ctx.getSource(), modConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
                 } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", string());
+                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> add(ctx.getSource(), modConfig, config, suggestorPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
@@ -135,7 +134,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                     subSubCommand.executes(ctx -> put(ctx.getSource(), modConfig, config, getKey.apply(ctx), argumentValuePair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
                 } else if (suggestorValuePair != null) {
-                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", string());
+                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subSubCommand.suggests((SuggestionProvider<S>) suggestorValuePair.getLeft().get()).executes(ctx -> put(ctx.getSource(), modConfig, config, getKey.apply(ctx), suggestorValuePair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
@@ -160,7 +159,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                     subCommand.executes(ctx -> remove(ctx.getSource(), modConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
                 } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string());
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> remove(ctx.getSource(), modConfig, config, suggestorPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
