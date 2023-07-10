@@ -196,8 +196,6 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public boolean save() {
-        //noinspection ResultOfMethodCallIgnored
-        this.getConfigsPath().getParent().toFile().mkdirs();
         try (BufferedWriter writer = Files.newBufferedWriter(this.getConfigsPath())) {
             JsonObject root = new JsonObject();
             this.getConfigs().keySet().forEach(config -> {

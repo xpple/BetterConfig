@@ -117,6 +117,8 @@ public class BetterConfigInternals {
             }
         }
 
+        //noinspection ResultOfMethodCallIgnored
+        modConfig.getConfigsPath().getParent().toFile().mkdirs();
         try (BufferedWriter writer = Files.newBufferedWriter(modConfig.getConfigsPath())) {
             writer.write(modConfig.getGson().toJson(root));
         } catch (IOException e) {
