@@ -8,3 +8,8 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+include 'common'
+include 'fabric'
+include 'paper'
+project(':paper').name = 'betterconfig' // silly hack needed for Paper

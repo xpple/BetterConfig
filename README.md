@@ -34,7 +34,7 @@ new ModConfigBuilder(<mod id>, Configs.class)
     .build();
 ```
 where `BlockAdapter` extends `TypeAdapter<Block>` and `BlockArgumentType` implements `ArgumentType<Block>`. See 
-[these tests](src/testmod/java/dev/xpple/betterconfig) for a complete picture.
+[these tests](fabric/src/testmod/java/dev/xpple/betterconfig) for a complete picture.
 
 Furthermore, you can completely change the behaviour of updating your config values by creating your own methods. Simply
 add one or more of `setter`, `adder`, `putter` or `remover` as attribute to your `@Config` annotation. A great use for
@@ -48,7 +48,7 @@ public static void customMapAdder(String string) {
 ```
 The value of `"none"` for the putter indicates that no putter will be available. This way, you can use this `Map` in your
 code like usual, and add values to it using `/(c)config <mod id> exampleMapAdder add <string>`. For more details, see
-[the JavaDocs for `@Config`](src/main/java/dev/xpple/betterconfig/api/Config.java).
+[the JavaDocs for `@Config`](fabric/src/main/java/dev/xpple/betterconfig/api/Config.java).
 
 The parameters of the update method can also be customised.
 ```java

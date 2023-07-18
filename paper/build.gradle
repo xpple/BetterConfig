@@ -1,0 +1,94 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+archivesBaseName = project.archives_base_name
+group = project.maven_group
+version = "${project.base_version}-paper"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+}
+
+configurations {
+    includeInJar
+}
+
+dependencies {
+    configurations.implementation.extendsFrom(configurations.includeInJar)
+    includeInJar project(':common')
+
+    compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+}
+
+processResources {
+    def props = [base_version: project.version, paper_api_version: project.paper_api_version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+jar {
+    dependsOn ':common:remapJar'
+    from {
+        configurations.includeInJar.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "xpple"
+            url = "sftp://xpple.dev:22/maven.xpple.dev/maven2"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/xpple/BetterConfig"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
