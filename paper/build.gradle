@@ -25,7 +25,7 @@ configurations {
 }
 
 dependencies {
-    configurations.implementation.extendsFrom(configurations.includeInJar)
+    configurations.compileOnly.extendsFrom(configurations.includeInJar)
     includeInJar project(':common')
 
     compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"

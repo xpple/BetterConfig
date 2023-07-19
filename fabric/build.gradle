@@ -62,6 +62,7 @@ configurations {
 }
 
 dependencies {
+    configurations.compileOnly.extendsFrom(configurations.includeInJar)
     includeInJar project(':common')
 
     // To change the versions see the gradle.properties file
@@ -76,8 +77,6 @@ dependencies {
     // These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
     // modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
-
-    configurations.implementation.extendsFrom(configurations.includeInJar)
 }
 
 processResources {
