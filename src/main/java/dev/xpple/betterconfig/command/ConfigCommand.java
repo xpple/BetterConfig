@@ -14,7 +14,7 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
 
     @Override
     protected int get(ServerCommandSource source, ModConfigImpl modConfig, String config) {
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, modConfig.asString(config)), true);
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, modConfig.asString(config)), false);
         return Command.SINGLE_SUCCESS;
     }
 
