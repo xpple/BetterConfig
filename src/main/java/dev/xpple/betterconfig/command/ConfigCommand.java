@@ -42,7 +42,7 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     @Override
     protected int put(ServerCommandSource source, ModConfigImpl modConfig, String config, Object key, Object value) throws CommandSyntaxException {
         modConfig.put(config, key, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", key, modConfig.asString(value), config), true);
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", modConfig.asString(key), modConfig.asString(value), config), true);
         return Command.SINGLE_SUCCESS;
     }
 

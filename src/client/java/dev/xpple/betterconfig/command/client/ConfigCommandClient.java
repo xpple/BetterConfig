@@ -43,7 +43,7 @@ public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommand
     @Override
     protected int put(FabricClientCommandSource source, ModConfigImpl modConfig, String config, Object key, Object value) throws CommandSyntaxException {
         modConfig.put(config, key, value);
-        source.sendFeedback(Text.translatable("betterconfig.commands.config.put", key, modConfig.asString(value), config));
+        source.sendFeedback(Text.translatable("betterconfig.commands.config.put", modConfig.asString(key), modConfig.asString(value), config));
         return Command.SINGLE_SUCCESS;
     }
 
