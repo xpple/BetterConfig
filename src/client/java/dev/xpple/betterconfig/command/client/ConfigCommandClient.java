@@ -14,6 +14,13 @@ public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommand
     }
 
     @Override
+    protected int comment(FabricClientCommandSource source, String config, String comment) {
+        source.sendFeedback(Text.translatable("betterconfig.commands.config.comment", config));
+        source.sendFeedback(Text.of(comment));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int get(FabricClientCommandSource source, ModConfigImpl modConfig, String config) {
         source.sendFeedback(Text.translatable("betterconfig.commands.config.get", config, modConfig.asString(config)));
         return Command.SINGLE_SUCCESS;

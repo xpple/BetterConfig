@@ -10,7 +10,8 @@ import java.lang.annotation.Target;
 /**
  * <p>
  *     An annotation that specifies that this field should be treated as a configuration.
- *     The class in which this field is defined must be defined as {@code public}.
+ *     The class in which this field is defined must be defined as {@code public}. You can
+ *     add a comment about the config by setting the {@link Config#comment()} attribute.
  * </p>
  *
  * <p>
@@ -75,6 +76,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Config {
+    String comment() default "";
+
     Setter setter() default @Setter;
     Adder adder() default @Adder;
     Putter putter() default @Putter;

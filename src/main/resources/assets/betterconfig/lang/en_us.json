@@ -1,4 +1,5 @@
 {
+  "betterconfig.commands.config.comment": "Comment for %s:",
   "betterconfig.commands.config.get": "%s is currently set to %s.",
   "betterconfig.commands.config.reset": "%s has been reset to %s.",
   "betterconfig.commands.config.set": "%s has been set to %s.",

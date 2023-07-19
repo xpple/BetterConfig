@@ -13,6 +13,13 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     }
 
     @Override
+    protected int comment(ServerCommandSource source, String config, String comment) {
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.comment", "Comment for %s:", config), false);
+        source.sendFeedback(() -> Text.of(comment), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int get(ServerCommandSource source, ModConfigImpl modConfig, String config) {
         source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, modConfig.asString(config)), false);
         return Command.SINGLE_SUCCESS;

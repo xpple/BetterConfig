@@ -33,7 +33,6 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
             for (String config : modConfig.getConfigs().keySet()) {
                 @SuppressWarnings("unchecked")
                 Predicate<S> condition = (Predicate<S>) modConfig.getConditions().get(config);
-
                 LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(config).requires(condition);
                 literals.put(config, configLiteral);
 
@@ -41,6 +40,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), modConfig, config)));
             }
 
+            modConfig.getComments().forEach((config, comment) -> literals.get(config).then(LiteralArgumentBuilder.<S>literal("comment").executes(ctx -> comment(ctx.getSource(), config, comment))));
             modConfig.getSetters().keySet().forEach(config -> {
                 Config annotation = modConfig.getAnnotations().get(config);
                 Config.Setter setter = annotation.setter();
@@ -169,6 +169,8 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
         }
         return root;
     }
+
+    protected abstract int comment(S source, String config, String comment);
 
     protected abstract int get(S source, ModConfigImpl modConfig, String config);
 

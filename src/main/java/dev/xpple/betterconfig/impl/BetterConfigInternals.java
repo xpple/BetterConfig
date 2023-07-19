@@ -44,6 +44,10 @@ public class BetterConfigInternals {
             }
             modConfig.getAnnotations().put(fieldName, annotation);
 
+            if (!annotation.comment().isEmpty()) {
+                modConfig.getComments().put(fieldName, annotation.comment());
+            }
+
             if (!annotation.temporary()) {
                 try {
                     if (root.has(fieldName)) {
