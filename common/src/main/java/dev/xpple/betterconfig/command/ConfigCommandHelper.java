@@ -30,7 +30,6 @@ public abstract class ConfigCommandHelper<S>  {
             Map<String, LiteralArgumentBuilder<S>> literals = new HashMap<>();
             for (String config : abstractConfig.getConfigs().keySet()) {
                 Predicate<S> condition = abstractConfig.getConditions().get(config);
-
                 LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(config).requires(condition);
                 literals.put(config, configLiteral);
 
@@ -38,6 +37,7 @@ public abstract class ConfigCommandHelper<S>  {
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), abstractConfig, config)));
             }
 
+            abstractConfig.getComments().forEach((config, comment) -> literals.get(config).then(LiteralArgumentBuilder.<S>literal("comment").executes(ctx -> comment(ctx.getSource(), config, comment))));
             abstractConfig.getSetters().keySet().forEach(config -> {
                 Config annotation = abstractConfig.getAnnotations().get(config);
                 Config.Setter setter = annotation.setter();
@@ -166,6 +166,8 @@ public abstract class ConfigCommandHelper<S>  {
         }
         return root;
     }
+
+    protected abstract int comment(S source, String config, String comment);
 
     protected abstract int get(S source, AbstractConfigImpl<S> abstractConfig, String config);
 

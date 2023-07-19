@@ -29,8 +29,15 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     }
 
     @Override
+    protected int comment(ServerCommandSource source, String config, String comment) {
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.comment", "Comment for %s:", config), false);
+        source.sendFeedback(() -> Text.of(comment), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int get(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource> abstractConfig, String config) {
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, abstractConfig.asString(config)), true);
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, abstractConfig.asString(config)), false);
         return Command.SINGLE_SUCCESS;
     }
 
@@ -58,7 +65,7 @@ public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
     @Override
     protected int put(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException {
         abstractConfig.put(config, key, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", key, abstractConfig.asString(value), config), true);
+        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", abstractConfig.asString(key), abstractConfig.asString(value), config), true);
         return Command.SINGLE_SUCCESS;
     }
 

@@ -30,9 +30,16 @@ public class ConfigCommand extends ConfigCommandHelper<CommandSourceStack> {
     }
 
     @Override
+    protected int comment(CommandSourceStack source, String config, String comment) {
+        source.getExecutor().sendMessage(Component.translatable("betterconfig.commands.config.comment", "Comment for %s:", Component.text(config)));
+        source.getExecutor().sendMessage(Component.text(comment));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int get(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack> abstractConfig, String config) {
         Component component = Component.translatable("betterconfig.commands.config.get", "%s is currently set to %s.", Component.text(config), Component.text(abstractConfig.asString(config)));
-        source.getExecutor().getServer().broadcast(component, Server.BROADCAST_CHANNEL_ADMINISTRATIVE);
+        source.getExecutor().sendMessage(component);
         return Command.SINGLE_SUCCESS;
     }
 

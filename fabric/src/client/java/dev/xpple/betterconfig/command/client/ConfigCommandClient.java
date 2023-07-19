@@ -30,6 +30,13 @@ public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommand
     }
 
     @Override
+    protected int comment(FabricClientCommandSource source, String config, String comment) {
+        source.sendFeedback(Text.translatable("betterconfig.commands.config.comment", config));
+        source.sendFeedback(Text.of(comment));
+        return Command.SINGLE_SUCCESS;
+    }
+
+    @Override
     protected int get(FabricClientCommandSource source, AbstractConfigImpl<FabricClientCommandSource> abstractConfig, String config) {
         source.sendFeedback(Text.translatable("betterconfig.commands.config.get", config, abstractConfig.asString(config)));
         return Command.SINGLE_SUCCESS;
@@ -59,7 +66,7 @@ public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommand
     @Override
     protected int put(FabricClientCommandSource source, AbstractConfigImpl<FabricClientCommandSource> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException {
         abstractConfig.put(config, key, value);
-        source.sendFeedback(Text.translatable("betterconfig.commands.config.put", key, abstractConfig.asString(value), config));
+        source.sendFeedback(Text.translatable("betterconfig.commands.config.put", abstractConfig.asString(key), abstractConfig.asString(value), config));
         return Command.SINGLE_SUCCESS;
     }
 

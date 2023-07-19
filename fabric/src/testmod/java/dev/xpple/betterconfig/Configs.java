@@ -69,4 +69,7 @@ public class Configs {
     private static void privateSetter(String string) {
         examplePrivateSetter = string + '!';
     }
+
+    @Config(comment = "This is a mysterious object")
+    public static Object exampleComment = null;
 }

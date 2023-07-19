@@ -209,6 +209,10 @@ public abstract class AbstractConfigImpl<S> implements AbstractConfig {
         return this.defaults;
     }
 
+    public Map<String, String> getComments() {
+        return this.comments;
+    }
+
     public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
         return this.setters;
     }
@@ -235,6 +239,7 @@ public abstract class AbstractConfigImpl<S> implements AbstractConfig {
 
     private final Map<String, Field> configs = new HashMap<>();
     private final Map<String, Object> defaults = new HashMap<>();
+    private final Map<String, String> comments = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
