@@ -29,7 +29,7 @@ import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
 
 public abstract class AbstractConfigImpl<S> implements AbstractConfig {
 
-    Map<Class<?>, Pair<?, ?>> defaultArguments = ImmutableMap.<Class<?>, Pair<?, ?>>builder()
+    private final Map<Class<?>, Pair<?, ?>> defaultArguments = ImmutableMap.<Class<?>, Pair<?, ?>>builder()
         .put(boolean.class, Pair.of((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends S>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
         .put(Boolean.class, Pair.of((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends S>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
         .put(double.class, Pair.of((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CheckedBiFunction<CommandContext<? extends S>, String, Double, CommandSyntaxException>) DoubleArgumentType::getDouble))
