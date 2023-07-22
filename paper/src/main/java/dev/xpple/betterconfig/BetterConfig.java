@@ -1,7 +1,7 @@
 package dev.xpple.betterconfig;
 
 import dev.xpple.betterconfig.command.ConfigCommand;
-import io.papermc.paper.event.server.ServerResourcesReloadedEvent;
+import io.papermc.paper.event.server.ServerResourcesLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,8 +17,8 @@ public final class BetterConfig extends JavaPlugin {
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
-            public void reload(ServerResourcesReloadedEvent event) {
-                event.getCommands().register(BetterConfig.this, new ConfigCommand().register());
+            public void load(ServerResourcesLoadEvent event) {
+                event.getCommands().register(BetterConfig.this, new ConfigCommand().build());
             }
         }, this);
     }

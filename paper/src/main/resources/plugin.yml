@@ -6,12 +6,6 @@ website: https://xpple.dev/
 main: dev.xpple.betterconfig.BetterConfig
 api-version: '${paper_api_version}'
 load: STARTUP
-commands:
-  config:
-    description: The command used to change plugin configurations
-    usage: /config <plugin name> <config> <add|get|put|remove|reset|set> [<key>] [<value>]
-    permission: betterconfig.config
-    permission-message: Unknown command or insufficient permissions
 permissions:
   betterconfig.config:
     description: Allows the use of the config command
