@@ -12,27 +12,30 @@ public class Configs {
     public static String exampleString = "default";
 }
 ```
-For Fabric users, register the `Configs` class in your mod's `onInitialize(Client)` method. Replace `<mod id>` with your
+Finally, register your `Configs` class.
+- For Fabric users, register the `Configs` class in your mod's `onInitialize(Client)` method. Replace `<mod id>` with your 
 mod's id.
-```java
-new ModConfigBuilder(<mod id>, Configs.class).build();
-```
-For Paper users, register the `Configs` class in your plugin's `onEnable` method. Replace `<plugin name>` with your
+  ```java
+  new ModConfigBuilder(<mod id>, Configs.class).build();
+  ```
+- For Paper users, register the `Configs` class in your plugin's `onEnable` method. Replace `<plugin name>` with your
 plugin's name.
-```java
-new PluginConfigBuilder(<plugin name>, Configs.class).build();
-```
-That's it! Now you can access `exampleString` through `Configs.exampleString`. You can edit `exampleString` by executing
-the following command.
-```
-/(c)config <mod id> exampleString set <string>
-```
+  ```java
+  new PluginConfigBuilder(<plugin name>, Configs.class).build();
+  ```
+That's it! Now you can access `exampleString` through `Configs.exampleString`. You can edit `exampleString` by using the
+config command.
+- On Fabric there are different commands for the client and server.  For both, replace `<mod id>` with your mod's id.
+  - On the client, execute `/cconfig <mod id> exampleString set <string>`.
+  - On servers, execute `/config <mod id> exampleString set <string>`.
+- On Paper servers, execute `/config <plugin name> exampleString set <string>`. Replace `<plugin name>` with your
+plugin's name.
 
 ## That's not all!
-This mod also supports the use of `Collection`s and `Map`s as variable types. These configurations will have the options
-`add`, `put` and `remove` available. Moreover, you can define your own (de)serialisers to create configurations with
-arbitrary types. To do this, all you have to do is register the (de)serialiser when you build your config. For instance,
-to create a variable with type `Block` you can do
+This mod also natively supports the use of `Collection`s and `Map`s as variable types. These configurations will have
+the options `add`, `put` and `remove` available. Moreover, you can define your own (de)serialisers to create
+configurations with arbitrary types. To do this, all you have to do is register the (de)serialiser when you build your
+config. For instance, to create configurations with type `Block` you can do
 ```java
 new ModConfigBuilder(<mod id>, Configs.class)
     .registerTypeHierarchyWithArgument(Block.class, new BlockAdapter(), new Pair<>(BlockArgumentType::block, BlockArgumentType::getBlock))
@@ -44,7 +47,7 @@ be found [here](paper/src/testplugin/java/dev/xpple/betterconfig).
 
 Furthermore, you can completely change the behaviour of updating your config values by creating your own methods. Simply
 add one or more of `setter`, `adder`, `putter` or `remover` as attribute to your `@Config` annotation. A great use for
-this would be adding key-pair entries to a `Map` based on a single value. Consider the following configuration.
+this would be adding key-value entries to a `Map` based on a single value. Consider the following configuration.
 ```java
 @Config(putter = @Config.Putter("none"), adder = @Config.Adder("customMapAdder"))
 public static Map<String, String> exampleMapAdder = new HashMap<>(Map.of("a", "A", "b", "B"));
@@ -66,12 +69,16 @@ public static void customTypeAdder(int codepoint) {
 ```
 For putters, there are separate key and value type attributes.
 
+And many more things! For some illustrative examples, see the `Configs` class for both
+[Fabric](fabric/src/testmod/java/dev/xpple/betterconfig/Configs.java) and
+[Paper](paper/src/testplugin/java/dev/xpple/betterconfig/Configs.java).
+
 ## Installation
-Replace `${version}` with the artifact version.
+Replace `${version}` with the artifact version. Append `-fabric` for Fabric and `-paper` for Paper.
 
 You may choose between my own maven repository and GitHub's package repository.
 ### My own
-```gradle
+```groovy
 repositories {
     maven {
         url 'https://maven.xpple.dev/maven2'
@@ -79,7 +86,7 @@ repositories {
 }
 ```
 ### GitHub packages
-```gradle
+```groovy
 repositories {
     maven {
         url 'https://maven.pkg.github.com/xpple/BetterConfig'
@@ -91,8 +98,11 @@ repositories {
 }
 ```
 Import it:
-```gradle
+```groovy
 dependencies {
+    // Fabric
     include modImplementation('dev.xpple:betterconfig:${version}')
+    // Paper (also include the JAR in the plugins folder)
+    compileOnly 'dev.xpple:betterconfig:${version}'
 }
 ```
