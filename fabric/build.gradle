@@ -47,6 +47,10 @@ loom {
             source sourceSets.testmod
         }
     }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
 }
 
 repositories {
@@ -63,6 +67,7 @@ configurations {
 
 dependencies {
     configurations.compileOnly.extendsFrom(configurations.includeInJar)
+    configurations.localRuntime.extendsFrom(configurations.includeInJar)
     includeInJar project(':common')
 
     // To change the versions see the gradle.properties file
