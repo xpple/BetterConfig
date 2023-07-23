@@ -7,6 +7,15 @@ archivesBaseName = project.archives_base_name
 group = project.maven_group
 version = "${project.base_version}-paper"
 
+sourceSets {
+    testplugin {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -55,6 +64,48 @@ tasks.withType(JavaCompile).configureEach {
         options.release = targetJavaVersion
     }
 }
+
+tasks.register('buildTestplugin', Jar) {
+    it.group = 'paper'
+
+    it.archiveBaseName = 'testplugin'
+    it.archiveVersion = '1.0.0'
+    from sourceSets.testplugin.output
+}
+
+tasks.register('copyJarsToServer') {
+    it.group = 'paper'
+
+    doLast {
+        copy {
+            from jar
+            into "${projectDir}/run/plugins"
+        }
+
+        copy {
+            from buildTestplugin
+            into "${projectDir}/run/plugins"
+        }
+    }
+}
+
+copyJarsToServer.dependsOn(build, buildTestplugin)
+
+tasks.register('runTestpluginServer') {
+    it.group = 'paper'
+
+    doLast {
+        javaexec {
+            workingDir = "${projectDir}/run"
+            main = '-jar'
+            args = ["${projectDir}/run/server.jar", '--nogui']
+            jvmArgs = ['-Dcom.mojang.eula.agree=true']
+            standardInput = System.in
+        }
+    }
+}
+
+runTestpluginServer.dependsOn(copyJarsToServer)
 
 jar {
     dependsOn ':common:remapJar'
