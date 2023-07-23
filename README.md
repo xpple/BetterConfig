@@ -12,10 +12,15 @@ public class Configs {
     public static String exampleString = "default";
 }
 ```
-Finally, in your mod's `onInitialize(Client)` method, register the `Configs` class. Replace `<mod id>` with your mod's
-id.
+For Fabric users, register the `Configs` class in your mod's `onInitialize(Client)` method. Replace `<mod id>` with your
+mod's id.
 ```java
 new ModConfigBuilder(<mod id>, Configs.class).build();
+```
+For Paper users, register the `Configs` class in your plugin's `onEnable` method. Replace `<plugin name>` with your
+plugin's name.
+```java
+new PluginConfigBuilder(<plugin name>, Configs.class).build();
 ```
 That's it! Now you can access `exampleString` through `Configs.exampleString`. You can edit `exampleString` by executing
 the following command.
@@ -25,7 +30,7 @@ the following command.
 
 ## That's not all!
 This mod also supports the use of `Collection`s and `Map`s as variable types. These configurations will have the options
-`add`, `put` and `remove` available. Moreover, you can define your own (de)serialisers to create configurations with 
+`add`, `put` and `remove` available. Moreover, you can define your own (de)serialisers to create configurations with
 arbitrary types. To do this, all you have to do is register the (de)serialiser when you build your config. For instance,
 to create a variable with type `Block` you can do
 ```java
@@ -33,8 +38,9 @@ new ModConfigBuilder(<mod id>, Configs.class)
     .registerTypeHierarchyWithArgument(Block.class, new BlockAdapter(), new Pair<>(BlockArgumentType::block, BlockArgumentType::getBlock))
     .build();
 ```
-where `BlockAdapter` extends `TypeAdapter<Block>` and `BlockArgumentType` implements `ArgumentType<Block>`. See 
-[these tests](fabric/src/testmod/java/dev/xpple/betterconfig) for a complete picture.
+where `BlockAdapter` extends `TypeAdapter<Block>` and `BlockArgumentType` implements `ArgumentType<Block>`. See
+[these tests](fabric/src/testmod/java/dev/xpple/betterconfig) for a complete picture. An identical setup for Paper can
+be found [here](paper/src/testplugin/java/dev/xpple/betterconfig).
 
 Furthermore, you can completely change the behaviour of updating your config values by creating your own methods. Simply
 add one or more of `setter`, `adder`, `putter` or `remover` as attribute to your `@Config` annotation. A great use for
@@ -48,7 +54,7 @@ public static void customMapAdder(String string) {
 ```
 The value of `"none"` for the putter indicates that no putter will be available. This way, you can use this `Map` in your
 code like usual, and add values to it using `/(c)config <mod id> exampleMapAdder add <string>`. For more details, see
-[the JavaDocs for `@Config`](fabric/src/main/java/dev/xpple/betterconfig/api/Config.java).
+[the JavaDocs for `@Config`](common/src/main/java/dev/xpple/betterconfig/api/Config.java).
 
 The parameters of the update method can also be customised.
 ```java
