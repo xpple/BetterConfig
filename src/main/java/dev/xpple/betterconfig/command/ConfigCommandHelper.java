@@ -52,7 +52,7 @@ public abstract class ConfigCommandHelper<S extends CommandSource>  {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(new EnumSuggestionProvider<>((Class) type));
                     subCommand.executes(ctx -> {
                         String value = getString(ctx, "value");
-                        return set(ctx.getSource(), modConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> c.toString().equals(value)).findAny().orElseThrow(() -> INVALID_ENUM_EXCEPTION.create(value)));
+                        return set(ctx.getSource(), modConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> INVALID_ENUM_EXCEPTION.create(value)));
                     });
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
                 } else if (argumentPair != null) {
