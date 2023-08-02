@@ -94,15 +94,11 @@ public class ModConfigImpl implements ModConfig {
 
     @Override
     public Object get(String config) {
-        Field field = this.configs.get(config);
-        if (field == null) {
+        Supplier<Object> getter = this.getters.get(config);
+        if (getter == null) {
             throw new IllegalArgumentException();
         }
-        try {
-            return field.get(null);
-        } catch (ReflectiveOperationException e) {
-            throw new AssertionError(e);
-        }
+        return getter.get();
     }
 
     @Override
@@ -242,6 +238,10 @@ public class ModConfigImpl implements ModConfig {
         return this.removers;
     }
 
+    public Map<String, Supplier<Object>> getGetters() {
+        return this.getters;
+    }
+
     public Map<String, Predicate<CommandSource>> getConditions() {
         return this.conditions;
     }
@@ -257,6 +257,7 @@ public class ModConfigImpl implements ModConfig {
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Supplier<Object>> getters = new HashMap<>();
     private final Map<String, Predicate<CommandSource>> conditions = new HashMap<>();
     private final Map<String, Config> annotations = new HashMap<>();
 }

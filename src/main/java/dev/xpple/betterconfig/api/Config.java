@@ -82,6 +82,7 @@ public @interface Config {
     Adder adder() default @Adder;
     Putter putter() default @Putter;
     Remover remover() default @Remover;
+    Getter getter() default @Getter;
 
     boolean readOnly() default false;
     boolean temporary() default false;
@@ -110,6 +111,11 @@ public @interface Config {
     @interface Remover {
         String value() default "";
         Class<?> type() default EMPTY.class;
+    }
+
+    @Target({})
+    @interface Getter {
+        String value() default "";
     }
 
     @ApiStatus.Internal

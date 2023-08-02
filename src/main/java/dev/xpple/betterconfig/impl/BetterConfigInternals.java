@@ -108,6 +108,36 @@ public class BetterConfigInternals {
                 }
             }
 
+
+            Config.Getter getter = annotation.getter();
+            String getterMethodName = getter.value();
+            //noinspection StatementWithEmptyBody
+            if (getterMethodName.equals("none")) {
+            } else if (getterMethodName.isEmpty()) {
+                modConfig.getGetters().put(fieldName, () -> {
+                    try {
+                        return field.get(null);
+                    } catch (ReflectiveOperationException e) {
+                        throw new AssertionError(e);
+                    }
+                });
+            } else {
+                Method getterMethod;
+                try {
+                    getterMethod = modConfig.getConfigsClass().getDeclaredMethod(getterMethodName);
+                } catch (NoSuchMethodException e) {
+                    throw new AssertionError(e);
+                }
+                getterMethod.setAccessible(true);
+                modConfig.getGetters().put(fieldName, () -> {
+                    try {
+                        return getterMethod.invoke(null);
+                    } catch (ReflectiveOperationException e) {
+                        throw new AssertionError(e);
+                    }
+                });
+            }
+
             if (annotation.readOnly()) {
                 continue;
             }
