@@ -1,0 +1,10 @@
+{
+  "modmenu.descriptionTranslation.betterconfig": "Серверлар һәм клиентлар өчен иң көчле һәм җинел кулланылучы боерык нигезендә көйләү китапханә.",
+  "betterconfig.commands.config.comment": "%s өчен аңлатма:",
+  "betterconfig.commands.config.get": "%s хәзер %s гә урнаштырылды.",
+  "betterconfig.commands.config.reset": "%s %s гә ташлатылды.",
+  "betterconfig.commands.config.set": "%s %s гә урнаштырылды.",
+  "betterconfig.commands.config.add": "%s %s гә өстәлде.",
+  "betterconfig.commands.config.put": "%s=%s чагыштыру %s гә өстәлде.",
+  "betterconfig.commands.config.remove": "%s %s дан бетерелде."
+}
