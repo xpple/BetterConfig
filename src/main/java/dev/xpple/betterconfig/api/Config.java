@@ -47,9 +47,11 @@ import java.lang.annotation.Target;
  *     {@link Config#adder()} is used for {@link java.util.Collection}s. You can also
  *     define an adder for a {@link java.util.Map}, in which you can create a key-value
  *     pair based on the single parameter. The {@link Config#putter()} attribute is solely
- *     used for {@code Map}s. Lastly, the {@link Config#remover()} is used for both
+ *     used for {@code Map}s. The {@link Config#remover()} is used for both
  *     {@code Collection}s and {@code Map}s. In the case of a {@code Map}, by default an
- *     entry will be removed based on its key.
+ *     entry will be removed based on its key. Lastly, the {@link Config#getter()} is used
+ *     for modifying the output of the config {@code get} subcommand, such as for adding
+ *     chat formatting.
  * </p>
  *
  * <p>

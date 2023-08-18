@@ -23,6 +23,11 @@ public interface ModConfig {
      */
     Path getConfigsPath();
 
+    /**
+     * Gets the underlying config value based on the key, ignoring custom getters.
+     * @param config the config's key
+     * @return the raw config value
+     */
     Object getRawValue(String config);
 
     /**
