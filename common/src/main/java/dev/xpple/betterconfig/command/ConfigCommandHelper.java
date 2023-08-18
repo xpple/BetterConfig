@@ -1,13 +1,13 @@
 package dev.xpple.betterconfig.command;
 
-import dev.xpple.betterconfig.api.Config;
-import dev.xpple.betterconfig.impl.AbstractConfigImpl;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.xpple.betterconfig.api.Config;
+import dev.xpple.betterconfig.impl.AbstractConfigImpl;
 import dev.xpple.betterconfig.util.CheckedFunction;
 
 import java.lang.reflect.Type;
@@ -44,15 +44,7 @@ public abstract class ConfigCommandHelper<S>  {
                 Class<?> type = setter.type() == Config.EMPTY.class ? abstractConfig.getType(config) : setter.type();
                 var argumentPair = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
-                if (type.isEnum()) {
-                    //noinspection rawtypes, unchecked
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
-                    subCommand.executes(ctx -> {
-                        String value = getString(ctx, "value");
-                        return set(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
-                    });
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
-                } else if (argumentPair != null) {
+                if (argumentPair != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentPair.getLeft().get());
                     subCommand.executes(ctx -> set(ctx.getSource(), abstractConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
@@ -60,6 +52,14 @@ public abstract class ConfigCommandHelper<S>  {
                     RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> set(ctx.getSource(), abstractConfig, config, suggestorPair.getRight().apply(ctx, "value")));
+                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
+                } else if (type.isEnum()) {
+                    //noinspection rawtypes, unchecked
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
+                    subCommand.executes(ctx -> {
+                        String value = getString(ctx, "value");
+                        return set(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
+                    });
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
                 }
             });
@@ -69,15 +69,7 @@ public abstract class ConfigCommandHelper<S>  {
                 Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) abstractConfig.getParameterTypes(config)[0] : adder.type();
                 var argumentPair = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
-                if (type.isEnum()) {
-                    //noinspection rawtypes, unchecked
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
-                    subCommand.executes(ctx -> {
-                        String value = getString(ctx, "value");
-                        return add(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
-                    });
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
-                } else if (argumentPair != null) {
+                if (argumentPair != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentPair.getLeft().get());
                     subCommand.executes(ctx -> add(ctx.getSource(), abstractConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
@@ -85,6 +77,14 @@ public abstract class ConfigCommandHelper<S>  {
                     RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> add(ctx.getSource(), abstractConfig, config, suggestorPair.getRight().apply(ctx, "value")));
+                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
+                } else if (type.isEnum()) {
+                    //noinspection rawtypes, unchecked
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
+                    subCommand.executes(ctx -> {
+                        String value = getString(ctx, "value");
+                        return add(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
+                    });
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
                 }
             });
@@ -97,14 +97,7 @@ public abstract class ConfigCommandHelper<S>  {
                 CheckedFunction<CommandContext<S>, ?, CommandSyntaxException> getKey;
                 var argumentKeyPair = abstractConfig.getArgument(keyType);
                 var suggestorKeyPair = abstractConfig.getSuggestor(keyType);
-                if (keyType.isEnum()) {
-                    //noinspection rawtypes, unchecked
-                    subCommand = RequiredArgumentBuilder.argument("key", string()).suggests(this.enumSuggestionProvider((Class) keyType));
-                    getKey = ctx -> {
-                        String value = getString(ctx, "key");
-                        return Arrays.stream(keyType.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value));
-                    };
-                } else if (argumentKeyPair != null) {
+                if (argumentKeyPair != null) {
                     subCommand = RequiredArgumentBuilder.argument("key", argumentKeyPair.getLeft().get());
                     getKey = ctx -> argumentKeyPair.getRight().apply(ctx, "key");
                 } else if (suggestorKeyPair != null) {
@@ -112,21 +105,20 @@ public abstract class ConfigCommandHelper<S>  {
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorKeyPair.getLeft().get());
                     getKey = ctx -> suggestorKeyPair.getRight().apply(ctx, "key");
+                } else if (keyType.isEnum()) {
+                    //noinspection rawtypes, unchecked
+                    subCommand = RequiredArgumentBuilder.argument("key", string()).suggests(this.enumSuggestionProvider((Class) keyType));
+                    getKey = ctx -> {
+                        String value = getString(ctx, "key");
+                        return Arrays.stream(keyType.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value));
+                    };
                 } else {
                     return;
                 }
                 Class<?> valueType = putter.valueType() == Config.EMPTY.class ? (Class<?>) types[1] : putter.valueType();
                 var argumentValuePair = abstractConfig.getArgument(valueType);
                 var suggestorValuePair = abstractConfig.getSuggestor(valueType);
-                if (valueType.isEnum()) {
-                    //noinspection rawtypes, unchecked
-                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) valueType));
-                    subCommand.executes(ctx -> {
-                        String value = getString(ctx, "value");
-                        return put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), Arrays.stream(valueType.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
-                    });
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
-                } else if (argumentValuePair != null) {
+                if (argumentValuePair != null) {
                     RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", argumentValuePair.getLeft().get());
                     subSubCommand.executes(ctx -> put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), argumentValuePair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
@@ -134,6 +126,14 @@ public abstract class ConfigCommandHelper<S>  {
                     RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subSubCommand.suggests((SuggestionProvider<S>) suggestorValuePair.getLeft().get()).executes(ctx -> put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), suggestorValuePair.getRight().apply(ctx, "value")));
+                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
+                } else if (valueType.isEnum()) {
+                    //noinspection rawtypes, unchecked
+                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) valueType));
+                    subCommand.executes(ctx -> {
+                        String value = getString(ctx, "value");
+                        return put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), Arrays.stream(valueType.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
+                    });
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
                 }
             });
@@ -143,15 +143,7 @@ public abstract class ConfigCommandHelper<S>  {
                 Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) abstractConfig.getParameterTypes(config)[0] : remover.type();
                 var argumentPair = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
-                if (type.isEnum()) {
-                    //noinspection rawtypes, unchecked
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
-                    subCommand.executes(ctx -> {
-                        String value = getString(ctx, "value");
-                        return remove(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
-                    });
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
-                } else if (argumentPair != null) {
+                if (argumentPair != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentPair.getLeft().get());
                     subCommand.executes(ctx -> remove(ctx.getSource(), abstractConfig, config, argumentPair.getRight().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
@@ -159,6 +151,14 @@ public abstract class ConfigCommandHelper<S>  {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
                     //noinspection unchecked
                     subCommand.suggests((SuggestionProvider<S>) suggestorPair.getLeft().get()).executes(ctx -> remove(ctx.getSource(), abstractConfig, config, suggestorPair.getRight().apply(ctx, "value")));
+                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
+                } else if (type.isEnum()) {
+                    //noinspection rawtypes, unchecked
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", string()).suggests(this.enumSuggestionProvider((Class) type));
+                    subCommand.executes(ctx -> {
+                        String value = getString(ctx, "value");
+                        return remove(ctx.getSource(), abstractConfig, config, Arrays.stream(type.getEnumConstants()).filter(c -> ((Enum<?>) c).name().equals(value)).findAny().orElseThrow(() -> this.invalidEnumException().create(value)));
+                    });
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
                 }
             });
