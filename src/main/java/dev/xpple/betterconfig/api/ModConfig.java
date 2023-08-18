@@ -23,6 +23,8 @@ public interface ModConfig {
      */
     Path getConfigsPath();
 
+    Object getRawValue(String config);
+
     /**
      * Get a config value based on the key.
      * @param config the config's key

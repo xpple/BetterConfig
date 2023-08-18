@@ -114,13 +114,7 @@ public class BetterConfigInternals {
             //noinspection StatementWithEmptyBody
             if (getterMethodName.equals("none")) {
             } else if (getterMethodName.isEmpty()) {
-                modConfig.getGetters().put(fieldName, () -> {
-                    try {
-                        return field.get(null);
-                    } catch (ReflectiveOperationException e) {
-                        throw new AssertionError(e);
-                    }
-                });
+                modConfig.getGetters().put(fieldName, () -> modConfig.getRawValue(fieldName));
             } else {
                 Method getterMethod;
                 try {
