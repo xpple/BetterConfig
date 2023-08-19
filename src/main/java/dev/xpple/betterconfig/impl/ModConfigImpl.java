@@ -95,7 +95,9 @@ public class ModConfigImpl implements ModConfig {
     @Override
     public Object getRawValue(String config) {
         try {
-            return this.configsClass.getDeclaredField(config).get(null);
+            Field field = this.configsClass.getDeclaredField(config);
+            field.setAccessible(true);
+            return field.get(null);
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }
