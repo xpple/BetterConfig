@@ -10,20 +10,29 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
 
 public class BetterConfigInternals {
 
     public static void init(AbstractConfigImpl<?> abstractConfig) {
-        JsonObject root;
+        JsonObject root = null;
         try (BufferedReader reader = Files.newBufferedReader(abstractConfig.getConfigsPath())) {
             root = JsonParser.parseReader(reader).getAsJsonObject();
-        } catch (IOException e) {
-            root = new JsonObject();
+        } catch (IOException ignored) {
+        } catch (Exception e) {
             LOGGER.warn("Could not read config file, default values will be used.");
+            LOGGER.warn("The old config file will be renamed.");
+            try {
+                Files.move(abstractConfig.getConfigsPath(), abstractConfig.getConfigsPath().resolveSibling("config_old.json"), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ignored) {
+            }
+        } finally {
+            root = Objects.requireNonNullElse(root, new JsonObject());
         }
 
         for (Field field : abstractConfig.getConfigsClass().getDeclaredFields()) {
