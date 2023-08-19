@@ -82,13 +82,8 @@ public class BetterConfigInternals {
                 } catch (ReflectiveOperationException e) {
                     hasParameter = true;
                     try {
-                        Class<?> clazz;
-                        try {
-                            clazz = Class.forName("net.minecraft.command.CommandSource");
-                        } catch (ReflectiveOperationException e1) {
-                            clazz = Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
-                        }
-                        predicateMethod = abstractConfig.getConfigsClass().getDeclaredMethod(annotation.condition(), clazz);
+                        Class<?> commandSourceClass = Platform.current.getCommandSourceClass();
+                        predicateMethod = abstractConfig.getConfigsClass().getDeclaredMethod(annotation.condition(), commandSourceClass);
                     } catch (ReflectiveOperationException e1) {
                         throw new AssertionError(e1);
                     }
