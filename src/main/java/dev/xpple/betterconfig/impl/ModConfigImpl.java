@@ -9,15 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.api.ModConfig;
-import dev.xpple.betterconfig.mixin.ArgumentTypesAccessor;
-import dev.xpple.betterconfig.mixin.ConstantArgumentSerializerAccessor;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedBiFunction;
 import dev.xpple.betterconfig.util.CheckedConsumer;
 import dev.xpple.betterconfig.util.Pair;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,29 +33,16 @@ import static dev.xpple.betterconfig.BetterConfig.MOD_PATH;
 
 public class ModConfigImpl implements ModConfig {
 
-    private static final Map<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>> defaultArguments;
-
-    static {
-        Map<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>> temp = new HashMap<>();
-
-        temp.put(double.class, registryAccess -> DoubleArgumentType.doubleArg());
-        temp.put(Double.class, registryAccess -> DoubleArgumentType.doubleArg());
-        temp.put(float.class, registryAccess -> FloatArgumentType.floatArg());
-        temp.put(Float.class, registryAccess -> FloatArgumentType.floatArg());
-        temp.put(int.class, registryAccess -> IntegerArgumentType.integer());
-        temp.put(Integer.class, registryAccess -> IntegerArgumentType.integer());
-        temp.put(long.class, registryAccess -> LongArgumentType.longArg());
-        temp.put(Long.class, registryAccess -> LongArgumentType.longArg());
-        temp.put(String.class, registryAccess -> StringArgumentType.string());
-
-        ArgumentTypesAccessor.getCLASS_MAP().forEach((clazz, serializer) -> {
-            if (serializer instanceof ConstantArgumentSerializer<?> constantArgumentSerializer) {
-                temp.put(clazz, ((ConstantArgumentSerializerAccessor.PropertiesAccessor) ((ConstantArgumentSerializerAccessor) constantArgumentSerializer).getProperties()).getTypeSupplier());
-            }
-        });
-
-        defaultArguments = ImmutableMap.copyOf(temp);
-    }
+    private static final Map<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>>builder()
+        .put(double.class, registryAccess -> DoubleArgumentType.doubleArg())
+        .put(Double.class, registryAccess -> DoubleArgumentType.doubleArg())
+        .put(float.class, registryAccess -> FloatArgumentType.floatArg())
+        .put(Float.class, registryAccess -> FloatArgumentType.floatArg())
+        .put(int.class, registryAccess -> IntegerArgumentType.integer())
+        .put(Integer.class, registryAccess -> IntegerArgumentType.integer())
+        .put(long.class, registryAccess -> LongArgumentType.longArg())
+        .put(Long.class, registryAccess -> LongArgumentType.longArg())
+        .put(String.class, registryAccess -> StringArgumentType.string()).build();
 
     private final String modId;
     private final Class<?> configsClass;
