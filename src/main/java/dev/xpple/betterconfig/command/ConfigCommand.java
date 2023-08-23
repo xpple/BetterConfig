@@ -4,12 +4,17 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
-public class ConfigCommand extends ConfigCommandHelper<ServerCommandSource> {
-    public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(this.create("config").requires(source -> source.hasPermissionLevel(4)));
+public class ConfigCommand extends AbstractConfigCommand<ServerCommandSource> {
+    private ConfigCommand() {
+        super("config");
+    }
+
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+        dispatcher.register(new ConfigCommand().create(registryAccess).requires(source -> source.hasPermissionLevel(4)));
     }
 
     @Override

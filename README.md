@@ -30,7 +30,7 @@ arbitrary types. To do this, all you have to do is register the (de)serialiser w
 to create a variable with type `Block` you can do
 ```java
 new ModConfigBuilder(<mod id>, Configs.class)
-    .registerTypeHierarchyWithArgument(Block.class, new BlockAdapter(), new Pair<>(BlockArgumentType::block, BlockArgumentType::getBlock))
+    .registerTypeHierarchy(Block.class, new BlockAdapter(), BlockArgumentType::block)
     .build();
 ```
 where `BlockAdapter` extends `TypeAdapter<Block>` and `BlockArgumentType` implements `ArgumentType<Block>`. See 

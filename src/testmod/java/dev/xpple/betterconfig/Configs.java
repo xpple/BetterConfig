@@ -5,6 +5,7 @@ import dev.xpple.betterconfig.api.Config;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.server.command.ServerCommandSource;
 
 import java.util.*;
@@ -72,4 +73,7 @@ public class Configs {
 
     @Config(comment = "This is a mysterious object")
     public static Object exampleComment = null;
+
+    @Config
+    public static BlockStateArgument exampleRegistryAccess = new BlockStateArgument(Blocks.COMPOSTER.getDefaultState(), Collections.emptySet(), null);
 }
