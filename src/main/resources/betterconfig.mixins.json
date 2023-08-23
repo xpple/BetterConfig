@@ -3,6 +3,9 @@
   "package": "dev.xpple.betterconfig.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ArgumentTypesAccessor",
+    "ConstantArgumentSerializerAccessor",
+    "ConstantArgumentSerializerAccessor$PropertiesAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,14 +3,19 @@ package dev.xpple.betterconfig.command.client;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.xpple.betterconfig.command.ConfigCommandHelper;
+import dev.xpple.betterconfig.command.AbstractConfigCommand;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
 
-public class ConfigCommandClient extends ConfigCommandHelper<FabricClientCommandSource> {
-    public void register(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(this.create("cconfig"));
+public class ConfigCommandClient extends AbstractConfigCommand<FabricClientCommandSource> {
+    private ConfigCommandClient() {
+        super("cconfig");
+    }
+
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+        dispatcher.register(new ConfigCommandClient().create(registryAccess));
     }
 
     @Override

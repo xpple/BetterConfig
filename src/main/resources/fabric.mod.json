@@ -29,6 +29,7 @@
       "environment": "client"
     }
   ],
+  "accessWidener": "betterconfig.accesswidener",
   "depends": {
     "fabricloader": ">=0.14.17",
     "minecraft": "1.20.x",

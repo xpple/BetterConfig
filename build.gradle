@@ -47,6 +47,8 @@ loom {
 			source sourceSets.testmod
 		}
 	}
+
+	accessWidenerPath = file('src/main/resources/betterconfig.accesswidener')
 }
 
 repositories {
