@@ -42,7 +42,8 @@ public class ModConfigImpl implements ModConfig {
         .put(Integer.class, registryAccess -> IntegerArgumentType.integer())
         .put(long.class, registryAccess -> LongArgumentType.longArg())
         .put(Long.class, registryAccess -> LongArgumentType.longArg())
-        .put(String.class, registryAccess -> StringArgumentType.string()).build();
+        .put(String.class, registryAccess -> StringArgumentType.string())
+        .build();
 
     private final String modId;
     private final Class<?> configsClass;
