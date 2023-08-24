@@ -34,6 +34,8 @@ import static dev.xpple.betterconfig.BetterConfig.MOD_PATH;
 public class ModConfigImpl implements ModConfig {
 
     private static final Map<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<CommandRegistryAccess, ArgumentType<?>>>builder()
+        .put(boolean.class, registryAccess -> BoolArgumentType.bool())
+        .put(Boolean.class, registryAccess -> BoolArgumentType.bool())
         .put(double.class, registryAccess -> DoubleArgumentType.doubleArg())
         .put(Double.class, registryAccess -> DoubleArgumentType.doubleArg())
         .put(float.class, registryAccess -> FloatArgumentType.floatArg())
