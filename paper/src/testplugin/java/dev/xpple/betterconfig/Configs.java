@@ -73,5 +73,5 @@ public class Configs {
     public static Object exampleComment = null;
 
     @Config
-    public static BlockState exampleNativeArgument = Material.COMPOSTER.createBlockData().createBlockState();
+    public static BlockState exampleNativeArgumentType = Material.COMPOSTER.createBlockData().createBlockState();
 }
