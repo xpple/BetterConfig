@@ -5,7 +5,7 @@ import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.PluginConfigImpl;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 
-public class PluginConfigBuilder extends AbstractConfigBuilder<CommandSourceStack> {
+public class PluginConfigBuilder extends AbstractConfigBuilder<CommandSourceStack, Void> {
 
     private final String pluginName;
 

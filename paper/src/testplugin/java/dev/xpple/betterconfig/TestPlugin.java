@@ -2,10 +2,11 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.PluginConfigBuilder;
-import org.apache.commons.lang3.tuple.Pair;
+import io.papermc.paper.command.brigadier.argument.VanillaArgumentTypes;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.block.BlockState;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TestPlugin extends JavaPlugin {
@@ -15,7 +16,7 @@ public class TestPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         new PluginConfigBuilder(PLUGIN_NAME, Configs.class)
-            .registerTypeHierarchyWithSuggestor(Material.class, new MaterialAdapter(), Pair.of(MaterialSuggestionProvider::new, (ctx, name) -> {
+            .registerType(Material.class, new MaterialAdapter(), new MaterialSuggestionProvider(), (ctx, name) -> {
                 String materialString = ctx.getArgument(name, String.class);
                 NamespacedKey blockId = NamespacedKey.fromString(materialString);
                 if (blockId == null) {
@@ -26,7 +27,8 @@ public class TestPlugin extends JavaPlugin {
                     throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
                 }
                 return material;
-            }))
+            })
+            .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), VanillaArgumentTypes::blockState)
             .build();
     }
 }

@@ -18,7 +18,7 @@ public final class BetterConfig extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
             public void load(ServerResourcesLoadEvent event) {
-                event.getCommands().register(BetterConfig.this, new ConfigCommand().build());
+                event.getCommands().register(BetterConfig.this, ConfigCommand.build());
             }
         }, this);
     }

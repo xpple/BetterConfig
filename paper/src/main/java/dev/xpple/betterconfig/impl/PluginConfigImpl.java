@@ -1,20 +1,26 @@
 package dev.xpple.betterconfig.impl;
 
 import com.google.gson.Gson;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.api.PluginConfig;
+import dev.xpple.betterconfig.util.CheckedBiFunction;
+import dev.xpple.betterconfig.util.Pair;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.function.Function;
 
 import static dev.xpple.betterconfig.BetterConfig.PLUGIN_PATH;
 
-public class PluginConfigImpl extends AbstractConfigImpl<CommandSourceStack> implements PluginConfig {
+public class PluginConfigImpl extends AbstractConfigImpl<CommandSourceStack, Void> implements PluginConfig {
 
     private final String pluginName;
 
-    public PluginConfigImpl(String pluginName, Class<?> configsClass, Gson gson, Map<Class<?>, Pair<?, ?>> arguments, Map<Class<?>, Pair<?, ?>> suggestors) {
+    public PluginConfigImpl(String pluginName, Class<?> configsClass, Gson gson, Map<Class<?>, Function<Void, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends CommandSourceStack>, CheckedBiFunction<CommandContext<? extends CommandSourceStack>, String, ?, CommandSyntaxException>>> suggestors) {
         super(configsClass, gson, arguments, suggestors);
         this.pluginName = pluginName;
     }

@@ -4,6 +4,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 
 import java.util.*;
 
@@ -70,4 +71,7 @@ public class Configs {
 
     @Config(comment = "This is a mysterious object")
     public static Object exampleComment = null;
+
+    @Config
+    public static BlockState exampleNativeArgument = Material.COMPOSTER.createBlockData().createBlockState();
 }

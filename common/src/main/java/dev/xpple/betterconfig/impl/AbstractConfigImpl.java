@@ -12,7 +12,7 @@ import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedBiFunction;
 import dev.xpple.betterconfig.util.CheckedConsumer;
-import org.apache.commons.lang3.tuple.Pair;
+import dev.xpple.betterconfig.util.Pair;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,35 +22,35 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
 
-public abstract class AbstractConfigImpl<S> implements AbstractConfig {
+public abstract class AbstractConfigImpl<S, R> implements AbstractConfig {
 
-    private final Map<Class<?>, Pair<?, ?>> defaultArguments = ImmutableMap.<Class<?>, Pair<?, ?>>builder()
-        .put(boolean.class, Pair.of((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends S>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
-        .put(Boolean.class, Pair.of((Supplier<ArgumentType<Boolean>>) BoolArgumentType::bool, (CheckedBiFunction<CommandContext<? extends S>, String, Boolean, CommandSyntaxException>) BoolArgumentType::getBool))
-        .put(double.class, Pair.of((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CheckedBiFunction<CommandContext<? extends S>, String, Double, CommandSyntaxException>) DoubleArgumentType::getDouble))
-        .put(Double.class, Pair.of((Supplier<ArgumentType<Double>>) DoubleArgumentType::doubleArg, (CheckedBiFunction<CommandContext<? extends S>, String, Double, CommandSyntaxException>) DoubleArgumentType::getDouble))
-        .put(float.class, Pair.of((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CheckedBiFunction<CommandContext<? extends S>, String, Float, CommandSyntaxException>) FloatArgumentType::getFloat))
-        .put(Float.class, Pair.of((Supplier<ArgumentType<Float>>) FloatArgumentType::floatArg, (CheckedBiFunction<CommandContext<? extends S>, String, Float, CommandSyntaxException>) FloatArgumentType::getFloat))
-        .put(int.class, Pair.of((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CheckedBiFunction<CommandContext<? extends S>, String, Integer, CommandSyntaxException>) IntegerArgumentType::getInteger))
-        .put(Integer.class, Pair.of((Supplier<ArgumentType<Integer>>) IntegerArgumentType::integer, (CheckedBiFunction<CommandContext<? extends S>, String, Integer, CommandSyntaxException>) IntegerArgumentType::getInteger))
-        .put(long.class, Pair.of((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CheckedBiFunction<CommandContext<? extends S>, String, Long, CommandSyntaxException>) LongArgumentType::getLong))
-        .put(Long.class, Pair.of((Supplier<ArgumentType<Long>>) LongArgumentType::longArg, (CheckedBiFunction<CommandContext<? extends S>, String, Long, CommandSyntaxException>) LongArgumentType::getLong))
-        .put(String.class, Pair.of((Supplier<ArgumentType<String>>) StringArgumentType::string, (CheckedBiFunction<CommandContext<? extends S>, String, String, CommandSyntaxException>) StringArgumentType::getString))
+    private static final Map<Class<?>, Function<?, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<?, ArgumentType<?>>>builder()
+        .put(boolean.class, registryAccess -> BoolArgumentType.bool())
+        .put(Boolean.class, registryAccess -> BoolArgumentType.bool())
+        .put(double.class, registryAccess -> DoubleArgumentType.doubleArg())
+        .put(Double.class, registryAccess -> DoubleArgumentType.doubleArg())
+        .put(float.class, registryAccess -> FloatArgumentType.floatArg())
+        .put(Float.class, registryAccess -> FloatArgumentType.floatArg())
+        .put(int.class, registryAccess -> IntegerArgumentType.integer())
+        .put(Integer.class, registryAccess -> IntegerArgumentType.integer())
+        .put(long.class, registryAccess -> LongArgumentType.longArg())
+        .put(Long.class, registryAccess -> LongArgumentType.longArg())
+        .put(String.class, registryAccess -> StringArgumentType.string())
         .build();
 
     private final Class<?> configsClass;
 
     private final Gson gson;
     private final Gson inlineGson;
-    private final Map<Class<?>, Pair<?, ?>> arguments;
-    private final Map<Class<?>, Pair<?, ?>> suggestors;
+    private final Map<Class<?>, Function<R, ? extends ArgumentType<?>>> arguments;
+    private final Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors;
 
-    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Pair<?, ?>> arguments, Map<Class<?>, Pair<?, ?>> suggestors) {
+    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<R, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors) {
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
@@ -70,13 +70,12 @@ public abstract class AbstractConfigImpl<S> implements AbstractConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<?>, String, T, CommandSyntaxException>> getArgument(Class<T> type) {
-        return (Pair<Supplier<ArgumentType<T>>, CheckedBiFunction<CommandContext<?>, String, T, CommandSyntaxException>>) this.arguments.getOrDefault(type, defaultArguments.get(type));
+    public Function<R, ? extends ArgumentType<?>> getArgument(Class<?> type) {
+        return this.arguments.getOrDefault(type, (Function<R, ? extends ArgumentType<?>>) defaultArguments.get(type));
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> Pair<Supplier<SuggestionProvider<?>>, CheckedBiFunction<CommandContext<?>, String, T, CommandSyntaxException>> getSuggestor(Class<T> type) {
-        return (Pair<Supplier<SuggestionProvider<?>>, CheckedBiFunction<CommandContext<?>, String, T, CommandSyntaxException>>) this.suggestors.get(type);
+    public Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>> getSuggestor(Class<?> type) {
+        return this.suggestors.get(type);
     }
 
     @Override

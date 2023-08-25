@@ -1,11 +1,12 @@
 package dev.xpple.betterconfig.api;
 
-import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 
-public class ModConfigBuilder extends AbstractConfigBuilder<CommandSource> {
+public class ModConfigBuilder extends AbstractConfigBuilder<CommandSource, CommandRegistryAccess> {
 
     private final String modId;
 

@@ -21,6 +21,6 @@ public class BetterConfig implements DedicatedServerModInitializer {
     }
 
     private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        new ConfigCommand().register(dispatcher);
+        ConfigCommand.register(dispatcher, registryAccess);
     }
 }

@@ -19,7 +19,7 @@ import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
 
 public class BetterConfigInternals {
 
-    public static void init(AbstractConfigImpl<?> abstractConfig) {
+    public static void init(AbstractConfigImpl<?, ?> abstractConfig) {
         JsonObject root = null;
         try (BufferedReader reader = Files.newBufferedReader(abstractConfig.getConfigsPath())) {
             root = JsonParser.parseReader(reader).getAsJsonObject();
@@ -140,7 +140,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initCollection(AbstractConfigImpl<?> abstractConfig, Field field, Config annotation) {
+    private static void initCollection(AbstractConfigImpl<?, ?> abstractConfig, Field field, Config annotation) {
         String fieldName = field.getName();
         Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
         Config.Adder adder = annotation.adder();
@@ -221,7 +221,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initMap(AbstractConfigImpl<?> abstractConfig, Field field, Config annotation) {
+    private static void initMap(AbstractConfigImpl<?, ?> abstractConfig, Field field, Config annotation) {
         String fieldName = field.getName();
         Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
         Config.Adder adder = annotation.adder();
@@ -327,7 +327,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initObject(AbstractConfigImpl<?> abstractConfig, Field field, Config annotation) {
+    private static void initObject(AbstractConfigImpl<?, ?> abstractConfig, Field field, Config annotation) {
         String fieldName = field.getName();
         Config.Setter setter = annotation.setter();
         String setterMethodName = setter.value();
