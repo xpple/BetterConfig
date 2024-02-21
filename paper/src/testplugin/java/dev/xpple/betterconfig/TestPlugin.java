@@ -2,7 +2,7 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.PluginConfigBuilder;
-import io.papermc.paper.command.brigadier.argument.VanillaArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -28,7 +28,7 @@ public class TestPlugin extends JavaPlugin {
                 }
                 return material;
             })
-            .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), VanillaArgumentTypes::blockState)
+            .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), ArgumentTypes::blockState)
             .build();
     }
 }

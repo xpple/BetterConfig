@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'fabric-loom' version '1.5-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -132,7 +132,7 @@ publishing {
         // retrieving dependencies.
         maven {
             name = "xpple"
-            url = "sftp://xpple.dev:22/maven.xpple.dev/maven2"
+            url = "sftp://xpple.dev:22/maven.xpple.dev/httpdocs/maven2"
             credentials {
                 username = System.getenv("MAVEN_USER")
                 password = System.getenv("MAVEN_PASS")
