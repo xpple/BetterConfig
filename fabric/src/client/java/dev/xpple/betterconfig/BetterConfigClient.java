@@ -5,7 +5,7 @@ import dev.xpple.betterconfig.command.client.ConfigCommandClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.commands.CommandBuildContext;
 
 public class BetterConfigClient implements ClientModInitializer {
 
@@ -14,7 +14,7 @@ public class BetterConfigClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register(BetterConfigClient::registerCommands);
     }
 
-    private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
-        ConfigCommandClient.register(dispatcher, registryAccess);
+    private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
+        ConfigCommandClient.register(dispatcher, buildContext);
     }
 }

@@ -3,19 +3,22 @@ package dev.xpple.betterconfig.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.xpple.betterconfig.BetterConfigCommon;
 import dev.xpple.betterconfig.api.Config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
-
-import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
 
 public class BetterConfigInternals {
 
@@ -25,8 +28,7 @@ public class BetterConfigInternals {
             root = JsonParser.parseReader(reader).getAsJsonObject();
         } catch (IOException ignored) {
         } catch (Exception e) {
-            LOGGER.warn("Could not read config file, default values will be used.");
-            LOGGER.warn("The old config file will be renamed.");
+            BetterConfigCommon.LOGGER.warn("Could not read config file, default values will be used.\nThe old config file will be renamed.", e);
             try {
                 Files.move(abstractConfig.getConfigsPath(), abstractConfig.getConfigsPath().resolveSibling("config_old.json"), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ignored) {
@@ -135,8 +137,7 @@ public class BetterConfigInternals {
         try (BufferedWriter writer = Files.newBufferedWriter(abstractConfig.getConfigsPath())) {
             writer.write(abstractConfig.getGson().toJson(root));
         } catch (IOException e) {
-            LOGGER.error("Could not save config file.");
-            e.printStackTrace();
+            BetterConfigCommon.LOGGER.error("Could not save config file.", e);
         }
     }
 

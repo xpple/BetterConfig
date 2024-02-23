@@ -6,10 +6,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.block.Block;
-import net.minecraft.command.CommandSource;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,24 +26,24 @@ class BlockArgumentType implements ArgumentType<Block> {
         return new BlockArgumentType();
     }
 
-    public static Block getBlock(CommandContext<? extends CommandSource> context, String name) {
+    public static Block getBlock(CommandContext<? extends SharedSuggestionProvider> context, String name) {
         return context.getArgument(name, Block.class);
     }
 
     @Override
     public Block parse(StringReader reader) throws CommandSyntaxException {
         int cursor = reader.getCursor();
-        Identifier identifier = Identifier.fromCommandInput(reader);
-        if (!Registries.BLOCK.containsId(identifier)) {
+        ResourceLocation key = ResourceLocation.read(reader);
+        if (!BuiltInRegistries.BLOCK.containsKey(key)) {
             reader.setCursor(cursor);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
         }
-        return Registries.BLOCK.get(identifier);
+        return BuiltInRegistries.BLOCK.get(key);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestIdentifiers(Registries.BLOCK.getIds(), builder);
+        return SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), builder);
     }
 
     @Override

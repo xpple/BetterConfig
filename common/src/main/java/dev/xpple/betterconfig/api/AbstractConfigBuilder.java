@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class AbstractConfigBuilder<S, R> {
+public abstract class AbstractConfigBuilder<S, C> {
 
     final Class<?> configsClass;
 
     final GsonBuilder builder = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization();
-    final Map<Class<?>, Function<R, ? extends ArgumentType<?>>> arguments = new HashMap<>();
+    final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments = new HashMap<>();
     final Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors = new HashMap<>();
 
     public AbstractConfigBuilder(Class<?> configsClass) {
@@ -38,15 +38,15 @@ public abstract class AbstractConfigBuilder<S, R> {
      * as well.
      * @see AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Supplier)
      */
-    public <T> AbstractConfigBuilder<S, R> registerType(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
-        return this.registerType(type, adapter, registryAccess -> argumentTypeSupplier.get());
+    public <T> AbstractConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
+        return this.registerType(type, adapter, buildContext -> argumentTypeSupplier.get());
     }
 
     /**
      * Register a new type adapter and argument type for the specified type.
      * @param type the type's class
      * @param adapter the type adapter
-     * @param argumentTypeFunction a function for the argument type needing registry access
+     * @param argumentTypeFunction a function for the argument type needing build context
      * @param <T> the type
      * @return the current builder instance
      * @implNote On servers, consider using {@link AbstractConfigBuilder#registerType(Class, TypeAdapter, SuggestionProvider, CheckedBiFunction)}
@@ -54,7 +54,7 @@ public abstract class AbstractConfigBuilder<S, R> {
      * as well.
      * @see AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Function)
      */
-    public <T> AbstractConfigBuilder<S, R> registerType(Class<T> type, TypeAdapter<T> adapter, Function<R, ArgumentType<T>> argumentTypeFunction) {
+    public <T> AbstractConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
         this.builder.registerTypeAdapter(type, adapter);
         this.arguments.put(type, argumentTypeFunction);
         return this;
@@ -72,15 +72,15 @@ public abstract class AbstractConfigBuilder<S, R> {
      * as well.
      * @see AbstractConfigBuilder#registerType(Class, TypeAdapter, Supplier)
      */
-    public <T> AbstractConfigBuilder<S, R> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
-        return this.registerTypeHierarchy(type, adapter, registryAccess -> argumentTypeSupplier.get());
+    public <T> AbstractConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
+        return this.registerTypeHierarchy(type, adapter, buildContext -> argumentTypeSupplier.get());
     }
 
     /**
      * Register a new type adapter and argument type for the specified type and all subclasses.
      * @param type the type's class
      * @param adapter the type adapter
-     * @param argumentTypeFunction a function for the argument type needing registry access
+     * @param argumentTypeFunction a function for the argument type needing build context
      * @param <T> the type
      * @return the current builder instance
      * @implNote On servers, consider using {@link AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, SuggestionProvider, CheckedBiFunction)}
@@ -88,7 +88,7 @@ public abstract class AbstractConfigBuilder<S, R> {
      * as well.
      * @see AbstractConfigBuilder#registerType(Class, TypeAdapter, Function)
      */
-    public <T> AbstractConfigBuilder<S, R> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Function<R, ArgumentType<T>> argumentTypeFunction) {
+    public <T> AbstractConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
         this.arguments.put(type, argumentTypeFunction);
         return this;
@@ -105,7 +105,7 @@ public abstract class AbstractConfigBuilder<S, R> {
      * @implNote On clients, consider using {@link AbstractConfigBuilder#registerType(Class, TypeAdapter, Supplier)} instead.
      * @see AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, SuggestionProvider, CheckedBiFunction)
      */
-    public <T> AbstractConfigBuilder<S, R> registerType(Class<T> type, TypeAdapter<T> adapter, SuggestionProvider<? extends S> suggestionProvider, CheckedBiFunction<CommandContext<? extends S>, String, T, CommandSyntaxException> argumentParser) {
+    public <T> AbstractConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, SuggestionProvider<? extends S> suggestionProvider, CheckedBiFunction<CommandContext<? extends S>, String, T, CommandSyntaxException> argumentParser) {
         this.builder.registerTypeAdapter(type, adapter);
         this.suggestors.put(type, new Pair<>(suggestionProvider, argumentParser));
         return this;
@@ -122,7 +122,7 @@ public abstract class AbstractConfigBuilder<S, R> {
      * @implNote On clients, consider using {@link AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Supplier)} instead.
      * @see AbstractConfigBuilder#registerType(Class, TypeAdapter, SuggestionProvider, CheckedBiFunction)
      */
-    public <T> AbstractConfigBuilder<S, R> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, SuggestionProvider<? extends S> suggestionProvider, CheckedBiFunction<CommandContext<? extends S>, String, T, CommandSyntaxException> argumentParser) {
+    public <T> AbstractConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, SuggestionProvider<? extends S> suggestionProvider, CheckedBiFunction<CommandContext<? extends S>, String, T, CommandSyntaxException> argumentParser) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
         this.suggestors.put(type, new Pair<>(suggestionProvider, argumentParser));
         return this;

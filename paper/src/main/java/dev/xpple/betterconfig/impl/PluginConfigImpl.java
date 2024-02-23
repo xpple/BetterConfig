@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.xpple.betterconfig.BetterConfig;
 import dev.xpple.betterconfig.api.PluginConfig;
 import dev.xpple.betterconfig.util.CheckedBiFunction;
 import dev.xpple.betterconfig.util.Pair;
@@ -13,8 +14,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.Function;
-
-import static dev.xpple.betterconfig.BetterConfig.PLUGIN_PATH;
 
 public class PluginConfigImpl extends AbstractConfigImpl<CommandSourceStack, Void> implements PluginConfig {
 
@@ -32,7 +31,7 @@ public class PluginConfigImpl extends AbstractConfigImpl<CommandSourceStack, Voi
 
     @Override
     public Path getConfigsPath() {
-        return PLUGIN_PATH.resolve(this.pluginName).resolve("config.json");
+        return BetterConfig.PLUGIN_PATH.resolve(this.pluginName).resolve("config.json");
     }
 
     @Override

@@ -3,9 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-archivesBaseName = project.archives_base_name
+archivesBaseName = "${project.archives_base_name}-paper"
 group = project.maven_group
-version = "${project.base_version}-paper"
+version = project.base_version
 
 sourceSets {
     testplugin {

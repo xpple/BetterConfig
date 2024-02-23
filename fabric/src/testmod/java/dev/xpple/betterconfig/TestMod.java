@@ -4,31 +4,31 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.ModConfigBuilder;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.command.argument.BlockStateArgument;
-import net.minecraft.command.argument.BlockStateArgumentType;
-import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.arguments.blocks.BlockInput;
+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 public class TestMod implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
-        //ArgumentTypeRegistry.registerArgumentType(new Identifier("testmod", "block"), BlockArgumentType.class, ConstantArgumentSerializer.of(BlockArgumentType::block));
+        //ArgumentTypeRegistry.registerArgumentType(new ResourceLocation("testmod", "block"), BlockArgumentType.class, SingletonArgumentInfo.contextFree(BlockArgumentType::block));
 
         new ModConfigBuilder("testmod", Configs.class)
             .registerTypeHierarchy(Block.class, new BlockAdapter(), new BlockSuggestionProvider(), (ctx, name) -> {
                 String blockString = ctx.getArgument(name, String.class);
-                Identifier blockId = Identifier.tryParse(blockString);
-                if (blockId == null) {
+                ResourceLocation blockKey = ResourceLocation.tryParse(blockString);
+                if (blockKey == null) {
                     throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
                 }
-                if (Registries.BLOCK.containsId(blockId)) {
-                    return Registries.BLOCK.get(blockId);
+                if (BuiltInRegistries.BLOCK.containsKey(blockKey)) {
+                    return BuiltInRegistries.BLOCK.get(blockKey);
                 }
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
             })
-            .registerTypeHierarchy(BlockStateArgument.class, new BlockStateAdapter(), BlockStateArgumentType::blockState)
+            .registerTypeHierarchy(BlockInput.class, new BlockStateAdapter(), BlockStateArgument::block)
             .build();
     }
 }

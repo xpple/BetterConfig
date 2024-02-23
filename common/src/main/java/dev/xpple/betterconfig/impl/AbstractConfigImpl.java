@@ -3,10 +3,17 @@ package dev.xpple.betterconfig.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mojang.brigadier.arguments.*;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import dev.xpple.betterconfig.BetterConfigCommon;
 import dev.xpple.betterconfig.api.AbstractConfig;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
@@ -25,32 +32,30 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static dev.xpple.betterconfig.BetterConfigCommon.LOGGER;
-
-public abstract class AbstractConfigImpl<S, R> implements AbstractConfig {
+public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
 
     private static final Map<Class<?>, Function<?, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<?, ArgumentType<?>>>builder()
-        .put(boolean.class, registryAccess -> BoolArgumentType.bool())
-        .put(Boolean.class, registryAccess -> BoolArgumentType.bool())
-        .put(double.class, registryAccess -> DoubleArgumentType.doubleArg())
-        .put(Double.class, registryAccess -> DoubleArgumentType.doubleArg())
-        .put(float.class, registryAccess -> FloatArgumentType.floatArg())
-        .put(Float.class, registryAccess -> FloatArgumentType.floatArg())
-        .put(int.class, registryAccess -> IntegerArgumentType.integer())
-        .put(Integer.class, registryAccess -> IntegerArgumentType.integer())
-        .put(long.class, registryAccess -> LongArgumentType.longArg())
-        .put(Long.class, registryAccess -> LongArgumentType.longArg())
-        .put(String.class, registryAccess -> StringArgumentType.string())
+        .put(boolean.class, buildContext -> BoolArgumentType.bool())
+        .put(Boolean.class, buildContext -> BoolArgumentType.bool())
+        .put(double.class, buildContext -> DoubleArgumentType.doubleArg())
+        .put(Double.class, buildContext -> DoubleArgumentType.doubleArg())
+        .put(float.class, buildContext -> FloatArgumentType.floatArg())
+        .put(Float.class, buildContext -> FloatArgumentType.floatArg())
+        .put(int.class, buildContext -> IntegerArgumentType.integer())
+        .put(Integer.class, buildContext -> IntegerArgumentType.integer())
+        .put(long.class, buildContext -> LongArgumentType.longArg())
+        .put(Long.class, buildContext -> LongArgumentType.longArg())
+        .put(String.class, buildContext -> StringArgumentType.string())
         .build();
 
     private final Class<?> configsClass;
 
     private final Gson gson;
     private final Gson inlineGson;
-    private final Map<Class<?>, Function<R, ? extends ArgumentType<?>>> arguments;
+    private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
     private final Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors;
 
-    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<R, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors) {
+    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors) {
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
@@ -70,8 +75,8 @@ public abstract class AbstractConfigImpl<S, R> implements AbstractConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public Function<R, ? extends ArgumentType<?>> getArgument(Class<?> type) {
-        return this.arguments.getOrDefault(type, (Function<R, ? extends ArgumentType<?>>) defaultArguments.get(type));
+    public Function<C, ? extends ArgumentType<?>> getArgument(Class<?> type) {
+        return this.arguments.getOrDefault(type, (Function<C, ? extends ArgumentType<?>>) defaultArguments.get(type));
     }
 
     public Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>> getSuggestor(Class<?> type) {
@@ -193,8 +198,7 @@ public abstract class AbstractConfigImpl<S, R> implements AbstractConfig {
             });
             writer.write(this.gson.toJson(root));
         } catch (IOException e) {
-            LOGGER.error("Could not save config file.");
-            e.printStackTrace();
+            BetterConfigCommon.LOGGER.error("Could not save config file.", e);
             return false;
         }
         return true;

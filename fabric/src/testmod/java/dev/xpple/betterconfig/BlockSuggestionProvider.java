@@ -4,15 +4,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.minecraft.command.CommandSource;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.concurrent.CompletableFuture;
 
-class BlockSuggestionProvider implements SuggestionProvider<ServerCommandSource> {
+class BlockSuggestionProvider implements SuggestionProvider<CommandSourceStack> {
     @Override
-    public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestIdentifiers(Registries.BLOCK.getIds(), builder);
+    public CompletableFuture<Suggestions> getSuggestions(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggestResource(BuiltInRegistries.BLOCK.keySet(), builder);
     }
 }

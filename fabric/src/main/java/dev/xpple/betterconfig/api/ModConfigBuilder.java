@@ -3,10 +3,10 @@ package dev.xpple.betterconfig.api;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 
-public class ModConfigBuilder extends AbstractConfigBuilder<CommandSource, CommandRegistryAccess> {
+public class ModConfigBuilder extends AbstractConfigBuilder<SharedSuggestionProvider, CommandBuildContext> {
 
     private final String modId;
 

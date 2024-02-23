@@ -2,13 +2,19 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.BlockStateArgument;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.blocks.BlockInput;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Configs {
@@ -61,8 +67,8 @@ public class Configs {
 
     @Config(condition = "isServer")
     public static boolean exampleServerOnlyConfig = true;
-    public static boolean isServer(CommandSource source) {
-        return source instanceof ServerCommandSource;
+    public static boolean isServer(SharedSuggestionProvider source) {
+        return source instanceof CommandSourceStack;
     }
 
     @Config(setter = @Config.Setter("privateSetter"))
@@ -75,5 +81,5 @@ public class Configs {
     public static Object exampleComment = null;
 
     @Config
-    public static BlockStateArgument exampleRegistryAccess = new BlockStateArgument(Blocks.COMPOSTER.getDefaultState(), Collections.emptySet(), null);
+    public static BlockInput exampleRegistryAccess = new BlockInput(Blocks.COMPOSTER.defaultBlockState(), Collections.emptySet(), null);
 }

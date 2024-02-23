@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.block.BlockState;
+import org.bukkit.generator.structure.Structure;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class TestPlugin extends JavaPlugin {
@@ -29,6 +30,7 @@ public class TestPlugin extends JavaPlugin {
                 return material;
             })
             .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), ArgumentTypes::blockState)
+            .registerTypeHierarchy(Structure.class, new StructureAdapter(), StructureArgumentType::structure)
             .build();
     }
 }

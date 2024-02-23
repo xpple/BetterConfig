@@ -8,20 +8,20 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.command.suggestion.EnumSuggestionProvider;
 import dev.xpple.betterconfig.impl.AbstractConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 
-public class ConfigCommand extends AbstractConfigCommand<ServerCommandSource, CommandRegistryAccess> {
+public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, CommandBuildContext> {
 
     @Override
-    protected <T extends Enum<T>> SuggestionProvider<ServerCommandSource> enumSuggestionProvider(Class<T> type) {
+    protected <T extends Enum<T>> SuggestionProvider<CommandSourceStack> enumSuggestionProvider(Class<T> type) {
         return new EnumSuggestionProvider<>(type);
     }
 
     @Override
     protected DynamicCommandExceptionType invalidEnumException() {
-        return new DynamicCommandExceptionType(value -> Text.translatable("argument.enum.invalid", value));
+        return new DynamicCommandExceptionType(value -> Component.translatable("argument.enum.invalid", value));
     }
 
     private ConfigCommand() {
@@ -29,55 +29,55 @@ public class ConfigCommand extends AbstractConfigCommand<ServerCommandSource, Co
     }
 
     @SuppressWarnings("unchecked")
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
-        dispatcher.register(new ConfigCommand().create(BetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess>) modConfig).toList(), registryAccess).requires(source -> source.hasPermissionLevel(4)));
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
+        dispatcher.register(new ConfigCommand().create(BetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (AbstractConfigImpl<CommandSourceStack, CommandBuildContext>) modConfig).toList(), buildContext).requires(source -> source.hasPermission(4)));
     }
 
     @Override
-    protected int comment(ServerCommandSource source, String config, String comment) {
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.comment", "Comment for %s:", config), false);
-        source.sendFeedback(() -> Text.of(comment), false);
+    protected int comment(CommandSourceStack source, String config, String comment) {
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.comment", "Comment for %s:", config), false);
+        source.sendSuccess(() -> Component.literal(comment), false);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int get(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config) {
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, abstractConfig.asString(config)), false);
+    protected int get(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config) {
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.get", "%s is currently set to %s.", config, abstractConfig.asString(config)), false);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int reset(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config) {
+    protected int reset(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config) {
         abstractConfig.reset(config);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.reset", "%s has been reset to %s.", config, abstractConfig.asString(config)), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.reset", "%s has been reset to %s.", config, abstractConfig.asString(config)), true);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int set(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config, Object value) throws CommandSyntaxException {
+    protected int set(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config, Object value) throws CommandSyntaxException {
         abstractConfig.set(config, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.set", "%s has been set to %s.", config, abstractConfig.asString(config)), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.set", "%s has been set to %s.", config, abstractConfig.asString(config)), true);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int add(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config, Object value) throws CommandSyntaxException {
+    protected int add(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config, Object value) throws CommandSyntaxException {
         abstractConfig.add(config, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.add", "%s has been added to %s.", abstractConfig.asString(value), config), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.add", "%s has been added to %s.", abstractConfig.asString(value), config), true);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int put(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException {
+    protected int put(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException {
         abstractConfig.put(config, key, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", abstractConfig.asString(key), abstractConfig.asString(value), config), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.put", "The mapping %s=%s has been added to %s.", abstractConfig.asString(key), abstractConfig.asString(value), config), true);
         return Command.SINGLE_SUCCESS;
     }
 
     @Override
-    protected int remove(ServerCommandSource source, AbstractConfigImpl<ServerCommandSource, CommandRegistryAccess> abstractConfig, String config, Object value) throws CommandSyntaxException {
+    protected int remove(CommandSourceStack source, AbstractConfigImpl<CommandSourceStack, CommandBuildContext> abstractConfig, String config, Object value) throws CommandSyntaxException {
         abstractConfig.remove(config, value);
-        source.sendFeedback(() -> Text.translatableWithFallback("betterconfig.commands.config.remove", "%s has been removed from %s.", abstractConfig.asString(value), config), true);
+        source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.remove", "%s has been removed from %s.", abstractConfig.asString(value), config), true);
         return Command.SINGLE_SUCCESS;
     }
 }

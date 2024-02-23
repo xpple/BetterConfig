@@ -5,9 +5,9 @@ import dev.xpple.betterconfig.command.ConfigCommand;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 
 import java.nio.file.Path;
 
@@ -20,7 +20,7 @@ public class BetterConfig implements DedicatedServerModInitializer {
         CommandRegistrationCallback.EVENT.register(BetterConfig::registerCommands);
     }
 
-    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        ConfigCommand.register(dispatcher, registryAccess);
+    private static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection selection) {
+        ConfigCommand.register(dispatcher, buildContext);
     }
 }

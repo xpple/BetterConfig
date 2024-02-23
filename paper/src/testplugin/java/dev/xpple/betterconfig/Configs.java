@@ -5,8 +5,14 @@ import dev.xpple.betterconfig.api.Config;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.generator.structure.Structure;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Configs {
@@ -74,4 +80,7 @@ public class Configs {
 
     @Config
     public static BlockState exampleNativeArgumentType = Material.COMPOSTER.createBlockData().createBlockState();
+
+    @Config
+    public static Structure exampleCustomArgumentType = Structure.MANSION;
 }

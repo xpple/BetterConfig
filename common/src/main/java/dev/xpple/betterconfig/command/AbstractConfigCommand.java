@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
-public abstract class AbstractConfigCommand<S, R>  {
+public abstract class AbstractConfigCommand<S, C>  {
 
     protected abstract <T extends Enum<T>> SuggestionProvider<S> enumSuggestionProvider(Class<T> type);
     protected abstract DynamicCommandExceptionType invalidEnumException();
@@ -30,9 +30,9 @@ public abstract class AbstractConfigCommand<S, R>  {
         this.rootLiteral = rootLiteral;
     }
 
-    protected final LiteralArgumentBuilder<S> create(Collection<? extends AbstractConfigImpl<S, R>> abstractConfigs, R registryAccess) {
+    protected final LiteralArgumentBuilder<S> create(Collection<? extends AbstractConfigImpl<S, C>> abstractConfigs, C buildContext) {
         LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.literal(this.rootLiteral);
-        for (AbstractConfigImpl<S, R> abstractConfig : abstractConfigs) {
+        for (AbstractConfigImpl<S, C> abstractConfig : abstractConfigs) {
             Map<String, LiteralArgumentBuilder<S>> literals = new HashMap<>();
             for (String config : abstractConfig.getConfigs().keySet()) {
                 Predicate<S> condition = abstractConfig.getConditions().get(config);
@@ -51,7 +51,7 @@ public abstract class AbstractConfigCommand<S, R>  {
                 var argumentFunction = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(registryAccess));
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> set(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
                 } else if (suggestorPair != null) {
@@ -76,7 +76,7 @@ public abstract class AbstractConfigCommand<S, R>  {
                 var argumentFunction = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(registryAccess));
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> add(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
                 } else if (suggestorPair != null) {
@@ -104,7 +104,7 @@ public abstract class AbstractConfigCommand<S, R>  {
                 var keyArgumentFunction = abstractConfig.getArgument(keyType);
                 var keySuggestorPair = abstractConfig.getSuggestor(keyType);
                 if (keyArgumentFunction != null) {
-                    subCommand = RequiredArgumentBuilder.argument("key", keyArgumentFunction.apply(registryAccess));
+                    subCommand = RequiredArgumentBuilder.argument("key", keyArgumentFunction.apply(buildContext));
                     getKey = ctx -> ctx.getArgument("key", keyType);
                 } else if (keySuggestorPair != null) {
                     subCommand = RequiredArgumentBuilder.argument("key", string());
@@ -125,7 +125,7 @@ public abstract class AbstractConfigCommand<S, R>  {
                 var valueArgumentFunction = abstractConfig.getArgument(valueType);
                 var valueSuggestorPair = abstractConfig.getSuggestor(valueType);
                 if (valueArgumentFunction != null) {
-                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", valueArgumentFunction.apply(registryAccess));
+                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", valueArgumentFunction.apply(buildContext));
                     subSubCommand.executes(ctx -> put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), ctx.getArgument("value", valueType)));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
                 } else if (valueSuggestorPair != null) {
@@ -150,7 +150,7 @@ public abstract class AbstractConfigCommand<S, R>  {
                 var argumentFunction = abstractConfig.getArgument(type);
                 var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(registryAccess));
+                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> remove(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
                 } else if (suggestorPair != null) {
@@ -175,15 +175,15 @@ public abstract class AbstractConfigCommand<S, R>  {
 
     protected abstract int comment(S source, String config, String comment);
 
-    protected abstract int get(S source, AbstractConfigImpl<S, R> abstractConfig, String config);
+    protected abstract int get(S source, AbstractConfigImpl<S, C> abstractConfig, String config);
 
-    protected abstract int reset(S source, AbstractConfigImpl<S, R> abstractConfig, String config);
+    protected abstract int reset(S source, AbstractConfigImpl<S, C> abstractConfig, String config);
 
-    protected abstract int set(S source, AbstractConfigImpl<S, R> abstractConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int set(S source, AbstractConfigImpl<S, C> abstractConfig, String config, Object value) throws CommandSyntaxException;
 
-    protected abstract int add(S source, AbstractConfigImpl<S, R> abstractConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int add(S source, AbstractConfigImpl<S, C> abstractConfig, String config, Object value) throws CommandSyntaxException;
 
-    protected abstract int put(S source, AbstractConfigImpl<S, R> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException;
+    protected abstract int put(S source, AbstractConfigImpl<S, C> abstractConfig, String config, Object key, Object value) throws CommandSyntaxException;
 
-    protected abstract int remove(S source, AbstractConfigImpl<S, R> abstractConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int remove(S source, AbstractConfigImpl<S, C> abstractConfig, String config, Object value) throws CommandSyntaxException;
 }
