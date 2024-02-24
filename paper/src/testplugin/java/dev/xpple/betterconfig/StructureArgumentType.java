@@ -2,7 +2,7 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.xpple.betterconfig.command.suggestion.SuggestionProviderHelper;
@@ -23,7 +23,7 @@ import java.util.stream.StreamSupport;
 
 class StructureArgumentType extends CustomArgumentType.Converted<Structure, NamespacedKey> {
 
-    private static final SimpleCommandExceptionType ERROR_INVALID = new SimpleCommandExceptionType(MessageComponentSerializer.message().serialize(Component.translatable("argument.id.invalid")));
+    private static final DynamicCommandExceptionType INVALID_STRUCTURE_ID_EXCEPTION = new DynamicCommandExceptionType(id -> MessageComponentSerializer.message().serialize(Component.translatable("structure_block.invalid_structure_name", id.toString())));
 
     private static final Set<NamespacedKey> STRUCTURES = StreamSupport.stream(Registry.STRUCTURE.spliterator(), false)
         .map(Keyed::getKey)
@@ -41,7 +41,7 @@ class StructureArgumentType extends CustomArgumentType.Converted<Structure, Name
     public @NotNull Structure convert(@NotNull NamespacedKey key) throws CommandSyntaxException {
         Structure structure = Registry.STRUCTURE.get(key);
         if (structure == null) {
-            throw ERROR_INVALID.create();
+            throw INVALID_STRUCTURE_ID_EXCEPTION.create(key);
         }
         return structure;
     }

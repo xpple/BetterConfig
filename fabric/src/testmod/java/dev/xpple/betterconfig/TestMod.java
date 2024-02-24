@@ -10,6 +10,7 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.StructureType;
 
 public class TestMod implements DedicatedServerModInitializer {
     @Override
@@ -29,6 +30,7 @@ public class TestMod implements DedicatedServerModInitializer {
                 throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
             })
             .registerTypeHierarchy(BlockInput.class, new BlockStateAdapter(), BlockStateArgument::block)
+            .registerTypeHierarchy((Class<StructureType<?>>) (Class) StructureType.class, new StructureAdapter(), StructureArgumentType::structure)
             .build();
     }
 }
