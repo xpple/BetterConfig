@@ -16,7 +16,7 @@ public class PluginConfigBuilder extends AbstractConfigBuilder<CommandSourceStac
 
     @Override
     public void build() {
-        PluginConfigImpl pluginConfig = new PluginConfigImpl(this.pluginName, this.configsClass, this.builder.create(), this.arguments, this.suggestors);
+        PluginConfigImpl pluginConfig = new PluginConfigImpl(this.pluginName, this.configsClass, this.builder.create(), this.arguments);
         if (BetterConfigImpl.getPluginConfigs().putIfAbsent(this.pluginName, pluginConfig) == null) {
             BetterConfigInternals.init(pluginConfig);
             return;

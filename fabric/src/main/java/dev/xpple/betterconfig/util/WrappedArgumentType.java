@@ -35,20 +35,27 @@ import java.util.concurrent.CompletableFuture;
 public abstract class WrappedArgumentType<T, N> implements ArgumentType<T> {
     private final ArgumentType<N> nativeType;
 
+    /**
+     * @param nativeType the <strong>native</strong> argument type, the client needs
+     *                   to understand this!
+     */
     protected WrappedArgumentType(ArgumentType<N> nativeType) {
         this.nativeType = nativeType;
     }
-
-    public abstract T parse(StringReader reader) throws CommandSyntaxException;
 
     public final ArgumentType<N> getNativeType() {
         return this.nativeType;
     }
 
+    @Override
+    public abstract T parse(StringReader reader) throws CommandSyntaxException;
+
+    @Override
     public Collection<String> getExamples() {
         return this.nativeType.getExamples();
     }
 
+    @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         return this.nativeType.listSuggestions(context, builder);
     }
@@ -58,6 +65,7 @@ public abstract class WrappedArgumentType<T, N> implements ArgumentType<T> {
             super(nativeType);
         }
 
+        @Override
         public final T parse(StringReader reader) throws CommandSyntaxException {
             return this.convert(this.getNativeType().parse(reader));
         }

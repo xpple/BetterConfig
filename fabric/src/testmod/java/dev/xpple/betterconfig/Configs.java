@@ -8,7 +8,6 @@ import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.levelgen.structure.structures.WoodlandMansionStructure;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,5 +85,5 @@ public class Configs {
     public static BlockInput exampleRegistryAccess = new BlockInput(Blocks.COMPOSTER.defaultBlockState(), Collections.emptySet(), null);
 
     @Config
-    public static StructureType<WoodlandMansionStructure> exampleConvertedArgumentType = StructureType.WOODLAND_MANSION;
+    public static StructureType<?> exampleConvertedArgumentType = StructureType.WOODLAND_MANSION;
 }

@@ -49,15 +49,9 @@ public abstract class AbstractConfigCommand<S, C>  {
                 Config.Setter setter = annotation.setter();
                 Class<?> type = setter.type() == Config.EMPTY.class ? abstractConfig.getType(config) : setter.type();
                 var argumentFunction = abstractConfig.getArgument(type);
-                var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> set(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
-                } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
-                    //noinspection unchecked
-                    subCommand.suggests((SuggestionProvider<S>) suggestorPair.left()).executes(ctx -> set(ctx.getSource(), abstractConfig, config, suggestorPair.right().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("set").then(subCommand));
                 } else if (type.isEnum()) {
                     //noinspection rawtypes, unchecked
@@ -74,15 +68,9 @@ public abstract class AbstractConfigCommand<S, C>  {
                 Config.Adder adder = annotation.adder();
                 Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) abstractConfig.getParameterTypes(config)[0] : adder.type();
                 var argumentFunction = abstractConfig.getArgument(type);
-                var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> add(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
-                } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, String> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
-                    //noinspection unchecked
-                    subCommand.suggests((SuggestionProvider<S>) suggestorPair.left()).executes(ctx -> add(ctx.getSource(), abstractConfig, config, suggestorPair.right().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("add").then(subCommand));
                 } else if (type.isEnum()) {
                     //noinspection rawtypes, unchecked
@@ -102,15 +90,9 @@ public abstract class AbstractConfigCommand<S, C>  {
                 RequiredArgumentBuilder<S, ?> subCommand;
                 CheckedFunction<CommandContext<S>, ?, CommandSyntaxException> getKey;
                 var keyArgumentFunction = abstractConfig.getArgument(keyType);
-                var keySuggestorPair = abstractConfig.getSuggestor(keyType);
                 if (keyArgumentFunction != null) {
                     subCommand = RequiredArgumentBuilder.argument("key", keyArgumentFunction.apply(buildContext));
                     getKey = ctx -> ctx.getArgument("key", keyType);
-                } else if (keySuggestorPair != null) {
-                    subCommand = RequiredArgumentBuilder.argument("key", string());
-                    //noinspection unchecked
-                    subCommand.suggests((SuggestionProvider<S>) keySuggestorPair.left());
-                    getKey = ctx -> keySuggestorPair.right().apply(ctx, "key");
                 } else if (keyType.isEnum()) {
                     //noinspection rawtypes, unchecked
                     subCommand = RequiredArgumentBuilder.argument("key", string()).suggests(this.enumSuggestionProvider((Class) keyType));
@@ -123,15 +105,9 @@ public abstract class AbstractConfigCommand<S, C>  {
                 }
                 Class<?> valueType = putter.valueType() == Config.EMPTY.class ? (Class<?>) types[1] : putter.valueType();
                 var valueArgumentFunction = abstractConfig.getArgument(valueType);
-                var valueSuggestorPair = abstractConfig.getSuggestor(valueType);
                 if (valueArgumentFunction != null) {
                     RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", valueArgumentFunction.apply(buildContext));
                     subSubCommand.executes(ctx -> put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), ctx.getArgument("value", valueType)));
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
-                } else if (valueSuggestorPair != null) {
-                    RequiredArgumentBuilder<S, ?> subSubCommand = RequiredArgumentBuilder.argument("value", greedyString());
-                    //noinspection unchecked
-                    subSubCommand.suggests((SuggestionProvider<S>) valueSuggestorPair.left()).executes(ctx -> put(ctx.getSource(), abstractConfig, config, getKey.apply(ctx), valueSuggestorPair.right().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("put").then(subCommand.then(subSubCommand)));
                 } else if (valueType.isEnum()) {
                     //noinspection rawtypes, unchecked
@@ -148,15 +124,9 @@ public abstract class AbstractConfigCommand<S, C>  {
                 Config.Remover remover = annotation.remover();
                 Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) abstractConfig.getParameterTypes(config)[0] : remover.type();
                 var argumentFunction = abstractConfig.getArgument(type);
-                var suggestorPair = abstractConfig.getSuggestor(type);
                 if (argumentFunction != null) {
                     RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", argumentFunction.apply(buildContext));
                     subCommand.executes(ctx -> remove(ctx.getSource(), abstractConfig, config, ctx.getArgument("value", type)));
-                    literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
-                } else if (suggestorPair != null) {
-                    RequiredArgumentBuilder<S, ?> subCommand = RequiredArgumentBuilder.argument("value", greedyString());
-                    //noinspection unchecked
-                    subCommand.suggests((SuggestionProvider<S>) suggestorPair.left()).executes(ctx -> remove(ctx.getSource(), abstractConfig, config, suggestorPair.right().apply(ctx, "value")));
                     literals.get(config).then(LiteralArgumentBuilder.<S>literal("remove").then(subCommand));
                 } else if (type.isEnum()) {
                     //noinspection rawtypes, unchecked

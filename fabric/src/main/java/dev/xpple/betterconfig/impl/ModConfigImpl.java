@@ -2,13 +2,8 @@ package dev.xpple.betterconfig.impl;
 
 import com.google.gson.Gson;
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.BetterConfig;
 import dev.xpple.betterconfig.api.ModConfig;
-import dev.xpple.betterconfig.util.CheckedBiFunction;
-import dev.xpple.betterconfig.util.Pair;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
 
@@ -20,8 +15,8 @@ public class ModConfigImpl<S extends SharedSuggestionProvider> extends AbstractC
 
     private final String modId;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<CommandBuildContext, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors) {
-        super(configsClass, gson, arguments, suggestors);
+    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<CommandBuildContext, ? extends ArgumentType<?>>> arguments) {
+        super(configsClass, gson, arguments);
         this.modId = modId;
     }
 

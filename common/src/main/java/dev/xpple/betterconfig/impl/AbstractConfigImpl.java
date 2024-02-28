@@ -10,16 +10,12 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.BetterConfigCommon;
 import dev.xpple.betterconfig.api.AbstractConfig;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
-import dev.xpple.betterconfig.util.CheckedBiFunction;
 import dev.xpple.betterconfig.util.CheckedConsumer;
-import dev.xpple.betterconfig.util.Pair;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -53,14 +49,12 @@ public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
     private final Gson gson;
     private final Gson inlineGson;
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
-    private final Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors;
 
-    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Map<Class<?>, Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>>> suggestors) {
+    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments) {
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
-        this.suggestors = suggestors;
     }
 
     public abstract String getIdentifier();
@@ -77,10 +71,6 @@ public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
     @SuppressWarnings("unchecked")
     public Function<C, ? extends ArgumentType<?>> getArgument(Class<?> type) {
         return this.arguments.getOrDefault(type, (Function<C, ? extends ArgumentType<?>>) defaultArguments.get(type));
-    }
-
-    public Pair<SuggestionProvider<? extends S>, CheckedBiFunction<CommandContext<? extends S>, String, ?, CommandSyntaxException>> getSuggestor(Class<?> type) {
-        return this.suggestors.get(type);
     }
 
     @Override

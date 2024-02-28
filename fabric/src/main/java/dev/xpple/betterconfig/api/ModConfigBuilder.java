@@ -17,7 +17,7 @@ public class ModConfigBuilder extends AbstractConfigBuilder<SharedSuggestionProv
 
     @Override
     public void build() {
-        ModConfigImpl<?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments, this.suggestors);
+        ModConfigImpl<?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments);
         if (BetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
             BetterConfigInternals.init(modConfig);
             return;
