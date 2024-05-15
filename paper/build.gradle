@@ -17,7 +17,6 @@ sourceSets {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven {
         name = "papermc-repo"
@@ -37,11 +36,11 @@ dependencies {
     configurations.compileOnly.extendsFrom(configurations.includeInJar)
     includeInJar project(':common')
 
-    compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:${paper_api_version}"
 }
 
 processResources {
-    def props = [base_version: project.version, paper_api_version: project.paper_api_version]
+    def props = [base_version: project.version, plugin_yml_paper_api_version: project.plugin_yml_paper_api_version]
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
@@ -49,7 +48,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 21
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
