@@ -103,7 +103,7 @@ public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
             throw new IllegalArgumentException();
         }
         try {
-            field.set(null, this.defaults.get(config));
+            field.set(null, this.gson.fromJson(this.gson.toJsonTree(this.defaults.get(config)), field.getGenericType()));
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }

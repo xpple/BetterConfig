@@ -48,7 +48,7 @@ public class BetterConfigInternals {
             String fieldName = field.getName();
             abstractConfig.getConfigs().put(fieldName, field);
             try {
-                abstractConfig.getDefaults().put(fieldName, field.get(null));
+                abstractConfig.getDefaults().put(fieldName, abstractConfig.getGson().fromJson(abstractConfig.getGson().toJsonTree(field.get(null)), field.getGenericType()));
             } catch (ReflectiveOperationException e) {
                 throw new AssertionError(e);
             }
