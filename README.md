@@ -101,8 +101,8 @@ Import it:
 ```groovy
 dependencies {
     // Fabric
-    include modImplementation('dev.xpple:betterconfig:${version}')
+    include modImplementation('dev.xpple:betterconfig-fabric:${betterconfig-version}')
     // Paper (also include the JAR in the plugins folder)
-    compileOnly 'dev.xpple:betterconfig:${version}'
+    compileOnly 'dev.xpple:betterconfig-paper:${betterconfig_version}'
 }
 ```
