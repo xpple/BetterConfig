@@ -1,0 +1,37 @@
+plugins {
+    id 'fabric-loom' version '1.6-SNAPSHOT'
+}
+
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+
+archivesBaseName = project.archives_base_name
+version = project.base_version
+group = project.maven_group
+
+repositories {
+    maven {
+        url = 'https://maven.parchmentmc.org'
+    }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings {
+            nameSyntheticMembers = true
+        }
+        parchment "org.parchmentmc.data:${project.parchment_mappings}"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+jar {
+    from("LICENSE") {
+        rename {"${it}_${project.archivesBaseName}"}
+    }
+}

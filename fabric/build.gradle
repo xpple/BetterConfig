@@ -1,0 +1,153 @@
+plugins {
+    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'maven-publish'
+}
+
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+
+archivesBaseName = "${project.archives_base_name}-fabric"
+version = project.base_version
+group = project.maven_group
+
+loom {
+    splitEnvironmentSourceSets()
+}
+
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+
+        compileClasspath += client.compileClasspath
+        runtimeClasspath += client.runtimeClasspath
+    }
+}
+
+loom {
+    mods {
+        betterconfig {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+        testmod {
+            sourceSet sourceSets.testmod
+        }
+    }
+
+    runs {
+        testmodClient {
+            client()
+            name = "Test Mod Client"
+            source sourceSets.testmod
+        }
+        testmodServer {
+            server()
+            name = "Test Mod Server"
+            source sourceSets.testmod
+        }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
+
+repositories {
+    maven {
+        url = 'https://maven.parchmentmc.org'
+    }
+}
+
+configurations {
+    includeInJar
+}
+
+dependencies {
+    configurations.compileOnly.extendsFrom(configurations.includeInJar)
+    configurations.localRuntime.extendsFrom(configurations.includeInJar)
+    includeInJar project(':common')
+
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings {
+            nameSyntheticMembers = true
+        }
+        parchment "org.parchmentmc.data:${project.parchment_mappings}"
+    }
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+
+    // Fabric API. This is technically optional, but you probably want it anyway.
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Uncomment the following line to enable the deprecated Fabric API modules.
+    // These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
+
+    // modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
+}
+
+processResources {
+    def props = [base_version: project.version, fabric_loader_version: project.fabric_loader_version]
+    inputs.properties props
+    filesMatching("fabric.mod.json") {
+        expand props
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename {"${it}_${project.archivesBaseName}"}
+    }
+    dependsOn ':common:remapJar'
+    from {
+        configurations.includeInJar.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.archivesBaseName
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+        maven {
+            name = "xpple"
+            url = "sftp://xpple.dev:22/maven.xpple.dev/httpdocs/maven2"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/xpple/BetterConfig"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
