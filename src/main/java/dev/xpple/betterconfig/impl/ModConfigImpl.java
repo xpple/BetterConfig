@@ -92,16 +92,23 @@ public class ModConfigImpl implements ModConfig {
     }
 
     @Override
-    public Object get(String config) {
-        Field field = this.configs.get(config);
-        if (field == null) {
-            throw new IllegalArgumentException();
-        }
+    public Object getRawValue(String config) {
         try {
+            Field field = this.configsClass.getDeclaredField(config);
+            field.setAccessible(true);
             return field.get(null);
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }
+    }
+
+    @Override
+    public Object get(String config) {
+        Supplier<Object> getter = this.getters.get(config);
+        if (getter == null) {
+            throw new IllegalArgumentException();
+        }
+        return getter.get();
     }
 
     @Override
@@ -201,7 +208,7 @@ public class ModConfigImpl implements ModConfig {
                 if (this.getAnnotations().get(config).temporary()) {
                     return;
                 }
-                Object value = this.get(config);
+                Object value = this.getRawValue(config);
                 root.add(config, this.gson.toJsonTree(value));
             });
             writer.write(this.gson.toJson(root));
@@ -241,6 +248,10 @@ public class ModConfigImpl implements ModConfig {
         return this.removers;
     }
 
+    public Map<String, Supplier<Object>> getGetters() {
+        return this.getters;
+    }
+
     public Map<String, Predicate<CommandSource>> getConditions() {
         return this.conditions;
     }
@@ -256,6 +267,7 @@ public class ModConfigImpl implements ModConfig {
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Supplier<Object>> getters = new HashMap<>();
     private final Map<String, Predicate<CommandSource>> conditions = new HashMap<>();
     private final Map<String, Config> annotations = new HashMap<>();
 }

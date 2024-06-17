@@ -7,6 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.util.Formatting;
 
 import java.util.*;
 
@@ -74,6 +75,12 @@ public class Configs {
     @Config(comment = "This is a mysterious object")
     public static Object exampleComment = null;
 
+    @Config(getter = @Config.Getter("customGetter"))
+    public static Formatting exampleCustomGetter = Formatting.GREEN;
+    public static String customGetter() {
+        return exampleCustomGetter.toString() + exampleCustomGetter.name() + Formatting.RESET;
+    }
+  
     @Config
     public static BlockStateArgument exampleRegistryAccess = new BlockStateArgument(Blocks.COMPOSTER.getDefaultState(), Collections.emptySet(), null);
 }
