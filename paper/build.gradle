@@ -3,9 +3,11 @@ plugins {
     id 'maven-publish'
 }
 
-archivesBaseName = "${project.archives_base_name}-paper"
-group = project.maven_group
-version = project.base_version
+base {
+    archivesName = "${project.archives_base_name}-paper"
+    group = project.maven_group
+    version = project.base_version
+}
 
 sourceSets {
     testplugin {
@@ -114,7 +116,7 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archivesBaseName
+            artifactId project.archives_base_name
             from components.java
         }
     }

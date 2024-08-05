@@ -33,7 +33,7 @@
     "fabricloader": ">=${fabric_loader_version}",
     "minecraft": "1.21.x",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-command-api-v2": "*"
   },
   "custom": {
     "modmenu": {

@@ -1,13 +1,12 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = project.archives_base_name
-version = project.base_version
-group = project.maven_group
+base {
+    archivesName = project.archives_base_name
+    version = project.base_version
+    group = project.maven_group
+}
 
 repositories {
     maven {
@@ -16,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.layered {
         officialMojangMappings {
@@ -30,8 +28,15 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 21
 }
 
+java {
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 jar {
     from("LICENSE") {
-        rename {"${it}_${project.archivesBaseName}"}
+        rename {"${it}_${project.base.archivesName.get()}"}
     }
 }
