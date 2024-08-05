@@ -1,5 +1,5 @@
 name: BetterConfig
-version: '${base_version}'
+version: '${version}'
 description: A very powerful and easy to use command based configuration library for servers and clients.
 author: xpple
 website: https://xpple.dev/

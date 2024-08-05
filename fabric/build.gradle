@@ -5,7 +5,7 @@ plugins {
 
 base {
     archivesName = "${project.archives_base_name}-fabric"
-    version = project.base_version
+    version = project.version
     group = project.maven_group
 }
 
@@ -81,7 +81,7 @@ dependencies {
 }
 
 processResources {
-    def props = [base_version: project.version, minecraft_version: project.minecraft_version, fabric_loader_version: project.fabric_loader_version]
+    def props = [version: project.version, minecraft_version: project.minecraft_version, fabric_loader_version: project.fabric_loader_version]
     inputs.properties props
     filesMatching("fabric.mod.json") {
         expand props
@@ -115,7 +115,7 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archives_base_name
+            artifactId project.base.archivesName.get()
             from components.java
         }
     }

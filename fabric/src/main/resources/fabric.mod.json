@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "betterconfig",
-  "version": "${base_version}",
+  "version": "${version}",
   "name": "BetterConfig",
   "description": "A very powerful and easy to use command based configuration library for servers and clients.",
   "authors": [

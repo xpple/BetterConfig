@@ -6,7 +6,7 @@ plugins {
 base {
     archivesName = "${project.archives_base_name}-paper"
     group = project.maven_group
-    version = project.base_version
+    version = project.version
 }
 
 sourceSets {
@@ -38,7 +38,7 @@ dependencies {
 }
 
 processResources {
-    def props = [base_version: project.version, plugin_yml_paper_api_version: project.plugin_yml_paper_api_version]
+    def props = [version: project.version, plugin_yml_paper_api_version: project.plugin_yml_paper_api_version]
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
@@ -116,7 +116,7 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId project.archives_base_name
+            artifactId project.base.archivesName.get()
             from components.java
         }
     }
