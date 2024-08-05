@@ -1,6 +1,6 @@
 package dev.xpple.betterconfig;
 
-import dev.xpple.betterconfig.api.PluginConfigBuilder;
+import dev.xpple.betterconfig.api.ModConfigBuilder;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -13,7 +13,7 @@ public class TestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new PluginConfigBuilder(PLUGIN_NAME, Configs.class)
+        new ModConfigBuilder<>(PLUGIN_NAME, Configs.class)
             .registerType(Material.class, new MaterialAdapter(), BlockMaterialArgumentType::block)
             .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), ArgumentTypes::blockState)
             .registerTypeHierarchy(Structure.class, new StructureAdapter(), StructureArgumentType::structure)

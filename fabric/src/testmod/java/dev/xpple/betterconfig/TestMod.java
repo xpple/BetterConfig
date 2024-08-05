@@ -2,7 +2,8 @@ package dev.xpple.betterconfig;
 
 import dev.xpple.betterconfig.api.ModConfigBuilder;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
@@ -15,7 +16,7 @@ public class TestMod implements DedicatedServerModInitializer {
     public void onInitializeServer() {
         //ArgumentTypeRegistry.registerArgumentType(new ResourceLocation("testmod", "block"), BlockArgumentType.class, SingletonArgumentInfo.contextFree(BlockArgumentType::block));
 
-        new ModConfigBuilder("testmod", Configs.class)
+        new ModConfigBuilder<CommandSourceStack, CommandBuildContext>("testmod", Configs.class)
             .registerTypeHierarchy(Block.class, new BlockAdapter(), BlockWrappedArgumentType::block)
             .registerTypeHierarchy(BlockInput.class, new BlockStateAdapter(), BlockStateArgument::block)
             .registerTypeHierarchy((Class<StructureType<?>>) (Class) StructureType.class, new StructureAdapter(), StructureArgumentType::structure)

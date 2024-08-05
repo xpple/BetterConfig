@@ -12,7 +12,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.BetterConfigCommon;
-import dev.xpple.betterconfig.api.AbstractConfig;
+import dev.xpple.betterconfig.api.ModConfig;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedConsumer;
@@ -23,12 +23,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
+public class ModConfigImpl<S, C> implements ModConfig {
 
     private static final Map<Class<?>, Function<?, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<?, ArgumentType<?>>>builder()
         .put(boolean.class, buildContext -> BoolArgumentType.bool())
@@ -44,20 +45,25 @@ public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
         .put(String.class, buildContext -> StringArgumentType.string())
         .build();
 
+    private final String modId;
     private final Class<?> configsClass;
 
     private final Gson gson;
     private final Gson inlineGson;
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
 
-    protected AbstractConfigImpl(Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments) {
+    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments) {
+        this.modId = modId;
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
     }
 
-    public abstract String getIdentifier();
+    @Override
+    public String getModId() {
+        return this.modId;
+    }
 
     @Override
     public Class<?> getConfigsClass() {
@@ -71,6 +77,11 @@ public abstract class AbstractConfigImpl<S, C> implements AbstractConfig {
     @SuppressWarnings("unchecked")
     public Function<C, ? extends ArgumentType<?>> getArgument(Class<?> type) {
         return this.arguments.getOrDefault(type, (Function<C, ? extends ArgumentType<?>>) defaultArguments.get(type));
+    }
+
+    @Override
+    public Path getConfigsPath() {
+        return Platform.current.getConfigsPath(this.modId);
     }
 
     @Override

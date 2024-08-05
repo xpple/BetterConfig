@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class BetterConfigImpl implements BetterConfigAPI {
 
-    private static final Map<String, ModConfigImpl<?>> modConfigs = new HashMap<>();
+    private static final Map<String, ModConfigImpl<?, ?>> modConfigs = new HashMap<>();
 
     @Override
     public ModConfig getModConfig(String modId) {
@@ -19,7 +19,7 @@ public class BetterConfigImpl implements BetterConfigAPI {
         return modConfig;
     }
 
-    public static Map<String, ModConfigImpl<?>> getModConfigs() {
+    public static Map<String, ModConfigImpl<?, ?>> getModConfigs() {
         return modConfigs;
     }
 

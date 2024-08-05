@@ -21,7 +21,7 @@ mod's id.
 - For Paper users, register the `Configs` class in your plugin's `onEnable` method. Replace `<plugin name>` with your
 plugin's name.
   ```java
-  new PluginConfigBuilder(<plugin name>, Configs.class).build();
+  new ModConfigBuilder(<plugin name>, Configs.class).build();
   ```
 That's it! Now you can access `exampleString` through `Configs.exampleString`. You can edit `exampleString` by using the
 config command.
@@ -78,7 +78,7 @@ Replace `${version}` with the artifact version. Append `-fabric` for Fabric and 
 
 You may choose between my own maven repository and GitHub's package repository.
 ### My own
-```groovy
+```gradle
 repositories {
     maven {
         url 'https://maven.xpple.dev/maven2'
@@ -86,7 +86,7 @@ repositories {
 }
 ```
 ### GitHub packages
-```groovy
+```gradle
 repositories {
     maven {
         url 'https://maven.pkg.github.com/xpple/BetterConfig'
@@ -98,7 +98,7 @@ repositories {
 }
 ```
 Import it:
-```groovy
+```gradle
 dependencies {
     // Fabric
     include modImplementation('dev.xpple:betterconfig-fabric:${betterconfig-version}')

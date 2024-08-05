@@ -4,7 +4,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.nio.file.Path;
 
-public interface AbstractConfig {
+public interface ModConfig {
+    /**
+     * Get the identifier of the mod of this configuration.
+     * @return the mod's identifier
+     */
+    String getModId();
+
     /**
      * Get the class where all the configurations for this mod are defined.
      * @return the class with all configurations

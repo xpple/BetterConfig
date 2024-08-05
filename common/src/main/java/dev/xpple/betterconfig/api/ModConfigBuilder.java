@@ -3,20 +3,26 @@ package dev.xpple.betterconfig.api;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.mojang.brigadier.arguments.ArgumentType;
+import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.BetterConfigInternals;
+import dev.xpple.betterconfig.impl.ModConfigImpl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public abstract class AbstractConfigBuilder<S, C> {
+public final class ModConfigBuilder<S, C> {
 
-    final Class<?> configsClass;
+    private final String modId;
 
-    final GsonBuilder builder = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization();
-    final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments = new HashMap<>();
+    private final Class<?> configsClass;
 
-    public AbstractConfigBuilder(Class<?> configsClass) {
+    private final GsonBuilder builder = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization();
+    private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments = new HashMap<>();
+
+    public ModConfigBuilder(String modId, Class<?> configsClass) {
+        this.modId = modId;
         this.configsClass = configsClass;
     }
 
@@ -31,9 +37,9 @@ public abstract class AbstractConfigBuilder<S, C> {
      * true for all argument types that natively exist in the game. Any custom argument types must be
      * converted, however. For this, use {@link dev.xpple.betterconfig.util.WrappedArgumentType} on
      * Fabric or {@link io.papermc.paper.command.brigadier.argument.CustomArgumentType} on Paper.
-     * @see AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Supplier)
+     * @see ModConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Supplier)
      */
-    public <T> AbstractConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
+    public <T> ModConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
         return this.registerType(type, adapter, buildContext -> argumentTypeSupplier.get());
     }
 
@@ -48,9 +54,9 @@ public abstract class AbstractConfigBuilder<S, C> {
      * true for all argument types that natively exist in the game. Any custom argument types must be
      * converted, however. For this, use {@link dev.xpple.betterconfig.util.WrappedArgumentType} on
      * Fabric or {@link io.papermc.paper.command.brigadier.argument.CustomArgumentType} on Paper.
-     * @see AbstractConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Function)
+     * @see ModConfigBuilder#registerTypeHierarchy(Class, TypeAdapter, Function)
      */
-    public <T> AbstractConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
+    public <T> ModConfigBuilder<S, C> registerType(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
         this.builder.registerTypeAdapter(type, adapter);
         this.arguments.put(type, argumentTypeFunction);
         return this;
@@ -67,9 +73,9 @@ public abstract class AbstractConfigBuilder<S, C> {
      * true for all argument types that natively exist in the game. Any custom argument types must be
      * converted, however. For this, use {@link dev.xpple.betterconfig.util.WrappedArgumentType} on
      * Fabric or {@link io.papermc.paper.command.brigadier.argument.CustomArgumentType} on Paper.
-     * @see AbstractConfigBuilder#registerType(Class, TypeAdapter, Supplier)
+     * @see ModConfigBuilder#registerType(Class, TypeAdapter, Supplier)
      */
-    public <T> AbstractConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
+    public <T> ModConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Supplier<ArgumentType<T>> argumentTypeSupplier) {
         return this.registerTypeHierarchy(type, adapter, buildContext -> argumentTypeSupplier.get());
     }
 
@@ -84,9 +90,9 @@ public abstract class AbstractConfigBuilder<S, C> {
      * true for all argument types that natively exist in the game. Any custom argument types must be
      * converted, however. For this, use {@link dev.xpple.betterconfig.util.WrappedArgumentType} on
      * Fabric or {@link io.papermc.paper.command.brigadier.argument.CustomArgumentType} on Paper.
-     * @see AbstractConfigBuilder#registerType(Class, TypeAdapter, Function)
+     * @see ModConfigBuilder#registerType(Class, TypeAdapter, Function)
      */
-    public <T> AbstractConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
+    public <T> ModConfigBuilder<S, C> registerTypeHierarchy(Class<T> type, TypeAdapter<T> adapter, Function<C, ArgumentType<T>> argumentTypeFunction) {
         this.builder.registerTypeHierarchyAdapter(type, adapter);
         this.arguments.put(type, argumentTypeFunction);
         return this;
@@ -96,5 +102,12 @@ public abstract class AbstractConfigBuilder<S, C> {
      * Finalise the registration process.
      * @throws IllegalArgumentException when a configuration already exists for this mod
      */
-    public abstract void build();
+    public void build() {
+        ModConfigImpl<?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments);
+        if (BetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
+            BetterConfigInternals.init(modConfig);
+            return;
+        }
+        throw new IllegalArgumentException(this.modId);
+    }
 }
