@@ -1,0 +1,17 @@
+name: BetterConfig
+version: '${version}'
+description: A very powerful and easy to use command based configuration library for servers and clients.
+author: xpple
+website: https://xpple.dev/
+main: dev.xpple.betterconfig.BetterConfig
+api-version: '${plugin_yml_paper_api_version}'
+load: STARTUP
+permissions:
+  betterconfig.config:
+    description: Allows the use of the config command
+    default: op
+  betterconfig.*:
+    description: Wildcard permission
+    default: op
+    children:
+      - betterconfig.config

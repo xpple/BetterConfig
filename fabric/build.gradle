@@ -1,0 +1,144 @@
+plugins {
+    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "${project.archives_base_name}-fabric"
+    version = project.mod_version
+    group = project.maven_group
+}
+
+loom {
+    splitEnvironmentSourceSets()
+}
+
+sourceSets {
+    testmod {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+
+        compileClasspath += client.compileClasspath
+        runtimeClasspath += client.runtimeClasspath
+    }
+}
+
+loom {
+    mods {
+        betterconfig {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+        testmod {
+            sourceSet sourceSets.testmod
+        }
+    }
+
+    runs {
+        testmodClient {
+            client()
+            name = "Test Mod Client"
+            source sourceSets.testmod
+        }
+        testmodServer {
+            server()
+            name = "Test Mod Server"
+            source sourceSets.testmod
+        }
+    }
+
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
+}
+
+repositories {
+    maven {
+        url = 'https://maven.parchmentmc.org'
+    }
+}
+
+configurations {
+    includeInJar
+}
+
+dependencies {
+    configurations.compileOnly.extendsFrom(configurations.includeInJar)
+    configurations.localRuntime.extendsFrom(configurations.includeInJar)
+    includeInJar project(':common')
+
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered {
+        officialMojangMappings {
+            nameSyntheticMembers = true
+        }
+        parchment "org.parchmentmc.data:${project.parchment_mappings}"
+    }
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+
+    modImplementation fabricApi.module("fabric-command-api-v2", project.fabric_api_version)
+}
+
+processResources {
+    def props = [version: project.mod_version, minecraft_version: project.minecraft_version, fabric_loader_version: project.fabric_loader_version]
+    inputs.properties props
+    filesMatching("fabric.mod.json") {
+        expand props
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename {"${it}_${project.base.archivesName.get()}"}
+    }
+    dependsOn ':common:remapJar'
+    from {
+        configurations.includeInJar.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+// configure the maven publication
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.base.archivesName.get()
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
+        maven {
+            name = "xpple"
+            url = "sftp://xpple.dev:22/maven.xpple.dev/httpdocs/maven2"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/xpple/BetterConfig"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}

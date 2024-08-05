@@ -1,0 +1,142 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "${project.archives_base_name}-paper"
+    group = project.maven_group
+    version = project.mod_version
+}
+
+sourceSets {
+    testplugin {
+        compileClasspath += main.compileClasspath
+        runtimeClasspath += main.runtimeClasspath
+        compileClasspath += main.output
+        runtimeClasspath += main.output
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+}
+
+configurations {
+    includeInJar
+}
+
+dependencies {
+    configurations.compileOnly.extendsFrom(configurations.includeInJar)
+    includeInJar project(':common')
+
+    compileOnly "io.papermc.paper:paper-api:${paper_api_version}"
+}
+
+processResources {
+    def props = [version: project.mod_version, plugin_yml_paper_api_version: project.plugin_yml_paper_api_version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+def targetJavaVersion = 21
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+tasks.register('buildTestplugin', Jar) {
+    it.group = 'paper'
+
+    it.archiveBaseName = 'testplugin'
+    it.archiveVersion = '1.0.0'
+    from sourceSets.testplugin.output
+}
+
+tasks.register('copyJarsToServer') {
+    it.group = 'paper'
+
+    doLast {
+        copy {
+            from jar
+            into "${projectDir}/run/plugins"
+        }
+
+        copy {
+            from buildTestplugin
+            into "${projectDir}/run/plugins"
+        }
+    }
+}
+
+copyJarsToServer.dependsOn(build, buildTestplugin)
+
+tasks.register('runTestpluginServer') {
+    it.group = 'paper'
+
+    doLast {
+        javaexec {
+            workingDir = "${projectDir}/run"
+            main = '-jar'
+            args = ["${projectDir}/run/server.jar", '--nogui']
+            jvmArgs = ['-Dcom.mojang.eula.agree=true']
+            standardInput = System.in
+        }
+    }
+}
+
+runTestpluginServer.dependsOn(copyJarsToServer)
+
+jar {
+    dependsOn ':common:remapJar'
+    from {
+        configurations.includeInJar.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId project.base.archivesName.get()
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "xpple"
+            url = "sftp://xpple.dev:22/maven.xpple.dev/httpdocs/maven2"
+            credentials {
+                username = System.getenv("MAVEN_USER")
+                password = System.getenv("MAVEN_PASS")
+            }
+        }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/xpple/BetterConfig"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
