@@ -14,19 +14,24 @@ public class Configs {
 ```
 Finally, register your `Configs` class.
 - For Fabric users, register the `Configs` class in your mod's `onInitialize(Client)` method. Replace `<mod id>` with your 
-mod's id.
-  ```java
-  new ModConfigBuilder(<mod id>, Configs.class).build();
-  ```
+mod's id. Sometimes you may omit the generics and just do `<>` instead.
+  - On clients:
+    ```java
+    new ModConfigBuilder<FabricClientCommandSource, CommandBuildContext>(<mod id>, Configs.class).build();
+    ```
+  - On servers:
+    ```java
+    new ModConfigBuilder<CommandSourceStack, CommandBuildContext>(<mod id>, Configs.class).build();
+    ```
 - For Paper users, register the `Configs` class in your plugin's `onEnable` method. Replace `<plugin name>` with your
 plugin's name.
   ```java
-  new ModConfigBuilder(<plugin name>, Configs.class).build();
+  new ModConfigBuilder<>(<plugin name>, Configs.class).build();
   ```
 That's it! Now you can access `exampleString` through `Configs.exampleString`. You can edit `exampleString` by using the
 config command.
 - On Fabric there are different commands for the client and server.  For both, replace `<mod id>` with your mod's id.
-  - On the client, execute `/cconfig <mod id> exampleString set <string>`.
+  - On clients, execute `/cconfig <mod id> exampleString set <string>`.
   - On servers, execute `/config <mod id> exampleString set <string>`.
 - On Paper servers, execute `/config <plugin name> exampleString set <string>`. Replace `<plugin name>` with your
 plugin's name.
@@ -37,7 +42,7 @@ the options `add`, `put` and `remove` available. Moreover, you can define your o
 configurations with arbitrary types. To do this, all you have to do is register the (de)serialiser when you build your
 config. For instance, to create configurations with type `Block` you can do
 ```java
-new ModConfigBuilder(<mod id>, Configs.class)
+new ModConfigBuilder<>(<mod id>, Configs.class)
     .registerTypeHierarchy(Block.class, new BlockAdapter(), BlockArgumentType::block)
     .build();
 ```
@@ -74,7 +79,8 @@ And many more things! For some illustrative examples, see the `Configs` class fo
 [Paper](paper/src/testplugin/java/dev/xpple/betterconfig/Configs.java).
 
 ## Installation
-Replace `${version}` with the artifact version. Append `-fabric` for Fabric and `-paper` for Paper.
+Replace `${version}` with the artifact version. Append `-fabric` for Fabric and `-paper` for Paper to the base artifact
+name.
 
 You may choose between my own maven repository and GitHub's package repository.
 ### My own
