@@ -79,8 +79,7 @@ And many more things! For some illustrative examples, see the `Configs` class fo
 [Paper](paper/src/testplugin/java/dev/xpple/betterconfig/Configs.java).
 
 ## Installation
-Replace `${version}` with the artifact version. Append `-fabric` for Fabric and `-paper` for Paper to the base artifact
-name.
+Replace `${betterconfig_version}` with the artifact version.
 
 You may choose between my own maven repository and GitHub's package repository.
 ### My own
