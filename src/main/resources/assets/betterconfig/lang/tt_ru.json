@@ -5,6 +5,6 @@
   "betterconfig.commands.config.reset": "%s көйләве %s кыйммәтенә кире кайтарылды.",
   "betterconfig.commands.config.set": "%s көйләве %s кыйммәтенә урнаштырылды.",
   "betterconfig.commands.config.add": "%s көйләве %s кыйммәтенә өстәлде.",
-  "betterconfig.commands.config.put": "%s=%s чагыштыруы %s көйләвенә өстәлде.",
+  "betterconfig.commands.config.put": "%s=%s мәппиңы %s көйләвенә өстәлде.",
   "betterconfig.commands.config.remove": "%s кыйммәте %s көйләвеннән бетерелде."
 }
