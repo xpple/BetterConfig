@@ -45,6 +45,16 @@ public class ModConfigImpl<S, C> implements ModConfig {
         .put(String.class, buildContext -> StringArgumentType.string())
         .build();
 
+    private final Map<String, Field> configs = new HashMap<>();
+    private final Map<String, Object> defaults = new HashMap<>();
+    private final Map<String, String> comments = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
+    private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
+    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Predicate<S>> conditions = new HashMap<>();
+    private final Map<String, Config> annotations = new HashMap<>();
+
     private final String modId;
     private final Class<?> configsClass;
 
@@ -72,6 +82,42 @@ public class ModConfigImpl<S, C> implements ModConfig {
 
     public Gson getGson() {
         return this.gson;
+    }
+
+    public Map<String, Field> getConfigs() {
+        return this.configs;
+    }
+
+    public Map<String, Object> getDefaults() {
+        return this.defaults;
+    }
+
+    public Map<String, String> getComments() {
+        return this.comments;
+    }
+
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
+        return this.setters;
+    }
+
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getAdders() {
+        return this.adders;
+    }
+
+    public Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> getPutters() {
+        return this.putters;
+    }
+
+    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getRemovers() {
+        return this.removers;
+    }
+
+    public Map<String, Predicate<S>> getConditions() {
+        return this.conditions;
+    }
+
+    public Map<String, Config> getAnnotations() {
+        return this.annotations;
     }
 
     @SuppressWarnings("unchecked")
@@ -190,8 +236,8 @@ public class ModConfigImpl<S, C> implements ModConfig {
     public boolean save() {
         try (BufferedWriter writer = Files.newBufferedWriter(this.getConfigsPath())) {
             JsonObject root = new JsonObject();
-            this.getConfigs().keySet().forEach(config -> {
-                if (this.getAnnotations().get(config).temporary()) {
+            this.configs.keySet().forEach(config -> {
+                if (this.annotations.get(config).temporary()) {
                     return;
                 }
                 Object value = this.get(config);
@@ -204,50 +250,4 @@ public class ModConfigImpl<S, C> implements ModConfig {
         }
         return true;
     }
-
-    public Map<String, Field> getConfigs() {
-        return this.configs;
-    }
-
-    public Map<String, Object> getDefaults() {
-        return this.defaults;
-    }
-
-    public Map<String, String> getComments() {
-        return this.comments;
-    }
-
-    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
-        return this.setters;
-    }
-
-    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getAdders() {
-        return this.adders;
-    }
-
-    public Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> getPutters() {
-        return this.putters;
-    }
-
-    public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getRemovers() {
-        return this.removers;
-    }
-
-    public Map<String, Predicate<S>> getConditions() {
-        return this.conditions;
-    }
-
-    public Map<String, Config> getAnnotations() {
-        return this.annotations;
-    }
-
-    private final Map<String, Field> configs = new HashMap<>();
-    private final Map<String, Object> defaults = new HashMap<>();
-    private final Map<String, String> comments = new HashMap<>();
-    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
-    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
-    private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
-    private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
-    private final Map<String, Predicate<S>> conditions = new HashMap<>();
-    private final Map<String, Config> annotations = new HashMap<>();
 }
