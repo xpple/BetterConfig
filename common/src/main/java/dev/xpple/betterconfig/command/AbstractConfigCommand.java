@@ -33,7 +33,10 @@ public abstract class AbstractConfigCommand<S, C>  {
                 LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(config).requires(condition);
 
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("get").executes(ctx -> get(ctx.getSource(), modConfig, config)));
-                configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), modConfig, config)));
+                Config annotation = modConfig.getAnnotations().get(config);
+                if (!annotation.readOnly()) {
+                    configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), modConfig, config)));
+                }
 
                 String comment = modConfig.getComments().get(config);
                 if (comment != null) {
@@ -41,7 +44,6 @@ public abstract class AbstractConfigCommand<S, C>  {
                 }
 
                 if (modConfig.getSetters().containsKey(config)) {
-                    Config annotation = modConfig.getAnnotations().get(config);
                     Config.Setter setter = annotation.setter();
                     Class<?> type = setter.type() == Config.EMPTY.class ? modConfig.getType(config) : setter.type();
                     var argumentFunction = modConfig.getArgument(type);
@@ -61,7 +63,6 @@ public abstract class AbstractConfigCommand<S, C>  {
                 }
 
                 if (modConfig.getAdders().containsKey(config)) {
-                    Config annotation = modConfig.getAnnotations().get(config);
                     Config.Adder adder = annotation.adder();
                     Class<?> type = adder.type() == Config.EMPTY.class ? (Class<?>) modConfig.getParameterTypes(config)[0] : adder.type();
                     var argumentFunction = modConfig.getArgument(type);
@@ -81,7 +82,6 @@ public abstract class AbstractConfigCommand<S, C>  {
                 }
 
                 if (modConfig.getPutters().containsKey(config)) {
-                    Config annotation = modConfig.getAnnotations().get(config);
                     Config.Putter putter = annotation.putter();
                     Type[] types = modConfig.getParameterTypes(config);
                     Class<?> keyType = putter.keyType() == Config.EMPTY.class ? (Class<?>) types[0] : putter.keyType();
@@ -122,7 +122,6 @@ public abstract class AbstractConfigCommand<S, C>  {
                 }
 
                 if (modConfig.getRemovers().containsKey(config)) {
-                    Config annotation = modConfig.getAnnotations().get(config);
                     Config.Remover remover = annotation.remover();
                     Class<?> type = remover.type() == Config.EMPTY.class ? (Class<?>) modConfig.getParameterTypes(config)[0] : remover.type();
                     var argumentFunction = modConfig.getArgument(type);
