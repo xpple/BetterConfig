@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 public class FabricPlatform implements Platform {
+    private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(value -> Component.translatable("argument.enum.invalid", value));
+
     @Override
     public Path getConfigsPath(String modId) {
         return BetterConfig.MOD_PATH.resolve(modId).resolve("config.json");
@@ -22,7 +24,7 @@ public class FabricPlatform implements Platform {
 
     @Override
     public DynamicCommandExceptionType invalidEnumException() {
-        return new DynamicCommandExceptionType(value -> Component.translatable("argument.enum.invalid", value));
+        return INVALID_ENUM_EXCEPTION;
     }
 
     @Override

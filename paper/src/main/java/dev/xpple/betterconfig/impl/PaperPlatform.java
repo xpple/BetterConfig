@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 
 public class PaperPlatform implements Platform {
+    private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(value -> MessageComponentSerializer.message().serialize(Component.translatable("argument.enum.invalid").arguments(Component.text(String.valueOf(value)))));
+
     @Override
     public Path getConfigsPath(String modId) {
         return BetterConfig.PLUGIN_PATH.resolve(modId).resolve("config.json");
@@ -24,7 +26,7 @@ public class PaperPlatform implements Platform {
 
     @Override
     public DynamicCommandExceptionType invalidEnumException() {
-        return new DynamicCommandExceptionType(value -> MessageComponentSerializer.message().serialize(Component.translatable("argument.enum.invalid").arguments(Component.text(String.valueOf(value)))));
+        return INVALID_ENUM_EXCEPTION;
     }
 
     @Override
