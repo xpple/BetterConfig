@@ -83,4 +83,10 @@ public class Configs {
 
     @Config
     public static Structure exampleCustomArgumentType = Structure.MANSION;
+
+    @Config(onChange = "onChange")
+    public static List<String> exampleOnChange = new ArrayList<>(List.of("xpple, earthcomputer"));
+    private static void onChange(List<String> oldValue, List<String> newValue) {
+        System.out.println("Old: " + oldValue + ", new: " + newValue);
+    }
 }

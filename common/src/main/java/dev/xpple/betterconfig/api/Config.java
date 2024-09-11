@@ -53,6 +53,24 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <p>
+ *     To track changes to the configs, you can use the {@link Config#onChange()} attribute.
+ *     Its value represents the name of a method where the changes can be tracked. The method
+ *     should have two parameters; one for the old value and one for the new value. For
+ *     example:
+ *     <pre>
+ *     {@code
+ *     @Config(onChange = "exampleOnChange")
+ *     public static String exampleString = "defaultString";
+ *     public static void exampleOnChange(String oldValue, String newValue) {
+ *         System.out.println("Old: " + oldValue + ", new: " + newValue);
+ *     }
+ *     }
+ *     </pre>
+ *     Both values are deep copies of the config that was changed, so they can be modified
+ *     freely without care for the original object.
+ * </p>
+ *
+ * <p>
  *     To make a configuration unmodifiable by commands, mark it with {@code readOnly = true}.
  *     Enabling this will ignore all update annotations. To make a configuration temporary,
  *     that is, to disable loading and saving from a config file, set {@code temporary} to
@@ -82,6 +100,8 @@ public @interface Config {
     Adder adder() default @Adder;
     Putter putter() default @Putter;
     Remover remover() default @Remover;
+
+    String onChange() default "";
 
     boolean readOnly() default false;
     boolean temporary() default false;

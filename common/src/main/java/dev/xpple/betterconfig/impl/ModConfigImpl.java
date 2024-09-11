@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -46,14 +47,15 @@ public class ModConfigImpl<S, C> implements ModConfig {
         .build();
 
     private final Map<String, Field> configs = new HashMap<>();
+    private final Map<String, Config> annotations = new HashMap<>();
     private final Map<String, Object> defaults = new HashMap<>();
     private final Map<String, String> comments = new HashMap<>();
+    private final Map<String, Predicate<S>> conditions = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
-    private final Map<String, Predicate<S>> conditions = new HashMap<>();
-    private final Map<String, Config> annotations = new HashMap<>();
+    private final Map<String, BiConsumer<Object, Object>> onChangeCallbacks = new HashMap<>();
 
     private final String modId;
     private final Class<?> configsClass;
@@ -80,7 +82,7 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.configsClass;
     }
 
-    public Gson getGson() {
+    Gson getGson() {
         return this.gson;
     }
 
@@ -88,12 +90,20 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.configs;
     }
 
-    public Map<String, Object> getDefaults() {
+    public Map<String, Config> getAnnotations() {
+        return this.annotations;
+    }
+
+    Map<String, Object> getDefaults() {
         return this.defaults;
     }
 
     public Map<String, String> getComments() {
         return this.comments;
+    }
+
+    public Map<String, Predicate<S>> getConditions() {
+        return this.conditions;
     }
 
     public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
@@ -112,12 +122,8 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.removers;
     }
 
-    public Map<String, Predicate<S>> getConditions() {
-        return this.conditions;
-    }
-
-    public Map<String, Config> getAnnotations() {
-        return this.annotations;
+    Map<String, BiConsumer<Object, Object>> getOnChangeCallbacks() {
+        return this.onChangeCallbacks;
     }
 
     @SuppressWarnings("unchecked")
@@ -160,7 +166,7 @@ public class ModConfigImpl<S, C> implements ModConfig {
             throw new IllegalArgumentException();
         }
         try {
-            field.set(null, this.gson.fromJson(this.gson.toJsonTree(this.defaults.get(config)), field.getGenericType()));
+            BetterConfigInternals.onChange(this, field, () -> field.set(null, this.deepCopy(this.defaults.get(config), field.getGenericType())), this.onChangeCallbacks.get(config));
         } catch (ReflectiveOperationException e) {
             throw new AssertionError(e);
         }
@@ -230,6 +236,10 @@ public class ModConfigImpl<S, C> implements ModConfig {
             throw new IllegalArgumentException();
         }
         return ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+    }
+
+    Object deepCopy(Object object, Type type) {
+        return this.gson.fromJson(this.gson.toJsonTree(object), type);
     }
 
     @Override
