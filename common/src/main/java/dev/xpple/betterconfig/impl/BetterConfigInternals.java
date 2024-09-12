@@ -152,7 +152,9 @@ public class BetterConfigInternals {
 
     private static BiConsumer<Object, Object> initOnChange(ModConfigImpl<?, ?> modConfig, Field field, String onChangeMethodName) {
         if (onChangeMethodName.isEmpty()) {
-            return (oldValue, newValue) -> {};
+            BiConsumer<Object, Object> onChange = (oldValue, newValue) -> {};
+            modConfig.getOnChangeCallbacks().put(field.getName(), onChange);
+            return onChange;
         }
         Method onChangeMethod;
         try {
