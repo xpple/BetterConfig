@@ -9,6 +9,7 @@ import dev.xpple.betterconfig.impl.ModConfigImpl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,6 +21,8 @@ public final class ModConfigBuilder<S, C> {
 
     private final GsonBuilder builder = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization();
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments = new HashMap<>();
+
+    private BiConsumer<Object, Object> globalChangeHook = (oldValue, newValue) -> {};
 
     public ModConfigBuilder(String modId, Class<?> configsClass) {
         this.modId = modId;
@@ -99,11 +102,24 @@ public final class ModConfigBuilder<S, C> {
     }
 
     /**
+     * Register a callback that will be called whenever any config value is updated. The first
+     * parameter of the callback is the old value, the second parameter is the new value. Both values
+     * are deep copies of the updated config, so they can be modified without care for the config's
+     * value.
+     * @param hook the callback
+     * @return the current builder instance
+     */
+    public ModConfigBuilder<S, C> registerGlobalChangeHook(BiConsumer<Object, Object> hook) {
+        this.globalChangeHook = hook;
+        return this;
+    }
+
+    /**
      * Finalise the registration process.
      * @throws IllegalArgumentException when a configuration already exists for this mod
      */
     public void build() {
-        ModConfigImpl<?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments);
+        ModConfigImpl<?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments, this.globalChangeHook);
         if (BetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
             BetterConfigInternals.init(modConfig);
             return;

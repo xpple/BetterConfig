@@ -403,5 +403,6 @@ public class BetterConfigInternals {
         updater.run();
         Object newValue = modConfig.deepCopy(field.get(null), field.getGenericType());
         onChange.accept(oldValue, newValue);
+        modConfig.getGlobalChangeHook().accept(oldValue, newValue);
     }
 }

@@ -64,12 +64,15 @@ public class ModConfigImpl<S, C> implements ModConfig {
     private final Gson inlineGson;
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments) {
+    private final BiConsumer<Object, Object> globalChangeHook;
+
+    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, BiConsumer<Object, Object> globalChangeHook) {
         this.modId = modId;
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
+        this.globalChangeHook = globalChangeHook;
     }
 
     @Override
@@ -124,6 +127,10 @@ public class ModConfigImpl<S, C> implements ModConfig {
 
     Map<String, BiConsumer<Object, Object>> getOnChangeCallbacks() {
         return this.onChangeCallbacks;
+    }
+
+    BiConsumer<Object, Object> getGlobalChangeHook() {
+        return this.globalChangeHook;
     }
 
     @SuppressWarnings("unchecked")

@@ -17,6 +17,7 @@ public class TestPlugin extends JavaPlugin {
             .registerType(Material.class, new MaterialAdapter(), BlockMaterialArgumentType::block)
             .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), ArgumentTypes::blockState)
             .registerTypeHierarchy(Structure.class, new StructureAdapter(), StructureArgumentType::structure)
+            .registerGlobalChangeHook((oldValue, newValue) -> System.out.println("Old: " + oldValue + ", new: " + newValue))
             .build();
     }
 }
