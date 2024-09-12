@@ -76,76 +76,13 @@ public class BetterConfigInternals {
                 }
             }
 
-            if (annotation.condition().isEmpty()) {
-                modConfig.getConditions().put(fieldName, source -> true);
-            } else {
-                Method predicateMethod;
-                boolean hasParameter = false;
-                try {
-                    predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition());
-                } catch (ReflectiveOperationException e) {
-                    hasParameter = true;
-                    try {
-                        Class<?> commandSourceClass = Platform.current.getCommandSourceClass();
-                        predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(annotation.condition(), commandSourceClass);
-                    } catch (ReflectiveOperationException e1) {
-                        throw new AssertionError(e1);
-                    }
-                }
-                if (predicateMethod.getReturnType() != boolean.class) {
-                    throw new AssertionError("Condition method '" + annotation.condition() + "' does not return boolean");
-                }
-                if (!Modifier.isStatic(predicateMethod.getModifiers())) {
-                    throw new AssertionError("Condition method '" + annotation.condition() + "' is not static");
-                }
-                predicateMethod.setAccessible(true);
-
-                Method predicateMethod_f = predicateMethod;
-
-                if (hasParameter) {
-                    modConfig.getConditions().put(fieldName, source -> {
-                        try {
-                            return (Boolean) predicateMethod_f.invoke(null, source);
-                        } catch (ReflectiveOperationException e) {
-                            throw new AssertionError(e);
-                        }
-                    });
-                } else {
-                    modConfig.getConditions().put(fieldName, source -> {
-                        try {
-                            return (Boolean) predicateMethod_f.invoke(null);
-                        } catch (ReflectiveOperationException e) {
-                            throw new AssertionError(e);
-                        }
-                    });
-                }
-            }
+            initCondition(modConfig, annotation.condition(), fieldName);
 
             if (annotation.readOnly()) {
                 continue;
             }
 
-            BiConsumer<Object, Object> onChange;
-            String onChangeMethodName = annotation.onChange();
-            if (!onChangeMethodName.isEmpty()) {
-                Method onChangeMethod;
-                try {
-                    onChangeMethod = modConfig.getConfigsClass().getDeclaredMethod(onChangeMethodName, field.getType(), field.getType());
-                } catch (ReflectiveOperationException e) {
-                    throw new AssertionError(e);
-                }
-                onChangeMethod.setAccessible(true);
-                onChange = (oldValue, newValue) -> {
-                    try {
-                        onChangeMethod.invoke(null, oldValue, newValue);
-                    } catch (ReflectiveOperationException e) {
-                        throw new AssertionError(e);
-                    }
-                };
-            } else {
-                onChange = (oldValue, newValue) -> {};
-            }
-            modConfig.getOnChangeCallbacks().put(fieldName, onChange);
+            BiConsumer<Object, Object> onChange = initOnChange(modConfig, field, annotation.onChange());
 
             Class<?> type = field.getType();
             if (Collection.class.isAssignableFrom(type)) {
@@ -164,6 +101,76 @@ public class BetterConfigInternals {
         } catch (IOException e) {
             BetterConfigCommon.LOGGER.error("Could not save config file.", e);
         }
+    }
+
+    private static void initCondition(ModConfigImpl<?, ?> modConfig, String condition, String fieldName) {
+        if (condition.isEmpty()) {
+            modConfig.getConditions().put(fieldName, source -> true);
+            return;
+        }
+        Method predicateMethod;
+        boolean hasParameter = false;
+        try {
+            predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(condition);
+        } catch (ReflectiveOperationException e) {
+            hasParameter = true;
+            try {
+                Class<?> commandSourceClass = Platform.current.getCommandSourceClass();
+                predicateMethod = modConfig.getConfigsClass().getDeclaredMethod(condition, commandSourceClass);
+            } catch (ReflectiveOperationException e1) {
+                throw new AssertionError(e1);
+            }
+        }
+        if (predicateMethod.getReturnType() != boolean.class) {
+            throw new AssertionError("Condition method '" + condition + "' does not return boolean");
+        }
+        if (!Modifier.isStatic(predicateMethod.getModifiers())) {
+            throw new AssertionError("Condition method '" + condition + "' is not static");
+        }
+        predicateMethod.setAccessible(true);
+
+        Method predicateMethod_f = predicateMethod;
+
+        if (hasParameter) {
+            modConfig.getConditions().put(fieldName, source -> {
+                try {
+                    return (Boolean) predicateMethod_f.invoke(null, source);
+                } catch (ReflectiveOperationException e) {
+                    throw new AssertionError(e);
+                }
+            });
+        } else {
+            modConfig.getConditions().put(fieldName, source -> {
+                try {
+                    return (Boolean) predicateMethod_f.invoke(null);
+                } catch (ReflectiveOperationException e) {
+                    throw new AssertionError(e);
+                }
+            });
+        }
+    }
+
+    private static BiConsumer<Object, Object> initOnChange(ModConfigImpl<?, ?> modConfig, Field field, String onChangeMethodName) {
+        if (onChangeMethodName.isEmpty()) {
+            return (oldValue, newValue) -> {};
+        }
+        Method onChangeMethod;
+        try {
+            onChangeMethod = modConfig.getConfigsClass().getDeclaredMethod(onChangeMethodName, field.getType(), field.getType());
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+        onChangeMethod.setAccessible(true);
+        BiConsumer<Object, Object> onChange = (oldValue, newValue) -> {
+            try {
+                onChangeMethod.invoke(null, oldValue, newValue);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+        };
+
+        modConfig.getOnChangeCallbacks().put(field.getName(), onChange);
+        return onChange;
     }
 
     private static void initCollection(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
