@@ -20,7 +20,7 @@ public class TestMod implements DedicatedServerModInitializer {
             .registerTypeHierarchy(Block.class, new BlockAdapter(), BlockWrappedArgumentType::block)
             .registerTypeHierarchy(BlockInput.class, new BlockStateAdapter(), BlockStateArgument::block)
             .registerTypeHierarchy((Class<StructureType<?>>) (Class) StructureType.class, new StructureAdapter(), StructureArgumentType::structure)
-            .registerGlobalChangeHook((oldValue, newValue) -> System.out.println("Old: " + oldValue + ", new: " + newValue))
+            .registerGlobalChangeHook((config, oldValue, newValue) -> System.out.println(config + " was updated | old: " + oldValue + ", new: " + newValue))
             .build();
     }
 }

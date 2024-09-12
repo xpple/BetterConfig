@@ -16,6 +16,7 @@ import dev.xpple.betterconfig.api.ModConfig;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedConsumer;
+import dev.xpple.betterconfig.util.TriConsumer;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -64,9 +65,9 @@ public class ModConfigImpl<S, C> implements ModConfig {
     private final Gson inlineGson;
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
 
-    private final BiConsumer<Object, Object> globalChangeHook;
+    private final TriConsumer<String, Object, Object> globalChangeHook;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, BiConsumer<Object, Object> globalChangeHook) {
+    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, TriConsumer<String, Object, Object> globalChangeHook) {
         this.modId = modId;
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
@@ -129,7 +130,7 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.onChangeCallbacks;
     }
 
-    BiConsumer<Object, Object> getGlobalChangeHook() {
+    TriConsumer<String, Object, Object> getGlobalChangeHook() {
         return this.globalChangeHook;
     }
 

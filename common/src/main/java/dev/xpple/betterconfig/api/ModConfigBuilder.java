@@ -6,10 +6,10 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import dev.xpple.betterconfig.impl.BetterConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
+import dev.xpple.betterconfig.util.TriConsumer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -22,7 +22,7 @@ public final class ModConfigBuilder<S, C> {
     private final GsonBuilder builder = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization();
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments = new HashMap<>();
 
-    private BiConsumer<Object, Object> globalChangeHook = (oldValue, newValue) -> {};
+    private TriConsumer<String, Object, Object> globalChangeHook = (config, oldValue, newValue) -> {};
 
     public ModConfigBuilder(String modId, Class<?> configsClass) {
         this.modId = modId;
@@ -103,13 +103,13 @@ public final class ModConfigBuilder<S, C> {
 
     /**
      * Register a callback that will be called whenever any config value is updated. The first
-     * parameter of the callback is the old value, the second parameter is the new value. Both values
-     * are deep copies of the updated config, so they can be modified without care for the config's
-     * value.
+     * parameter of the callback is the name of the config that was changed. The second parameter is
+     * the old value and the third parameter is the new value. Both values are deep copies of the
+     * updated config, so they can be modified without care for the config's value.
      * @param hook the callback
      * @return the current builder instance
      */
-    public ModConfigBuilder<S, C> registerGlobalChangeHook(BiConsumer<Object, Object> hook) {
+    public ModConfigBuilder<S, C> registerGlobalChangeHook(TriConsumer<String, Object, Object> hook) {
         this.globalChangeHook = hook;
         return this;
     }
