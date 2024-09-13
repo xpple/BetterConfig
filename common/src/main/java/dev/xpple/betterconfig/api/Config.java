@@ -62,7 +62,7 @@ import java.lang.annotation.Target;
  *     @Config(onChange = "exampleOnChange")
  *     public static String exampleString = "defaultString";
  *     public static void exampleOnChange(String oldValue, String newValue) {
- *         System.out.println("Old: " + oldValue + ", new: " + newValue);
+ *         LOGGER.info("exampleOnChange was updated | old: {}, new: {}", oldValue, newValue);
  *     }
  *     }
  *     </pre>

@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.BetterConfigCommon;
 import dev.xpple.betterconfig.api.Config;
+import dev.xpple.betterconfig.api.GlobalChangeEvent;
 import dev.xpple.betterconfig.util.CheckedRunnable;
 
 import java.io.BufferedReader;
@@ -403,5 +404,6 @@ public class BetterConfigInternals {
         updater.run();
         Object newValue = modConfig.deepCopy(field.get(null), field.getGenericType());
         onChange.accept(oldValue, newValue);
+        modConfig.getGlobalChangeHook().accept(new GlobalChangeEvent(field.getName(), oldValue, newValue));
     }
 }

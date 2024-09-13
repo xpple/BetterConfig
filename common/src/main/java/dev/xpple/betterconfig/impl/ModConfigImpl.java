@@ -12,6 +12,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.BetterConfigCommon;
+import dev.xpple.betterconfig.api.GlobalChangeEvent;
 import dev.xpple.betterconfig.api.ModConfig;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
@@ -27,6 +28,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -64,12 +66,15 @@ public class ModConfigImpl<S, C> implements ModConfig {
     private final Gson inlineGson;
     private final Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments) {
+    private final Consumer<GlobalChangeEvent> globalChangeHook;
+
+    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Consumer<GlobalChangeEvent> globalChangeHook) {
         this.modId = modId;
         this.configsClass = configsClass;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
+        this.globalChangeHook = globalChangeHook;
     }
 
     @Override
@@ -124,6 +129,10 @@ public class ModConfigImpl<S, C> implements ModConfig {
 
     Map<String, BiConsumer<Object, Object>> getOnChangeCallbacks() {
         return this.onChangeCallbacks;
+    }
+
+    Consumer<GlobalChangeEvent> getGlobalChangeHook() {
+        return this.globalChangeHook;
     }
 
     @SuppressWarnings("unchecked")
