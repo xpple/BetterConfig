@@ -106,7 +106,7 @@ Import it:
 ```gradle
 dependencies {
     // Fabric
-    include modImplementation('dev.xpple:betterconfig-fabric:${betterconfig-version}')
+    include modImplementation('dev.xpple:betterconfig-fabric:${betterconfig_version}')
     // Paper (also include the JAR in the plugins folder)
     compileOnly 'dev.xpple:betterconfig-paper:${betterconfig_version}'
 }
