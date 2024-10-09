@@ -44,6 +44,10 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+
+    from("LICENSE") {
+        rename {"${it}_${project.base.archivesName.get()}"}
+    }
 }
 
 def targetJavaVersion = 21
@@ -54,6 +58,8 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
+
+    withSourcesJar()
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -111,6 +117,10 @@ jar {
             it.isDirectory() ? it : zipTree(it)
         }
     }
+}
+
+sourcesJar {
+    from(project(':common').sourceSets.main.allSource)
 }
 
 publishing {

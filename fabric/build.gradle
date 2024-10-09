@@ -87,6 +87,10 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand props
     }
+
+    from("LICENSE") {
+        rename {"${it}_${project.base.archivesName.get()}"}
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -96,18 +100,21 @@ tasks.withType(JavaCompile).configureEach {
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+
+    withSourcesJar()
 }
 
 jar {
-    from("LICENSE") {
-        rename {"${it}_${project.base.archivesName.get()}"}
-    }
     dependsOn ':common:remapJar'
     from {
         configurations.includeInJar.collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
+}
+
+sourcesJar {
+    from(project(':common').sourceSets.main.allSource)
 }
 
 // configure the maven publication
