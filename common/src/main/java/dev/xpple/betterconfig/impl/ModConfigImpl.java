@@ -225,7 +225,8 @@ public class ModConfigImpl<S, C> implements ModConfig {
     @Override
     public void resetTemporaryConfigs() {
         for (String config : this.configs.keySet()) {
-            if (this.annotations.get(config).temporary()) {
+            Config annotation = this.annotations.get(config);
+            if (annotation.temporary() && !annotation.readOnly()) {
                 this.reset(config);
             }
         }
