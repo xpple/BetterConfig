@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Mixin(Commands.class)
 public abstract class MixinCommands {
-    @Inject(method = "fillUsableCommands", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;getSuggestionsProvider()Lcom/mojang/brigadier/suggestion/SuggestionProvider;", ordinal = 0), remap = false)
+    @Inject(method = "fillUsableCommands", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;getSuggestionsProvider()Lcom/mojang/brigadier/suggestion/SuggestionProvider;", ordinal = 0, remap = false))
     private <S> void replace(CommandNode<CommandSourceStack> rootCommandSource, CommandNode<SharedSuggestionProvider> rootSuggestion, CommandSourceStack source, Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> commandNodeToSuggestionNode, CallbackInfo ci, @Local RequiredArgumentBuilder<S, ?> requiredArgumentBuilder) {
         if (requiredArgumentBuilder.getType() instanceof WrappedArgumentType<?, ?> wrappedArgumentType) {
             ((RequiredArgumentBuilderAccessor) requiredArgumentBuilder).setSuggestionsProvider(wrappedArgumentType::listSuggestions);
