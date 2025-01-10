@@ -41,6 +41,9 @@ public interface ModConfig {
      * Reset the value for the config associated with this config key.
      * @param config the config's key
      * @throws IllegalArgumentException when there is no config associated to this key
+     * @implNote resetting the config does not use the setter, as some configs do not have
+     * setters. Instead it assigns a deep copy of the config's default value to the config
+     * using reflection.
      */
     void reset(String config);
 
