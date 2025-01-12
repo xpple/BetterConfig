@@ -54,6 +54,15 @@ public class Configs {
         exampleCustomType.add(Character.toString(codepoint));
     }
 
+    @Config(representation = @Config.Representation(value = "customRepresentation"))
+    public static String exampleCustomRepresentation = "";
+    public static String customRepresentation() {
+        if (exampleCustomRepresentation.isEmpty()) {
+            return "Some Text";
+        }
+        return exampleCustomRepresentation;
+    }
+
     @Config
     public static TestEnum exampleEnum = TestEnum.ONE;
 
