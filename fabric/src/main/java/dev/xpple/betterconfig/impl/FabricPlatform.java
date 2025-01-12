@@ -31,4 +31,15 @@ public class FabricPlatform implements Platform {
     public <S, T extends Enum<T>> SuggestionProvider<S> enumSuggestionProvider(Class<T> type) {
         return (context, builder) -> SharedSuggestionProvider.suggest(Arrays.stream(type.getEnumConstants()).map(Enum::name), builder);
     }
+
+    @Override
+    public Class<?> getComponentClass() {
+        return Component.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <P> P stringToComponent(String string) {
+        return (P) Component.nullToEmpty(string);
+    }
 }

@@ -15,5 +15,9 @@ public interface Platform {
 
     <S, T extends Enum<T>> SuggestionProvider<S> enumSuggestionProvider(Class<T> type);
 
+    Class<?> getComponentClass();
+
+    <P> P stringToComponent(String string);
+
     Platform current = ServiceLoader.load(Platform.class, Platform.class.getClassLoader()).iterator().next();
 }

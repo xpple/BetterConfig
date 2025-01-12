@@ -33,4 +33,15 @@ public class PaperPlatform implements Platform {
     public <S, T extends Enum<T>> SuggestionProvider<S> enumSuggestionProvider(Class<T> type) {
         return (context, builder) -> SuggestionProviderHelper.suggestMatching(Arrays.stream(type.getEnumConstants()).map(Enum::name), builder);
     }
+
+    @Override
+    public Class<?> getComponentClass() {
+        return Component.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <P> P stringToComponent(String string) {
+        return (P) Component.text(string);
+    }
 }

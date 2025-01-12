@@ -6,22 +6,23 @@ import dev.xpple.betterconfig.api.ModConfig;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BetterConfigImpl implements BetterConfigAPI {
+public class BetterConfigImpl<P> implements BetterConfigAPI<P> {
 
-    private static final Map<String, ModConfigImpl<?, ?>> modConfigs = new HashMap<>();
+    private static final Map<String, ModConfigImpl<?, ?, ?>> modConfigs = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ModConfig getModConfig(String modId) {
-        ModConfig modConfig = modConfigs.get(modId);
+    public ModConfig<P> getModConfig(String modId) {
+        ModConfig<P> modConfig = (ModConfig<P>) modConfigs.get(modId);
         if (modConfig == null) {
             throw new IllegalArgumentException(modId);
         }
         return modConfig;
     }
 
-    public static Map<String, ModConfigImpl<?, ?>> getModConfigs() {
+    public static Map<String, ModConfigImpl<?, ?, ?>> getModConfigs() {
         return modConfigs;
     }
 
-    public static final BetterConfigImpl INSTANCE = new BetterConfigImpl();
+    public static final BetterConfigImpl<?> INSTANCE = new BetterConfigImpl<>();
 }

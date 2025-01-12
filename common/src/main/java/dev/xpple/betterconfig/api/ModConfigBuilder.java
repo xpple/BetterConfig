@@ -13,6 +13,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * @param <S> the command source type: {@link net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource}
+ *           on Fabric clients, {@link net.minecraft.commands.CommandSourceStack} on Fabric servers
+ *           and {@link io.papermc.paper.command.brigadier.CommandSourceStack} on Paper.
+ * @param <C> the command build context: {@link net.minecraft.commands.CommandBuildContext} on Fabric
+ *           and unused on Paper.
+ */
 public final class ModConfigBuilder<S, C> {
 
     private final String modId;
@@ -117,7 +124,7 @@ public final class ModConfigBuilder<S, C> {
      * @throws IllegalArgumentException when a configuration already exists for this mod
      */
     public void build() {
-        ModConfigImpl<?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments, this.globalChangeHook);
+        ModConfigImpl<?, ?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments, this.globalChangeHook);
         if (BetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
             BetterConfigInternals.init(modConfig);
             return;
