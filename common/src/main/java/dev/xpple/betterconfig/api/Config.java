@@ -100,6 +100,7 @@ public @interface Config {
     Adder adder() default @Adder;
     Putter putter() default @Putter;
     Remover remover() default @Remover;
+    Representation representation() default @Representation;
 
     String onChange() default "";
 
@@ -130,6 +131,11 @@ public @interface Config {
     @interface Remover {
         String value() default "";
         Class<?> type() default EMPTY.class;
+    }
+
+    @Target({})
+    @interface Representation {
+        String value() default "";
     }
 
     @ApiStatus.Internal

@@ -255,6 +255,23 @@ public class BetterConfigInternals {
                 }
             });
         }
+        Config.Representation representation = annotation.representation();
+        String representationMethodName = representation.value();
+        if (!representationMethodName.isEmpty()) {
+            Method representationMethod;
+            try {
+                representationMethod = modConfig.getConfigsClass().getDeclaredMethod(representationMethodName);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+            modConfig.getRepresentations().put(fieldName, () -> {
+                try {
+                    return (String)representationMethod.invoke(null);
+                } catch (ReflectiveOperationException | ClassCastException e) {
+                    throw new AssertionError(e);
+                }
+            });
+        }
     }
 
     private static void initMap(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
@@ -361,6 +378,23 @@ public class BetterConfigInternals {
                 }
             });
         }
+        Config.Representation representation = annotation.representation();
+        String representationMethodName = representation.value();
+        if (!representationMethodName.isEmpty()) {
+            Method representationMethod;
+            try {
+                representationMethod = modConfig.getConfigsClass().getDeclaredMethod(representationMethodName);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+            modConfig.getRepresentations().put(fieldName, () -> {
+                try {
+                    return (String)representationMethod.invoke(null);
+                } catch (ReflectiveOperationException | ClassCastException e) {
+                    throw new AssertionError(e);
+                }
+            });
+        }
     }
 
     private static void initObject(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
@@ -393,6 +427,23 @@ public class BetterConfigInternals {
                     if (e.getCause() instanceof CommandSyntaxException commandSyntaxException) {
                         throw commandSyntaxException;
                     }
+                    throw new AssertionError(e);
+                }
+            });
+        }
+        Config.Representation representation = annotation.representation();
+        String representationMethodName = representation.value();
+        if (!representationMethodName.isEmpty()) {
+            Method representationMethod;
+            try {
+                representationMethod = modConfig.getConfigsClass().getDeclaredMethod(representationMethodName);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+            modConfig.getRepresentations().put(fieldName, () -> {
+                try {
+                    return (String)representationMethod.invoke(null);
+                } catch (ReflectiveOperationException | ClassCastException e) {
                     throw new AssertionError(e);
                 }
             });

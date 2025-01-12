@@ -27,10 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class ModConfigImpl<S, C> implements ModConfig {
 
@@ -57,6 +54,7 @@ public class ModConfigImpl<S, C> implements ModConfig {
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> removers = new HashMap<>();
+    private final Map<String, Supplier<String>> representations = new HashMap<>();
     private final Map<String, BiConsumer<Object, Object>> onChangeCallbacks = new HashMap<>();
 
     private final String modId;
@@ -127,6 +125,10 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.removers;
     }
 
+    public Map<String, Supplier<String>> getRepresentations() {
+        return this.representations;
+    }
+
     Map<String, BiConsumer<Object, Object>> getOnChangeCallbacks() {
         return this.onChangeCallbacks;
     }
@@ -160,8 +162,12 @@ public class ModConfigImpl<S, C> implements ModConfig {
 
     @Override
     public String asString(String config) {
-        Object value = this.get(config);
-        return this.asString(value);
+        Supplier<String> repr = this.representations.get(config);
+        if (repr == null) {
+            Object value = this.get(config);
+            return this.asString(value);
+        }
+        return repr.get();
     }
 
     public String asString(Object value) {

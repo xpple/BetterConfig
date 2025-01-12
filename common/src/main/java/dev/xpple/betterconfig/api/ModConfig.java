@@ -35,7 +35,7 @@ public interface ModConfig {
      * @param config the config's key
      * @return the string representation
      */
-    String asString(String config);
+    String asString(String config) throws CommandSyntaxException;
 
     /**
      * Reset the value for the config associated with this config key.
