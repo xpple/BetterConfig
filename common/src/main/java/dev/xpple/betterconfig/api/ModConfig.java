@@ -36,7 +36,7 @@ public interface ModConfig<P> {
     Object get(String config);
 
     /**
-     * Get the string representation for this config key.
+     * Get the JSON serialised string representation for this config key.
      * @param config the config's key
      * @return the string representation
      * @throws IllegalArgumentException when there is no config associated to this key
