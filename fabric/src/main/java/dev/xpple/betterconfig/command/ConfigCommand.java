@@ -3,7 +3,7 @@ package dev.xpple.betterconfig.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,7 +17,7 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Com
 
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register(new ConfigCommand().create(BetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.hasPermission(4)));
+        dispatcher.register(new ConfigCommand().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.hasPermission(4)));
     }
 
     @Override

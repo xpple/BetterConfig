@@ -3,7 +3,7 @@ package dev.xpple.betterconfig.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
@@ -17,7 +17,7 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Voi
 
     @SuppressWarnings("unchecked")
     public static LiteralCommandNode<CommandSourceStack> build() {
-        return new ConfigCommand().create(BetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, Void, Component>) modConfig).toList(), null).requires(source -> source.getSender().hasPermission("betterconfig.config")).build();
+        return new ConfigCommand().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, Void, Component>) modConfig).toList(), null).requires(source -> source.getSender().hasPermission("betterconfig.config")).build();
     }
 
     @Override

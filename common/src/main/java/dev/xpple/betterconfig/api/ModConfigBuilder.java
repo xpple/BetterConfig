@@ -3,7 +3,7 @@ package dev.xpple.betterconfig.api;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.mojang.brigadier.arguments.ArgumentType;
-import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 
@@ -125,7 +125,7 @@ public final class ModConfigBuilder<S, C> {
      */
     public void build() {
         ModConfigImpl<?, ?, ?> modConfig = new ModConfigImpl<>(this.modId, this.configsClass, this.builder.create(), this.arguments, this.globalChangeHook);
-        if (BetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
+        if (AbstractBetterConfigImpl.getModConfigs().putIfAbsent(this.modId, modConfig) == null) {
             BetterConfigInternals.init(modConfig);
             return;
         }

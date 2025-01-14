@@ -4,7 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.command.AbstractConfigCommand;
-import dev.xpple.betterconfig.impl.BetterConfigImpl;
+import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.CommandBuildContext;
@@ -18,7 +18,7 @@ public class ConfigCommandClient extends AbstractConfigCommand<FabricClientComma
 
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register(new ConfigCommandClient().create(BetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig).toList(), buildContext));
+        dispatcher.register(new ConfigCommandClient().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig).toList(), buildContext));
     }
 
     @Override
