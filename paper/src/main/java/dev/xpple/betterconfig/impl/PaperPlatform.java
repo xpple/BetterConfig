@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.MessageComponentSerializer;
 import net.kyori.adventure.text.Component;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -41,7 +42,7 @@ public class PaperPlatform implements Platform {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <P> P stringToComponent(String string) {
-        return (P) Component.text(string);
+    public <P> P stringToComponent(@Nullable String string) {
+        return (P) (string == null ? Component.empty() : Component.text(string));
     }
 }

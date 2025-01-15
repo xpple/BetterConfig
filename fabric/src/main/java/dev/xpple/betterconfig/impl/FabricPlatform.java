@@ -5,6 +5,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import dev.xpple.betterconfig.BetterConfig;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class FabricPlatform implements Platform {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <P> P stringToComponent(String string) {
+    public <P> P stringToComponent(@Nullable String string) {
         return (P) Component.nullToEmpty(string);
     }
 }
