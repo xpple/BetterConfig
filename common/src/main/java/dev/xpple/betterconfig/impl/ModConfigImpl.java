@@ -31,8 +31,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public class ModConfigImpl<S, C> implements ModConfig {
+public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private static final Map<Class<?>, Function<?, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<?, ArgumentType<?>>>builder()
         .put(boolean.class, buildContext -> BoolArgumentType.bool())
@@ -53,6 +54,7 @@ public class ModConfigImpl<S, C> implements ModConfig {
     private final Map<String, Object> defaults = new HashMap<>();
     private final Map<String, String> comments = new HashMap<>();
     private final Map<String, Predicate<S>> conditions = new HashMap<>();
+    private final Map<String, Supplier<P>> chatRepresentations = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> adders = new HashMap<>();
     private final Map<String, CheckedBiConsumer<Object, Object, CommandSyntaxException>> putters = new HashMap<>();
@@ -111,6 +113,10 @@ public class ModConfigImpl<S, C> implements ModConfig {
         return this.conditions;
     }
 
+    public Map<String, Supplier<P>> getChatRepresentations() {
+        return this.chatRepresentations;
+    }
+
     public Map<String, CheckedConsumer<Object, CommandSyntaxException>> getSetters() {
         return this.setters;
     }
@@ -166,6 +172,16 @@ public class ModConfigImpl<S, C> implements ModConfig {
 
     public String asString(Object value) {
         return this.inlineGson.toJson(value);
+    }
+
+    @Override
+    public P asComponent(String config) {
+        Object value = this.get(config);
+        Supplier<P> chatRepresentation = this.chatRepresentations.get(config);
+        if (chatRepresentation == null) {
+            return Platform.current.stringToComponent(this.asString(value));
+        }
+        return chatRepresentation.get();
     }
 
     @Override

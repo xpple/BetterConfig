@@ -7,6 +7,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.generator.structure.Structure;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.UUID;
+
 public class TestPlugin extends JavaPlugin {
 
     private static final String PLUGIN_NAME = "TestPlugin";
@@ -17,6 +19,7 @@ public class TestPlugin extends JavaPlugin {
             .registerType(Material.class, new MaterialAdapter(), BlockMaterialArgumentType::block)
             .registerTypeHierarchy(BlockState.class, new BlockStateAdapter(), ArgumentTypes::blockState)
             .registerTypeHierarchy(Structure.class, new StructureAdapter(), StructureArgumentType::structure)
+            .registerType(UUID.class, new UUIDAdapter(), ArgumentTypes::uuid)
             .registerGlobalChangeHook(event -> BetterConfigCommon.LOGGER.info("{} was updated | old: {}, new: {}", event.config(), event.oldValue(), event.newValue()))
             .build();
     }

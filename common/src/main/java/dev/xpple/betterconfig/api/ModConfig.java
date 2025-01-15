@@ -4,7 +4,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.nio.file.Path;
 
-public interface ModConfig {
+/**
+ * @param <P> the chat component type: {@link net.minecraft.network.chat.Component} on Fabric
+ *           and {@link net.kyori.adventure.text.Component} on Paper
+ */
+public interface ModConfig<P> {
     /**
      * Get the identifier of the mod of this configuration.
      * @return the mod's identifier
@@ -27,15 +31,25 @@ public interface ModConfig {
      * Get a config value based on the key.
      * @param config the config's key
      * @return the config value
+     * @throws IllegalArgumentException when there is no config associated to this key
      */
     Object get(String config);
 
     /**
-     * Get the string representation for this config key.
+     * Get the JSON serialised string representation for this config key.
      * @param config the config's key
      * @return the string representation
+     * @throws IllegalArgumentException when there is no config associated to this key
      */
     String asString(String config);
+
+    /**
+     * Get the chat component representation for this config key.
+     * @param config the config's key
+     * @return the chat component representation
+     * @throws IllegalArgumentException when there is no config associated to this key
+     */
+    P asComponent(String config);
 
     /**
      * Reset the value for the config associated with this config key.

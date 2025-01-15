@@ -3,8 +3,12 @@ package dev.xpple.betterconfig;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Player;
 import org.bukkit.generator.structure.Structure;
 
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 @SuppressWarnings({"FieldMayBeFinal", "unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Configs {
@@ -88,5 +93,19 @@ public class Configs {
     public static List<String> exampleOnChange = new ArrayList<>(List.of("xpple, earthcomputer"));
     private static void onChange(List<String> oldValue, List<String> newValue) {
         BetterConfigCommon.LOGGER.info("exampleOnChange was updated | old: {}, new: {}", oldValue, newValue);
+    }
+
+    @Config(chatRepresentation = "customChatRepresentation")
+    public static List<UUID> exampleCustomChatRepresentation = new ArrayList<>(List.of(UUID.fromString("9fcd62d4-6ada-405a-95f4-7737e48c3704"), UUID.fromString("fa68270b-1071-46c6-ac5c-6c4a0b777a96")));
+    private static Component customChatRepresentation() {
+        return Component.translatable("chat.square_brackets", "[%s]", Component.join(JoinConfiguration.separator(Component.text(", ")), exampleCustomChatRepresentation.stream()
+            .map(uuid -> {
+                Player player = Bukkit.getServer().getPlayer(uuid);
+                if (player == null) {
+                    return Component.text(uuid.toString());
+                }
+                return player.displayName();
+            })
+            .toList()));
     }
 }

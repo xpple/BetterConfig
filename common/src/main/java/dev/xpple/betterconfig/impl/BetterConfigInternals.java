@@ -22,10 +22,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class BetterConfigInternals {
 
-    public static void init(ModConfigImpl<?, ?> modConfig) {
+    public static void init(ModConfigImpl<?, ?, ?> modConfig) {
         JsonObject root = null;
         try (BufferedReader reader = Files.newBufferedReader(modConfig.getConfigsPath())) {
             root = JsonParser.parseReader(reader).getAsJsonObject();
@@ -79,6 +80,8 @@ public class BetterConfigInternals {
 
             initCondition(modConfig, annotation.condition(), fieldName);
 
+            initChatRepresentation(modConfig, field, annotation.chatRepresentation());
+
             if (annotation.readOnly()) {
                 continue;
             }
@@ -104,7 +107,36 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initCondition(ModConfigImpl<?, ?> modConfig, String condition, String fieldName) {
+    private static void initChatRepresentation(ModConfigImpl<?, ?, ?> modConfig, Field field, String chatRepresentationMethodName) {
+        if (chatRepresentationMethodName.isEmpty()) {
+            return;
+        }
+        Method chatRepresentationMethod;
+        try {
+            chatRepresentationMethod = modConfig.getConfigsClass().getDeclaredMethod(chatRepresentationMethodName);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+        Class<?> componentClass = Platform.current.getComponentClass();
+        if (chatRepresentationMethod.getReturnType() != componentClass) {
+            throw new AssertionError("Chat representation method '" + chatRepresentationMethodName + "' does not return Component");
+        }
+        if (!Modifier.isStatic(chatRepresentationMethod.getModifiers())) {
+            throw new AssertionError("Chat representation method '" + chatRepresentationMethodName + "' is not static");
+        }
+        chatRepresentationMethod.setAccessible(true);
+
+        //noinspection rawtypes, unchecked
+        modConfig.getChatRepresentations().put(field.getName(), (Supplier) () -> {
+            try {
+                return chatRepresentationMethod.invoke(null);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+        });
+    }
+
+    private static void initCondition(ModConfigImpl<?, ?, ?> modConfig, String condition, String fieldName) {
         if (condition.isEmpty()) {
             modConfig.getConditions().put(fieldName, source -> true);
             return;
@@ -151,7 +183,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static BiConsumer<Object, Object> initOnChange(ModConfigImpl<?, ?> modConfig, Field field, String onChangeMethodName) {
+    private static BiConsumer<Object, Object> initOnChange(ModConfigImpl<?, ?, ?> modConfig, Field field, String onChangeMethodName) {
         if (onChangeMethodName.isEmpty()) {
             BiConsumer<Object, Object> onChange = (oldValue, newValue) -> {};
             modConfig.getOnChangeCallbacks().put(field.getName(), onChange);
@@ -176,7 +208,7 @@ public class BetterConfigInternals {
         return onChange;
     }
 
-    private static void initCollection(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
+    private static void initCollection(ModConfigImpl<?, ?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
         String fieldName = field.getName();
         Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
         Config.Adder adder = annotation.adder();
@@ -257,7 +289,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initMap(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
+    private static void initMap(ModConfigImpl<?, ?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
         String fieldName = field.getName();
         Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
         Config.Adder adder = annotation.adder();
@@ -363,7 +395,7 @@ public class BetterConfigInternals {
         }
     }
 
-    private static void initObject(ModConfigImpl<?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
+    private static void initObject(ModConfigImpl<?, ?, ?> modConfig, Field field, Config annotation, BiConsumer<Object, Object> onChange) {
         String fieldName = field.getName();
         Config.Setter setter = annotation.setter();
         String setterMethodName = setter.value();
@@ -399,7 +431,7 @@ public class BetterConfigInternals {
         }
     }
 
-    static void onChange(ModConfigImpl<?, ?> modConfig, Field field, CheckedRunnable<ReflectiveOperationException> updater, BiConsumer<Object, Object> onChange) throws ReflectiveOperationException {
+    static void onChange(ModConfigImpl<?, ?, ?> modConfig, Field field, CheckedRunnable<ReflectiveOperationException> updater, BiConsumer<Object, Object> onChange) throws ReflectiveOperationException {
         Object oldValue = modConfig.deepCopy(field.get(null), field.getGenericType());
         updater.run();
         Object newValue = modConfig.deepCopy(field.get(null), field.getGenericType());

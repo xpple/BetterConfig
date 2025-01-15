@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
-public abstract class AbstractConfigCommand<S, C>  {
+public abstract class AbstractConfigCommand<S, C, P>  {
 
     private final String rootLiteral;
 
@@ -24,9 +24,9 @@ public abstract class AbstractConfigCommand<S, C>  {
         this.rootLiteral = rootLiteral;
     }
 
-    protected final LiteralArgumentBuilder<S> create(Collection<? extends ModConfigImpl<S, C>> modConfigs, C buildContext) {
+    protected final LiteralArgumentBuilder<S> create(Collection<? extends ModConfigImpl<S, C, P>> modConfigs, C buildContext) {
         LiteralArgumentBuilder<S> root = LiteralArgumentBuilder.literal(this.rootLiteral);
-        for (ModConfigImpl<S, C> modConfig : modConfigs) {
+        for (ModConfigImpl<S, C, P> modConfig : modConfigs) {
             LiteralArgumentBuilder<S> identifierLiteral = LiteralArgumentBuilder.literal(modConfig.getModId());
             for (String config : modConfig.getConfigs().keySet()) {
                 Predicate<S> condition = modConfig.getConditions().get(config);
@@ -150,15 +150,15 @@ public abstract class AbstractConfigCommand<S, C>  {
 
     protected abstract int comment(S source, String config, String comment);
 
-    protected abstract int get(S source, ModConfigImpl<S, C> modConfig, String config);
+    protected abstract int get(S source, ModConfigImpl<S, C, P> modConfig, String config);
 
-    protected abstract int reset(S source, ModConfigImpl<S, C> modConfig, String config);
+    protected abstract int reset(S source, ModConfigImpl<S, C, P> modConfig, String config);
 
-    protected abstract int set(S source, ModConfigImpl<S, C> modConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int set(S source, ModConfigImpl<S, C, P> modConfig, String config, Object value) throws CommandSyntaxException;
 
-    protected abstract int add(S source, ModConfigImpl<S, C> modConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int add(S source, ModConfigImpl<S, C, P> modConfig, String config, Object value) throws CommandSyntaxException;
 
-    protected abstract int put(S source, ModConfigImpl<S, C> modConfig, String config, Object key, Object value) throws CommandSyntaxException;
+    protected abstract int put(S source, ModConfigImpl<S, C, P> modConfig, String config, Object key, Object value) throws CommandSyntaxException;
 
-    protected abstract int remove(S source, ModConfigImpl<S, C> modConfig, String config, Object value) throws CommandSyntaxException;
+    protected abstract int remove(S source, ModConfigImpl<S, C, P> modConfig, String config, Object value) throws CommandSyntaxException;
 }
