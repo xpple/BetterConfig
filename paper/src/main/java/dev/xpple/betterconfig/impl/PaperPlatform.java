@@ -7,6 +7,7 @@ import dev.xpple.betterconfig.command.suggestion.SuggestionProviderHelper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.MessageComponentSerializer;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -32,5 +33,16 @@ public class PaperPlatform implements Platform {
     @Override
     public <S, T extends Enum<T>> SuggestionProvider<S> enumSuggestionProvider(Class<T> type) {
         return (context, builder) -> SuggestionProviderHelper.suggestMatching(Arrays.stream(type.getEnumConstants()).map(Enum::name), builder);
+    }
+
+    @Override
+    public Class<?> getComponentClass() {
+        return Component.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <P> P stringToComponent(@Nullable String string) {
+        return (P) (string == null ? Component.empty() : Component.text(string));
     }
 }

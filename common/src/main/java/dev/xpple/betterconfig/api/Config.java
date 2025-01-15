@@ -96,6 +96,8 @@ import java.lang.annotation.Target;
 public @interface Config {
     String comment() default "";
 
+    String chatRepresentation() default "";
+
     Setter setter() default @Setter;
     Adder adder() default @Adder;
     Putter putter() default @Putter;
