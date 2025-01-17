@@ -91,15 +91,13 @@ public @interface Config {
      * A method name that will be used to represent the config value in the chat. The method should have no parameters and return
      * a chat {@code Component}, which is {@link net.minecraft.network.chat.Component} on Fabric and {@link net.kyori.adventure.text.Component}
      * on Paper. Below is an example for Fabric:
-     * <pre>
-     * {@code
+     * {@snippet lang=java :
      * @Config(chatRepresentation = "chatRepresentation")
      * public static ChatFormatting formatting = ChatFormatting.YELLOW;
      * public static Component chatRepresentation() {
      *     return Component.literal(formatting.getName()).withStyle(formatting);
      * }
      * }
-     * </pre>
      * @return the method name
      */
     String chatRepresentation() default "";
@@ -128,15 +126,13 @@ public @interface Config {
     /**
      * The name of a method that will be called whenever the config value is altered. The method should have two parameters; one
      * for the old value and one for the new value. For example:
-     * <pre>
-     * {@code
+     * {@snippet lang=java :
      * @Config(onChange = "exampleOnChange")
      * public static String exampleString = "defaultString";
      * public static void exampleOnChange(String oldValue, String newValue) {
      *     LOGGER.info("exampleOnChange was updated | old: {}, new: {}", oldValue, newValue);
      * }
      * }
-     * </pre>
      * Both values are deep copies of the config that was changed, so they can be modified freely without care for the original
      * object.
      * @return the method name
@@ -159,15 +155,13 @@ public @interface Config {
      * Specify a condition for the visibility of the config in the config command. The value should be a method name of a method
      * that returns a boolean and optionally has the {@code CommandSource} as parameter. On Fabric, this is {@link net.minecraft.commands.SharedSuggestionProvider}
      * and on Paper this is {@link io.papermc.paper.command.brigadier.CommandSourceStack}. For example:
-     * <pre>
-     * {@code
+     * {@snippet lang=java :
      * @Config(condition = "myCondition")
      * public static String myConfig = "";
      * public static boolean myCondition(CommandSource source) {
      *     return Boolean.getBoolean("enableMyConfig");
      * }
      * }
-     * </pre>
      * @return the method name
      */
     String condition() default "";
@@ -183,15 +177,13 @@ public @interface Config {
          * type of the config itself, unless the {@link Setter#type()} is specified. The method can be {@code private}.
          * Optionally, the method may throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException} to indicate failure.
          * Below is an example of a config along with a custom setter.
-         * <pre>
-         * {@code
+         * {@snippet lang=java :
          * @Config(setter = @Config.Setter("exampleSetter"))
          * public static String exampleString = "defaultString";
          * public static void exampleSetter(String string) {
          *     exampleString = string.toLowerCase(Locale.ROOT);
          * }
          * }
-         * </pre>
          * If this value is set to the empty string (the default), the field will be set using reflection. Additionally if the
          * value is set to {@code none}, the {@code set} subcommand will not be available.
          * @return the method name
@@ -215,15 +207,13 @@ public @interface Config {
          * type of the config itself, unless the {@link Adder#type()} is specified. The method can be {@code private}.
          * Optionally, the method may throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException} to indicate failure.
          * Below is an example of a config along with a custom adder.
-         * <pre>
-         * {@code
+         * {@snippet lang=java :
          * @Config(adder = @Config.Adder("exampleAdder"))
          * public static List<String> exampleList = new ArrayList<>();
          * public static void exampleAdder(String string) {
          *     exampleList.add(string.toLowerCase(Locale.ROOT));
          * }
          * }
-         * </pre>
          * If this value is set to the empty string (the default), the {@link java.util.Collection#add(Object)} method will be
          * used. Additionally if the value is set to {@code none}, the {@code add} subcommand will not be available.
          * @return the method name
@@ -247,15 +237,13 @@ public @interface Config {
          * of the key and value types of the map, unless {@link Putter#keyType()} or {@link Putter#valueType()} is specified. The
          * method can be {@code private}. Optionally, the method may throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException}
          * to indicate failure. Below is an example of a config along with a custom adder.
-         * <pre>
-         * {@code
+         * {@snippet lang=java :
          * @Config(putter = @Config.Putter("examplePutter"))
          * public static Map<String, String> exampleMap = new HashMap<>();
          * public static void examplePutter(String string) {
          *     exampleMap.put(string.toLowerCase(Locale.ROOT), string.toUpperCase(Locale.ROOT));
          * }
          * }
-         * </pre>
          * If this value is set to the empty string (the default), the {@link java.util.Map#put(Object, Object)} method will be
          * used. Additionally if the value is set to {@code none}, the {@code put} subcommand will not be available.
          * @return the method name
@@ -284,15 +272,13 @@ public @interface Config {
          * the type of the config itself, unless the {@link Remover#type()} is specified. The method can be {@code private}.
          * Optionally, the method may throw a {@link com.mojang.brigadier.exceptions.CommandSyntaxException} to indicate failure.
          * Below is an example of a config along with a custom adder.
-         * <pre>
-         * {@code
+         * {@snippet lang=java :
          * @Config(remover = @Config.Remover("exampleRemover"))
          * public static List<String> exampleList = new ArrayList<>();
          * public static void exampleRemover(String string) {
          *     exampleList.remove(string.toLowerCase(Locale.ROOT));
          * }
          * }
-         * </pre>
          * If this value is set to the empty string (the default), the {@link java.util.Collection#remove(Object)} method will be
          * used. Additionally if the value is set to {@code none}, the {@code remove} subcommand will not be available.
          * @return the method name
