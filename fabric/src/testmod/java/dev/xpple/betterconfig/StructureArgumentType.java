@@ -29,10 +29,11 @@ public class StructureArgumentType extends WrappedArgumentType.Converted<Structu
 
     @Override
     public StructureType<?> convert(ResourceLocation key) throws CommandSyntaxException {
+        CommandSyntaxException structureNotFound = INVALID_STRUCTURE_ID_EXCEPTION.create(Component.translationArg(key));
         if (!BuiltInRegistries.STRUCTURE_TYPE.containsKey(key)) {
-            throw INVALID_STRUCTURE_ID_EXCEPTION.create(Component.translationArg(key));
+            throw structureNotFound;
         }
-        return BuiltInRegistries.STRUCTURE_TYPE.get(key);
+        return BuiltInRegistries.STRUCTURE_TYPE.getOptional(key).orElseThrow(() -> structureNotFound);
     }
 
     @Override

@@ -17,6 +17,6 @@ class StructureAdapter extends TypeAdapter<StructureType<?>> {
 
     @Override
     public StructureType<?> read(JsonReader reader) throws IOException {
-        return BuiltInRegistries.STRUCTURE_TYPE.get(ResourceLocation.parse(reader.nextString()));
+        return BuiltInRegistries.STRUCTURE_TYPE.getOptional(ResourceLocation.parse(reader.nextString())).orElseThrow(IOException::new);
     }
 }

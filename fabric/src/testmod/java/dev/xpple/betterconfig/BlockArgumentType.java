@@ -32,13 +32,14 @@ class BlockArgumentType implements ArgumentType<Block> {
 
     @Override
     public Block parse(StringReader reader) throws CommandSyntaxException {
+        CommandSyntaxException blockNotFound = CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
         int cursor = reader.getCursor();
         ResourceLocation key = ResourceLocation.read(reader);
         if (!BuiltInRegistries.BLOCK.containsKey(key)) {
             reader.setCursor(cursor);
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
+            throw blockNotFound;
         }
-        return BuiltInRegistries.BLOCK.get(key);
+        return BuiltInRegistries.BLOCK.getOptional(key).orElseThrow(() -> blockNotFound);
     }
 
     @Override

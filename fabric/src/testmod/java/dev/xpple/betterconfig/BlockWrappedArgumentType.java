@@ -33,11 +33,12 @@ public class BlockWrappedArgumentType extends WrappedArgumentType<Block, BlockPr
     public Block parse(StringReader reader) throws CommandSyntaxException {
         int cursor = reader.getCursor();
         ResourceLocation key = ResourceLocation.read(reader);
+        CommandSyntaxException blockNotFound = INVALID_BLOCK_ID_EXCEPTION.create(Component.translationArg(key));
         if (!BuiltInRegistries.BLOCK.containsKey(key)) {
             reader.setCursor(cursor);
-            throw INVALID_BLOCK_ID_EXCEPTION.create(Component.translationArg(key));
+            throw blockNotFound;
         }
-        return BuiltInRegistries.BLOCK.get(key);
+        return BuiltInRegistries.BLOCK.getOptional(key).orElseThrow(() -> blockNotFound);
     }
 
     @Override

@@ -17,6 +17,6 @@ class BlockAdapter extends TypeAdapter<Block> {
 
     @Override
     public Block read(JsonReader reader) throws IOException {
-        return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(reader.nextString()));
+        return BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(reader.nextString())).orElseThrow(IOException::new);
     }
 }
