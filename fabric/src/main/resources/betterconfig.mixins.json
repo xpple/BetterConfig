@@ -3,7 +3,7 @@
   "package": "dev.xpple.betterconfig.mixin",
   "compatibilityLevel": "JAVA_17",
   "server": [
-    "MixinCommands",
+    "ArgumentCommandNodeMixin",
     "RequiredArgumentBuilderAccessor"
   ],
   "injectors": {

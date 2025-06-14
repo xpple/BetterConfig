@@ -12,9 +12,9 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.BetterConfigCommon;
+import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.api.GlobalChangeEvent;
 import dev.xpple.betterconfig.api.ModConfig;
-import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedConsumer;
 
