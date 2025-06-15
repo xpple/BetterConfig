@@ -28,6 +28,23 @@ public interface ModConfig<P> {
     Path getConfigsPath();
 
     /**
+     * Get the default (initial) value for a config. Note that the returned value is a
+     * deep copy of the config's default value.
+     * @param config the config's key
+     * @return (a deep copy of) the default value
+     * @throws IllegalArgumentException when there is no config associated to this key
+     */
+    Object getDefault(String config);
+
+    /**
+     * Get the comment for a config.
+     * @param config the config's key
+     * @return the config comment
+     * @throws IllegalArgumentException when there is no config associated to this key
+     */
+    P getComment(String config);
+
+    /**
      * Get a config value based on the key.
      * @param config the config's key
      * @return the config value

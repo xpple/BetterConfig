@@ -2,6 +2,7 @@ package dev.xpple.betterconfig;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.xpple.betterconfig.api.Config;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -83,8 +84,11 @@ public class Configs {
         examplePrivateSetter = string + '!';
     }
 
-    @Config(comment = "This is a mysterious object")
+    @Config(comment = "comment")
     public static Object exampleComment = null;
+    private static Component comment() {
+        return Component.literal("This is a mysterious object").withStyle(ChatFormatting.OBFUSCATED);
+    }
 
     @Config
     public static BlockInput exampleRegistryAccess = new BlockInput(Blocks.COMPOSTER.defaultBlockState(), Collections.emptySet(), null);

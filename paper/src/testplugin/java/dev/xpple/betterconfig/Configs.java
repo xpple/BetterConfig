@@ -5,6 +5,8 @@ import dev.xpple.betterconfig.api.Config;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -80,8 +82,11 @@ public class Configs {
         examplePrivateSetter = string + '!';
     }
 
-    @Config(comment = "This is a mysterious object")
+    @Config(comment = "comment")
     public static Object exampleComment = null;
+    private static Component comment() {
+        return Component.text("This is a mysterious object").style(Style.style(TextDecoration.OBFUSCATED));
+    }
 
     @Config
     public static BlockState exampleNativeArgumentType = Material.COMPOSTER.createBlockData().createBlockState();

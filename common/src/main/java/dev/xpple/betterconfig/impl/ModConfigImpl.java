@@ -52,7 +52,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     private final Map<String, Field> configs = new HashMap<>();
     private final Map<String, Config> annotations = new HashMap<>();
     private final Map<String, Object> defaults = new HashMap<>();
-    private final Map<String, String> comments = new HashMap<>();
+    private final Map<String, Supplier<P>> comments = new HashMap<>();
     private final Map<String, Predicate<S>> conditions = new HashMap<>();
     private final Map<String, Supplier<P>> chatRepresentations = new HashMap<>();
     private final Map<String, CheckedConsumer<Object, CommandSyntaxException>> setters = new HashMap<>();
@@ -105,7 +105,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
         return this.defaults;
     }
 
-    public Map<String, String> getComments() {
+    public Map<String, Supplier<P>> getComments() {
         return this.comments;
     }
 
@@ -149,6 +149,24 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     @Override
     public Path getConfigsPath() {
         return Platform.current.getConfigsPath(this.modId);
+    }
+
+    @Override
+    public Object getDefault(String config) {
+        Field field = this.configs.get(config);
+        if (field == null) {
+            throw new IllegalArgumentException();
+        }
+        return this.deepCopy(this.defaults.get(config), field.getGenericType());
+    }
+
+    @Override
+    public P getComment(String config) {
+        Supplier<P> comment = this.comments.get(config);
+        if (comment == null) {
+            throw new IllegalArgumentException();
+        }
+        return comment.get();
     }
 
     @Override

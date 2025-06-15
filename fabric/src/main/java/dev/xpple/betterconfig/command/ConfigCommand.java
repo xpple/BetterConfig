@@ -21,9 +21,9 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Com
     }
 
     @Override
-    protected int comment(CommandSourceStack source, String config, String comment) {
+    protected int comment(CommandSourceStack source, String config, Component comment) {
         source.sendSuccess(() -> Component.translatableWithFallback("betterconfig.commands.config.comment", "Comment for %s:", config), false);
-        source.sendSuccess(() -> Component.literal(comment), false);
+        source.sendSuccess(() -> comment, false);
         return Command.SINGLE_SUCCESS;
     }
 

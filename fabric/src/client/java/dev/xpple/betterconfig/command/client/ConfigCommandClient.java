@@ -22,9 +22,9 @@ public class ConfigCommandClient extends AbstractConfigCommand<FabricClientComma
     }
 
     @Override
-    protected int comment(FabricClientCommandSource source, String config, String comment) {
+    protected int comment(FabricClientCommandSource source, String config, Component comment) {
         source.sendFeedback(Component.translatable("betterconfig.commands.config.comment", config));
-        source.sendFeedback(Component.literal(comment));
+        source.sendFeedback(comment);
         return Command.SINGLE_SUCCESS;
     }
 

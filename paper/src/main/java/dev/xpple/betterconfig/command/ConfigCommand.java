@@ -21,9 +21,9 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Voi
     }
 
     @Override
-    protected int comment(CommandSourceStack source, String config, String comment) {
+    protected int comment(CommandSourceStack source, String config, Component comment) {
         source.getSender().sendMessage(Component.translatable("betterconfig.commands.config.comment", "Comment for %s:", Component.text(config)));
-        source.getSender().sendMessage(Component.text(comment));
+        source.getSender().sendMessage(comment);
         return Command.SINGLE_SUCCESS;
     }
 
