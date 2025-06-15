@@ -8,7 +8,7 @@ field should not be final. Mark this field with the annotation `@Config`. The in
 default (fallback) value. You can add a comment by setting the `comment` attribute.
 ```java
 public class Configs {
-    @Config(comment = "This is an example!")
+    @Config
     public static String exampleString = "default";
 }
 ```

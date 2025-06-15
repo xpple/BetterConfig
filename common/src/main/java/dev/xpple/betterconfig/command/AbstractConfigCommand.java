@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.*;
 
@@ -38,9 +39,9 @@ public abstract class AbstractConfigCommand<S, C, P>  {
                     configLiteral.then(LiteralArgumentBuilder.<S>literal("reset").executes(ctx -> reset(ctx.getSource(), modConfig, config)));
                 }
 
-                String comment = modConfig.getComments().get(config);
+                Supplier<P> comment = modConfig.getComments().get(config);
                 if (comment != null) {
-                    configLiteral.then(LiteralArgumentBuilder.<S>literal("comment").executes(ctx -> comment(ctx.getSource(), config, comment)));
+                    configLiteral.then(LiteralArgumentBuilder.<S>literal("comment").executes(ctx -> comment(ctx.getSource(), config, comment.get())));
                 }
 
                 if (modConfig.getSetters().containsKey(config)) {
@@ -148,7 +149,7 @@ public abstract class AbstractConfigCommand<S, C, P>  {
         return root;
     }
 
-    protected abstract int comment(S source, String config, String comment);
+    protected abstract int comment(S source, String config, P comment);
 
     protected abstract int get(S source, ModConfigImpl<S, C, P> modConfig, String config);
 

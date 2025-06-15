@@ -58,9 +58,7 @@ public class BetterConfigInternals {
                 throw new AssertionError(e);
             }
 
-            if (!annotation.comment().isEmpty()) {
-                modConfig.getComments().put(fieldName, annotation.comment());
-            }
+            initComment(modConfig, annotation.comment(), fieldName);
 
             if (!annotation.temporary()) {
                 try {
@@ -105,6 +103,35 @@ public class BetterConfigInternals {
         } catch (IOException e) {
             BetterConfigCommon.LOGGER.error("Could not save config file.", e);
         }
+    }
+
+    private static void initComment(ModConfigImpl<?, ?, ?> modConfig, String commentMethodName, String fieldName) {
+        if (commentMethodName.isEmpty()) {
+            return;
+        }
+        Method commentMethod;
+        try {
+            commentMethod = modConfig.getConfigsClass().getDeclaredMethod(commentMethodName);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+        Class<?> componentClass = Platform.current.getComponentClass();
+        if (commentMethod.getReturnType() != componentClass) {
+            throw new AssertionError("Comment method '" + commentMethodName + "' does not return Component");
+        }
+        if (!Modifier.isStatic(commentMethod.getModifiers())) {
+            throw new AssertionError("Comment method '" + commentMethodName + "' is not static");
+        }
+        commentMethod.setAccessible(true);
+
+        //noinspection rawtypes, unchecked
+        modConfig.getComments().put(fieldName, (Supplier) () -> {
+            try {
+                return commentMethod.invoke(null);
+            } catch (ReflectiveOperationException e) {
+                throw new AssertionError(e);
+            }
+        });
     }
 
     private static void initChatRepresentation(ModConfigImpl<?, ?, ?> modConfig, Field field, String chatRepresentationMethodName) {

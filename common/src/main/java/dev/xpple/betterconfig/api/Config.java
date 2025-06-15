@@ -82,8 +82,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Config {
     /**
-     * An explanatory comment about the config. This value will be used in the {@code comment} subcommand of the config command.
-     * @return the comment
+     * A method name that will be used to display an explanatory comment about the config. The method should have no parameters
+     * and return the chat component type: {@link net.minecraft.network.chat.Component} on Fabric and {@link net.kyori.adventure.text.Component}
+     * on Paper. This value will be used in the {@code comment} subcommand of the config command. Below is an example for Fabric:
+     * {@snippet lang = java:
+     * @Config(comment = "comment")
+     * public static Component comment() {
+     *     return Component.literal("This should be helpful!");
+     * }
+     * }
+     * @return the method name
      */
     String comment() default "";
 
