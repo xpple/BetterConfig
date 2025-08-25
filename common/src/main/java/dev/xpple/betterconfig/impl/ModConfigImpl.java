@@ -304,4 +304,9 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
         }
         return true;
     }
+
+    @Override
+    public void reload() {
+        BetterConfigInternals.init(this);
+    }
 }

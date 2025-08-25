@@ -125,4 +125,11 @@ public interface ModConfig<P> {
      * @return {@code true} if the configuration was successfully saved, {@code false} otherwise
      */
     boolean save();
+
+    /**
+     * Reload this configuration. Every config field that is not marked as {@link Config#temporary()}
+     * will be set based on the value in the config file. Temporary configs remain unchanged. No
+     * change hooks will fire.
+     */
+    void reload();
 }
