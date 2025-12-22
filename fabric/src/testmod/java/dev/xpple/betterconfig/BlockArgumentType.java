@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ class BlockArgumentType implements ArgumentType<Block> {
     public Block parse(StringReader reader) throws CommandSyntaxException {
         CommandSyntaxException blockNotFound = CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().create();
         int cursor = reader.getCursor();
-        ResourceLocation key = ResourceLocation.read(reader);
+        Identifier key = Identifier.read(reader);
         if (!BuiltInRegistries.BLOCK.containsKey(key)) {
             reader.setCursor(cursor);
             throw blockNotFound;

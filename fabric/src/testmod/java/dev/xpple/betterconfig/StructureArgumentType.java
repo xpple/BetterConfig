@@ -7,20 +7,20 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.xpple.betterconfig.util.WrappedArgumentType;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 
 import java.util.concurrent.CompletableFuture;
 
-public class StructureArgumentType extends WrappedArgumentType.Converted<StructureType<?>, ResourceLocation> {
+public class StructureArgumentType extends WrappedArgumentType.Converted<StructureType<?>, Identifier> {
 
     private static final DynamicCommandExceptionType INVALID_STRUCTURE_ID_EXCEPTION = new DynamicCommandExceptionType(id -> Component.translatable("structure_block.invalid_structure_name", id));
 
     private StructureArgumentType() {
-        super(ResourceLocationArgument.id());
+        super(IdentifierArgument.id());
     }
 
     public static StructureArgumentType structure() {
@@ -28,7 +28,7 @@ public class StructureArgumentType extends WrappedArgumentType.Converted<Structu
     }
 
     @Override
-    public StructureType<?> convert(ResourceLocation key) throws CommandSyntaxException {
+    public StructureType<?> convert(Identifier key) throws CommandSyntaxException {
         CommandSyntaxException structureNotFound = INVALID_STRUCTURE_ID_EXCEPTION.create(Component.translationArg(key));
         if (!BuiltInRegistries.STRUCTURE_TYPE.containsKey(key)) {
             throw structureNotFound;

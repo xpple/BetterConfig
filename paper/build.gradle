@@ -94,18 +94,14 @@ tasks.register('copyJarsToServer') {
 
 copyJarsToServer.dependsOn(build, buildTestplugin)
 
-tasks.register('runTestpluginServer') {
+tasks.register('runTestpluginServer', JavaExec) {
     it.group = 'paper'
 
-    doLast {
-        javaexec {
-            workingDir = "${projectDir}/run"
-            main = '-jar'
-            args = ["${projectDir}/run/server.jar", '--nogui']
-            jvmArgs = ['-Dcom.mojang.eula.agree=true']
-            standardInput = System.in
-        }
-    }
+    workingDir = "${projectDir}/run"
+    mainClass = '-jar'
+    args = ["${projectDir}/run/server.jar", '--nogui']
+    jvmArgs = ['-Dcom.mojang.eula.agree=true']
+    standardInput = System.in
 }
 
 runTestpluginServer.dependsOn(copyJarsToServer)

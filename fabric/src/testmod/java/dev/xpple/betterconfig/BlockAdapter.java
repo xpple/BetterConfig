@@ -4,7 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.io.IOException;
@@ -17,6 +17,6 @@ class BlockAdapter extends TypeAdapter<Block> {
 
     @Override
     public Block read(JsonReader reader) throws IOException {
-        return BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse(reader.nextString())).orElseThrow(IOException::new);
+        return BuiltInRegistries.BLOCK.getOptional(Identifier.parse(reader.nextString())).orElseThrow(IOException::new);
     }
 }

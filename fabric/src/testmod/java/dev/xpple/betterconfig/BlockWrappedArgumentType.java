@@ -12,7 +12,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +32,7 @@ public class BlockWrappedArgumentType extends WrappedArgumentType<Block, BlockPr
     @Override
     public Block parse(StringReader reader) throws CommandSyntaxException {
         int cursor = reader.getCursor();
-        ResourceLocation key = ResourceLocation.read(reader);
+        Identifier key = Identifier.read(reader);
         CommandSyntaxException blockNotFound = INVALID_BLOCK_ID_EXCEPTION.create(Component.translationArg(key));
         if (!BuiltInRegistries.BLOCK.containsKey(key)) {
             reader.setCursor(cursor);
