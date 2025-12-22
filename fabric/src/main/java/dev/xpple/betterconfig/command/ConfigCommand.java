@@ -8,6 +8,7 @@ import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 
 public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, CommandBuildContext, Component> {
 
@@ -17,7 +18,7 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Com
 
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register(new ConfigCommand().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.hasPermission(4)));
+        dispatcher.register(new ConfigCommand().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER)));
     }
 
     @Override
