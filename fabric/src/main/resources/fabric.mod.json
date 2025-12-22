@@ -31,7 +31,7 @@
   ],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": ">=1.21.6-rc.1 <1.22",
+    "minecraft": "${minecraft_dependency}",
     "java": ">=21",
     "fabric-resource-loader-v0": "*",
     "fabric-command-api-v2": "*"
