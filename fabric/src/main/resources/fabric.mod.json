@@ -5,7 +5,8 @@
   "name": "BetterConfig",
   "description": "A very powerful and easy to use command based configuration library for servers and clients.",
   "authors": [
-    "xpple"
+    "xpple",
+    "Earthcomputer"
   ],
   "contact": {
     "homepage": "https://xpple.dev/",
