@@ -9,9 +9,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = ArgumentCommandNode.class, remap = false)
+@Mixin(ArgumentCommandNode.class)
 public abstract class ArgumentCommandNodeMixin {
-    @Inject(method = "createBuilder()Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;suggests(Lcom/mojang/brigadier/suggestion/SuggestionProvider;)Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;", remap = false, shift = At.Shift.AFTER))
+    @Inject(method = "createBuilder()Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;suggests(Lcom/mojang/brigadier/suggestion/SuggestionProvider;)Lcom/mojang/brigadier/builder/RequiredArgumentBuilder;", shift = At.Shift.AFTER))
     private static <S, T> void replace(CallbackInfoReturnable<RequiredArgumentBuilder<S, T>> cir, @Local RequiredArgumentBuilder<S, ?> builder) {
         if (builder.getType() instanceof WrappedArgumentType<?, ?> wrappedArgumentType) {
             ((RequiredArgumentBuilderAccessor) builder).setSuggestionsProvider(wrappedArgumentType::listSuggestions);

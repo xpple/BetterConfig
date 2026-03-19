@@ -3,10 +3,11 @@ plugins {
     id 'maven-publish'
 }
 
+group = project.maven_group
+version = project.mod_version
+
 base {
     archivesName = "${project.archives_base_name}-paper"
-    group = project.maven_group
-    version = project.mod_version
 }
 
 sourceSets {
@@ -50,7 +51,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
@@ -107,7 +108,7 @@ tasks.register('runTestpluginServer', JavaExec) {
 runTestpluginServer.dependsOn(copyJarsToServer)
 
 jar {
-    dependsOn ':common:remapJar'
+    dependsOn ':common:jar'
     from {
         configurations.includeInJar.collect {
             it.isDirectory() ? it : zipTree(it)

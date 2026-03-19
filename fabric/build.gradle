@@ -1,12 +1,13 @@
 plugins {
-    id 'fabric-loom' version "${fabric_loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${fabric_loom_version}"
     id 'maven-publish'
 }
 
+version = project.mod_version
+group = project.maven_group
+
 base {
     archivesName = "${project.archives_base_name}-fabric"
-    version = project.mod_version
-    group = project.maven_group
 }
 
 loom {
@@ -54,9 +55,6 @@ loom {
 
 repositories {
     maven {
-        url = 'https://maven.parchmentmc.org'
-    }
-    maven {
         url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
     }
 }
@@ -72,18 +70,12 @@ dependencies {
 
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings {
-            nameSyntheticMembers = true
-        }
-        parchment "org.parchmentmc.data:${project.parchment_mappings}"
-    }
-    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 
-    modImplementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
-    modImplementation fabricApi.module("fabric-command-api-v2", project.fabric_api_version)
+    implementation fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)
+    implementation fabricApi.module("fabric-command-api-v2", project.fabric_api_version)
 
-    modLocalRuntime("me.djtheredstoner:DevAuth-fabric:${project.devauth_version}") {
+    localRuntime("me.djtheredstoner:DevAuth-fabric:${project.devauth_version}") {
         exclude group: 'net.fabricmc', module: 'fabric-loader'
     }
 }
@@ -101,18 +93,18 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
+    it.options.release = 25
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 
     withSourcesJar()
 }
 
 jar {
-    dependsOn ':common:remapJar'
+    dependsOn ':common:jar'
     from {
         configurations.includeInJar.collect {
             it.isDirectory() ? it : zipTree(it)
