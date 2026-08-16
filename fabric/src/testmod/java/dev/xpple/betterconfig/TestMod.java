@@ -27,6 +27,8 @@ public class TestMod implements DedicatedServerModInitializer {
             .registerTypeHierarchy((Class<StructureType<?>>) (Class) StructureType.class, new StructureAdapter(), StructureArgumentType::structure)
             .registerType(UUID.class, new UUIDTypeAdapter(), UuidArgument::uuid)
             .registerGlobalChangeHook(event -> BetterConfigCommon.LOGGER.info("{} was updated | old: {}, new: {}", event.config(), event.oldValue(), event.newValue()))
+            .registerCommandAlias("testmodconfig")
+            .registerCommandAlias("testmodconfig2")
             .build();
     }
 }

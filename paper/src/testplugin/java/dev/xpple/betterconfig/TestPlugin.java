@@ -21,6 +21,8 @@ public class TestPlugin extends JavaPlugin {
             .registerTypeHierarchy(Structure.class, new StructureAdapter(), StructureArgumentType::structure)
             .registerType(UUID.class, new UUIDAdapter(), ArgumentTypes::uuid)
             .registerGlobalChangeHook(event -> BetterConfigCommon.LOGGER.info("{} was updated | old: {}, new: {}", event.config(), event.oldValue(), event.newValue()))
+            .registerCommandAlias("testmodconfig")
+            .registerCommandAlias("testmodconfig2")
             .build();
     }
 }

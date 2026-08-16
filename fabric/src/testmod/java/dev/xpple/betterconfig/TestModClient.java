@@ -22,6 +22,8 @@ public class TestModClient implements ClientModInitializer {
             .registerTypeHierarchy((Class<StructureType<?>>) (Class) StructureType.class, new StructureAdapter(), StructureArgumentType::structure)
             .registerType(UUID.class, new UUIDTypeAdapter(), UuidArgument::uuid)
             .registerGlobalChangeHook(event -> BetterConfigCommon.LOGGER.info("{} was updated | old: {}, new: {}", event.config(), event.oldValue(), event.newValue()))
+            .registerCommandAlias("testmodclientconfig")
+            .registerCommandAlias("testmodclientconfig2")
             .build();
     }
 }

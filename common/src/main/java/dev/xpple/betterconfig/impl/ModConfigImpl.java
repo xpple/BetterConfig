@@ -25,8 +25,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -36,17 +38,17 @@ import java.util.function.Supplier;
 public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private static final Map<Class<?>, Function<?, ArgumentType<?>>> defaultArguments = ImmutableMap.<Class<?>, Function<?, ArgumentType<?>>>builder()
-        .put(boolean.class, buildContext -> BoolArgumentType.bool())
-        .put(Boolean.class, buildContext -> BoolArgumentType.bool())
-        .put(double.class, buildContext -> DoubleArgumentType.doubleArg())
-        .put(Double.class, buildContext -> DoubleArgumentType.doubleArg())
-        .put(float.class, buildContext -> FloatArgumentType.floatArg())
-        .put(Float.class, buildContext -> FloatArgumentType.floatArg())
-        .put(int.class, buildContext -> IntegerArgumentType.integer())
-        .put(Integer.class, buildContext -> IntegerArgumentType.integer())
-        .put(long.class, buildContext -> LongArgumentType.longArg())
-        .put(Long.class, buildContext -> LongArgumentType.longArg())
-        .put(String.class, buildContext -> StringArgumentType.string())
+        .put(boolean.class, _ -> BoolArgumentType.bool())
+        .put(Boolean.class, _ -> BoolArgumentType.bool())
+        .put(double.class, _ -> DoubleArgumentType.doubleArg())
+        .put(Double.class, _ -> DoubleArgumentType.doubleArg())
+        .put(float.class, _ -> FloatArgumentType.floatArg())
+        .put(Float.class, _ -> FloatArgumentType.floatArg())
+        .put(int.class, _ -> IntegerArgumentType.integer())
+        .put(Integer.class, _ -> IntegerArgumentType.integer())
+        .put(long.class, _ -> LongArgumentType.longArg())
+        .put(Long.class, _ -> LongArgumentType.longArg())
+        .put(String.class, _ -> StringArgumentType.string())
         .build();
 
     private final Map<String, Field> configs = new HashMap<>();
@@ -63,6 +65,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private final String modId;
     private final Class<?> configsClass;
+    private final Set<String> commandAliases;
 
     private final Gson gson;
     private final Gson inlineGson;
@@ -70,9 +73,10 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private final Consumer<GlobalChangeEvent> globalChangeHook;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Consumer<GlobalChangeEvent> globalChangeHook) {
+    public ModConfigImpl(String modId, Class<?> configsClass, Set<String> commandAliases, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Consumer<GlobalChangeEvent> globalChangeHook) {
         this.modId = modId;
         this.configsClass = configsClass;
+        this.commandAliases = commandAliases;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
@@ -149,6 +153,11 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     @Override
     public Path getConfigsPath() {
         return Platform.current.getConfigsPath(this.modId);
+    }
+
+    @Override
+    public Set<String> getCommandAliases() {
+        return Collections.unmodifiableSet(commandAliases);
     }
 
     @Override

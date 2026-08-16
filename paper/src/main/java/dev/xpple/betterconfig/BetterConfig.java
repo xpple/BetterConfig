@@ -13,6 +13,6 @@ public final class BetterConfig extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> event.registrar().register(ConfigCommand.build()));
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> ConfigCommand.register(event.registrar()));
     }
 }

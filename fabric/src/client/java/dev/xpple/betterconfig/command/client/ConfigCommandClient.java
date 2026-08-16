@@ -3,12 +3,19 @@ package dev.xpple.betterconfig.command.client;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.xpple.betterconfig.command.AbstractConfigCommand;
 import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.network.chat.Component;
+
+import java.util.Map;
+import java.util.Set;
+
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.*;
 
 public class ConfigCommandClient extends AbstractConfigCommand<FabricClientCommandSource, CommandBuildContext, Component> {
 
@@ -18,7 +25,18 @@ public class ConfigCommandClient extends AbstractConfigCommand<FabricClientComma
 
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register(new ConfigCommandClient().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig).toList(), buildContext));
+        Map<String, ModConfigImpl<?, ?, ?>> modConfigs = AbstractBetterConfigImpl.getModConfigs();
+        LiteralCommandNode<FabricClientCommandSource> command = dispatcher.register(new ConfigCommandClient().create(modConfigs.values().stream().map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig).toList(), buildContext));
+        for (ModConfigImpl<?, ?, ?> modConfig : modConfigs.values()) {
+            Set<String> commandAliases = modConfig.getCommandAliases();
+            CommandNode<FabricClientCommandSource> modCommand = command.getChild(modConfig.getModId());
+            if (modCommand == null) {
+                continue;
+            }
+            for (String alias : commandAliases) {
+                dispatcher.register(literal(alias).redirect(modCommand));
+            }
+        }
     }
 
     @Override

@@ -3,12 +3,19 @@ package dev.xpple.betterconfig.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.permissions.Permissions;
+
+import java.util.Map;
+import java.util.Set;
+
+import static net.minecraft.commands.Commands.*;
 
 public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, CommandBuildContext, Component> {
 
@@ -18,7 +25,18 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Com
 
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
-        dispatcher.register(new ConfigCommand().create(AbstractBetterConfigImpl.getModConfigs().values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER)));
+        Map<String, ModConfigImpl<?, ?, ?>> modConfigs = AbstractBetterConfigImpl.getModConfigs();
+        LiteralCommandNode<CommandSourceStack> command = dispatcher.register(new ConfigCommand().create(modConfigs.values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER)));
+        for (ModConfigImpl<?, ?, ?> modConfig : modConfigs.values()) {
+            Set<String> commandAliases = modConfig.getCommandAliases();
+            CommandNode<CommandSourceStack> modCommand = command.getChild(modConfig.getModId());
+            if (modCommand == null) {
+                continue;
+            }
+            for (String alias : commandAliases) {
+                dispatcher.register(literal(alias).requires(command.getRequirement()).redirect(modCommand));
+            }
+        }
     }
 
     @Override

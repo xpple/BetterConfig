@@ -4,12 +4,10 @@ import dev.xpple.betterconfig.impl.BetterConfigImpl;
 import net.kyori.adventure.text.Component;
 
 public interface BetterConfigAPI extends AbstractBetterConfigAPI<Component> {
-    /**
-     * Get the API instance.
-     * @return the API instance.
-     */
+    /// Get the API instance.
+    /// @return the API instance.
     static BetterConfigAPI getInstance() {
-        return (BetterConfigAPI) BetterConfigImpl.INSTANCE;
+        return BetterConfigImpl.INSTANCE;
     }
 
     @Override
