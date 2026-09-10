@@ -1,6 +1,6 @@
 name: TestPlugin
 version: '1.0.0'
 main: dev.xpple.betterconfig.TestPlugin
-api-version: 26.2
+api-version: 26.3
 load: STARTUP
 authors: [xpple]
