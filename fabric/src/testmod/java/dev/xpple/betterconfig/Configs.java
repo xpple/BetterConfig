@@ -118,4 +118,7 @@ public class Configs {
     private static boolean isClient(SharedSuggestionProvider source) {
         return !(source instanceof CommandSourceStack);
     }
+
+    @Config(customName = "example_custom_name")
+    public static String exampleCustomName = "";
 }

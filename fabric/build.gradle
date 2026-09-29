@@ -14,6 +14,11 @@ loom {
     splitEnvironmentSourceSets()
 }
 
+loom.runs.configureEach {
+    jvmArguments.add("-enableassertions")
+    systemProperties.put("fabric.loom.suppressNarratorError", "true")
+}
+
 sourceSets {
     testmod {
         compileClasspath += main.compileClasspath

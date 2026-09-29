@@ -17,6 +17,7 @@ import dev.xpple.betterconfig.api.GlobalChangeEvent;
 import dev.xpple.betterconfig.api.ModConfig;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedConsumer;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private final Map<String, Field> configs = new HashMap<>();
     private final Map<String, Config> annotations = new HashMap<>();
+    private final Map<String, String> customNames = new HashMap<>();
     private final Map<String, Object> defaults = new HashMap<>();
     private final Map<String, Supplier<P>> comments = new HashMap<>();
     private final Map<String, Predicate<S>> conditions = new HashMap<>();
@@ -103,6 +105,10 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     public Map<String, Config> getAnnotations() {
         return this.annotations;
+    }
+
+    public Map<String, String> getCustomNames() {
+        return this.customNames;
     }
 
     Map<String, Object> getDefaults() {
@@ -170,12 +176,23 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     }
 
     @Override
-    public P getComment(String config) {
-        Supplier<P> comment = this.comments.get(config);
-        if (comment == null) {
+    public @Nullable P getComment(String config) {
+        if (!this.configs.containsKey(config)) {
             throw new IllegalArgumentException();
         }
+        Supplier<P> comment = this.comments.get(config);
+        if (comment == null) {
+            return null;
+        }
         return comment.get();
+    }
+
+    @Override
+    public @Nullable String getCustomName(String config) {
+        if (!this.configs.containsKey(config)) {
+            throw new IllegalArgumentException();
+        }
+        return this.customNames.get(config);
     }
 
     @Override

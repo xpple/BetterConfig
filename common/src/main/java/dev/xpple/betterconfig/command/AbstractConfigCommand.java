@@ -30,8 +30,10 @@ public abstract class AbstractConfigCommand<S, C, P>  {
         for (ModConfigImpl<S, C, P> modConfig : modConfigs) {
             LiteralArgumentBuilder<S> identifierLiteral = LiteralArgumentBuilder.literal(modConfig.getModId());
             for (String config : modConfig.getConfigs().keySet()) {
+                String customName = modConfig.getCustomNames().get(config);
+                String commandLiteral = customName != null ? customName : config;
                 Predicate<S> condition = modConfig.getConditions().get(config);
-                LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(config).requires(condition);
+                LiteralArgumentBuilder<S> configLiteral = LiteralArgumentBuilder.<S>literal(commandLiteral).requires(condition);
 
                 configLiteral.then(LiteralArgumentBuilder.<S>literal("get").executes(ctx -> get(ctx.getSource(), modConfig, config)));
                 Config annotation = modConfig.getAnnotations().get(config);
