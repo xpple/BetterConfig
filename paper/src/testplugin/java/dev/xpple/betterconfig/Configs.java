@@ -113,4 +113,7 @@ public class Configs {
             })
             .toList()));
     }
+
+    @Config(customName = "example_custom_name")
+    public static String exampleCustomName = "";
 }

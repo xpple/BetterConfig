@@ -95,6 +95,23 @@ public @interface Config {
      */
     String comment() default "";
 
+    // TODO the command suggestions do not work as described
+    /// A custom name that will be used as command literal in place of the name of the config field. This essentially configures
+    /// a custom user-facing name, without having to change the name of the config field. This is particularly useful because of
+    /// the way command suggestions work in Minecraft. When a suggested string contains any of `._/`, the string will be split
+    /// up at those characters. Each part of the string is then matched individually to the input string. If any of them match,
+    /// the entire string will be suggested. Below is an example:
+    /// {@snippet lang = java:
+    /// @Config(customName = "custom_name")
+    /// public static String customName = "";
+    /// }
+    /// Without the custom name, the config will only be suggested when typing `c`. With the custom name, the config will also be
+    /// suggested when typing `n`.
+    ///
+    /// The caller has to verify themselves that the custom name is a valid command literal, and that it is unique.
+    /// @return the custom name
+    String customName() default "";
+
     /**
      * A method name that will be used to represent the config value in the chat. The method should have no parameters and return
      * a chat {@code Component}, which is {@link net.minecraft.network.chat.Component} on Fabric and {@link net.kyori.adventure.text.Component}

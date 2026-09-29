@@ -1,6 +1,7 @@
 package dev.xpple.betterconfig.api;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -33,9 +34,15 @@ public interface ModConfig<P> {
 
     /// Get the comment for a config.
     /// @param config the config's key
-    /// @return the config comment
+    /// @return the config comment or `null` if none has been configured
     /// @throws IllegalArgumentException when there is no config associated to this key
-    P getComment(String config);
+    @Nullable P getComment(String config);
+
+    /// Get the custom name for a config.
+    /// @param config the config's key
+    /// @return the custom name or `null` if none has been configured
+    /// @throws IllegalArgumentException when there is no config associated to this key
+    @Nullable String getCustomName(String config);
 
     /// Get a config value based on the key.
     /// @param config the config's key

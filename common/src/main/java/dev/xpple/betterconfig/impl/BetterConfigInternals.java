@@ -76,6 +76,8 @@ public class BetterConfigInternals {
                 }
             }
 
+            initCustomName(modConfig, annotation.customName(), fieldName);
+
             initCondition(modConfig, annotation.condition(), fieldName);
 
             initChatRepresentation(modConfig, field, annotation.chatRepresentation());
@@ -163,9 +165,16 @@ public class BetterConfigInternals {
         });
     }
 
+    private static void initCustomName(ModConfigImpl<?, ?, ?> modConfig, String customName, String fieldName) {
+        if (customName.isEmpty()) {
+            return;
+        }
+        modConfig.getCustomNames().put(fieldName, customName);
+    }
+
     private static void initCondition(ModConfigImpl<?, ?, ?> modConfig, String condition, String fieldName) {
         if (condition.isEmpty()) {
-            modConfig.getConditions().put(fieldName, source -> true);
+            modConfig.getConditions().put(fieldName, _ -> true);
             return;
         }
         Method predicateMethod;
@@ -200,7 +209,7 @@ public class BetterConfigInternals {
                 }
             });
         } else {
-            modConfig.getConditions().put(fieldName, source -> {
+            modConfig.getConditions().put(fieldName, _ -> {
                 try {
                     return (Boolean) predicateMethod_f.invoke(null);
                 } catch (ReflectiveOperationException e) {
@@ -212,7 +221,7 @@ public class BetterConfigInternals {
 
     private static BiConsumer<Object, Object> initOnChange(ModConfigImpl<?, ?, ?> modConfig, Field field, String onChangeMethodName) {
         if (onChangeMethodName.isEmpty()) {
-            BiConsumer<Object, Object> onChange = (oldValue, newValue) -> {};
+            BiConsumer<Object, Object> onChange = (_, _) -> {};
             modConfig.getOnChangeCallbacks().put(field.getName(), onChange);
             return onChange;
         }
