@@ -24,6 +24,10 @@ public interface ModConfig<P> {
     /// @return the set of registered command aliases.
     Set<String> getCommandAliases();
 
+    /// Get the side that the config will be modifiable from via a command.
+    /// @return the side
+    ModConfigSide getSide();
+
     /// Get the default (initial) value for a config. Note that the returned value is a
     /// deep copy of the config's default value.
     /// @param config the config's key
