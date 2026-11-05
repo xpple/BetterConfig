@@ -165,7 +165,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     @Override
     public ModConfigSide getSide() {
-        return side;
+        return this.side;
     }
 
     @Override

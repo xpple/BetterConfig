@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import dev.xpple.betterconfig.impl.AbstractBetterConfigImpl;
 import dev.xpple.betterconfig.impl.BetterConfigInternals;
 import dev.xpple.betterconfig.impl.ModConfigImpl;
+import dev.xpple.betterconfig.impl.Platform;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ public final class ModConfigBuilder<S, C> {
 
     private final Set<String> commandAliases = new HashSet<>();
 
-    private ModConfigSide side = ModConfigSide.BOTH;
+    private ModConfigSide side = Platform.current.getType() == Platform.Type.PAPER ? ModConfigSide.SERVER : ModConfigSide.BOTH;
 
     public ModConfigBuilder(String modId, Class<?> configsClass) {
         this.modId = modId;
@@ -120,9 +121,13 @@ public final class ModConfigBuilder<S, C> {
         return this;
     }
 
-    /// Sets the side that the config will be modifiable from via a command.
+    /// Sets the side that the mod config will be modifiable from via a command.
     /// @param side the new side
     public ModConfigBuilder<S, C> setSide(ModConfigSide side) {
+        if (Platform.current.getType() == Platform.Type.PAPER && side != ModConfigSide.SERVER) {
+            throw new IllegalArgumentException("Mod config side " + side + " is not supported on Paper!");
+        }
+
         this.side = side;
         return this;
     }

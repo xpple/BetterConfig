@@ -14,6 +14,11 @@ public class FabricPlatform implements Platform {
     private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(value -> Component.translatable("argument.enum.invalid", value));
 
     @Override
+    public Type getType() {
+        return Type.FABRIC;
+    }
+
+    @Override
     public Path getConfigsPath(String modId) {
         return BetterConfig.MOD_PATH.resolve(modId).resolve("config.json");
     }

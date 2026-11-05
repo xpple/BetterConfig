@@ -24,7 +24,7 @@ public interface ModConfig<P> {
     /// @return the set of registered command aliases.
     Set<String> getCommandAliases();
 
-    /// Get the side that the config will be modifiable from via a command.
+    /// Get the side that the mod config will be modifiable from via a command.
     /// @return the side
     ModConfigSide getSide();
 

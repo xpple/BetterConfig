@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.util.ServiceLoader;
 
 public interface Platform {
+    Type getType();
+
     Path getConfigsPath(String modId);
 
     Class<?> getCommandSourceClass();
@@ -21,4 +23,9 @@ public interface Platform {
     <P> P stringToComponent(@Nullable String string);
 
     Platform current = ServiceLoader.load(Platform.class, Platform.class.getClassLoader()).iterator().next();
+
+    enum Type {
+        FABRIC,
+        PAPER,
+    }
 }
