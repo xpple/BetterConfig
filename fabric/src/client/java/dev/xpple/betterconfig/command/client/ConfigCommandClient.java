@@ -26,7 +26,12 @@ public class ConfigCommandClient extends AbstractConfigCommand<FabricClientComma
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext buildContext) {
         Map<String, ModConfigImpl<?, ?, ?>> modConfigs = AbstractBetterConfigImpl.getModConfigs();
-        LiteralCommandNode<FabricClientCommandSource> command = dispatcher.register(new ConfigCommandClient().create(modConfigs.values().stream().map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig).toList(), buildContext));
+        LiteralCommandNode<FabricClientCommandSource> command = dispatcher.register(new ConfigCommandClient().create(
+            modConfigs.values().stream()
+                .filter(modConfig -> modConfig.getSide().isOnClient())
+                .map(modConfig -> (ModConfigImpl<FabricClientCommandSource, CommandBuildContext, Component>) modConfig)
+                .toList(),
+            buildContext));
         for (ModConfigImpl<?, ?, ?> modConfig : modConfigs.values()) {
             Set<String> commandAliases = modConfig.getCommandAliases();
             CommandNode<FabricClientCommandSource> modCommand = command.getChild(modConfig.getModId());

@@ -15,6 +15,7 @@ import dev.xpple.betterconfig.BetterConfigCommon;
 import dev.xpple.betterconfig.api.Config;
 import dev.xpple.betterconfig.api.GlobalChangeEvent;
 import dev.xpple.betterconfig.api.ModConfig;
+import dev.xpple.betterconfig.api.ModConfigSide;
 import dev.xpple.betterconfig.util.CheckedBiConsumer;
 import dev.xpple.betterconfig.util.CheckedConsumer;
 
@@ -66,6 +67,7 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     private final String modId;
     private final Class<?> configsClass;
     private final Set<String> commandAliases;
+    private final ModConfigSide side;
 
     private final Gson gson;
     private final Gson inlineGson;
@@ -73,10 +75,11 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
 
     private final Consumer<GlobalChangeEvent> globalChangeHook;
 
-    public ModConfigImpl(String modId, Class<?> configsClass, Set<String> commandAliases, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Consumer<GlobalChangeEvent> globalChangeHook) {
+    public ModConfigImpl(String modId, Class<?> configsClass, Set<String> commandAliases, ModConfigSide side, Gson gson, Map<Class<?>, Function<C, ? extends ArgumentType<?>>> arguments, Consumer<GlobalChangeEvent> globalChangeHook) {
         this.modId = modId;
         this.configsClass = configsClass;
         this.commandAliases = commandAliases;
+        this.side = side;
         this.gson = gson.newBuilder().setPrettyPrinting().create();
         this.inlineGson = gson;
         this.arguments = arguments;
@@ -158,6 +161,11 @@ public class ModConfigImpl<S, C, P> implements ModConfig<P> {
     @Override
     public Set<String> getCommandAliases() {
         return Collections.unmodifiableSet(commandAliases);
+    }
+
+    @Override
+    public ModConfigSide getSide() {
+        return this.side;
     }
 
     @Override

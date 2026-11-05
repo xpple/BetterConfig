@@ -26,7 +26,12 @@ public class ConfigCommand extends AbstractConfigCommand<CommandSourceStack, Com
     @SuppressWarnings("unchecked")
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         Map<String, ModConfigImpl<?, ?, ?>> modConfigs = AbstractBetterConfigImpl.getModConfigs();
-        LiteralCommandNode<CommandSourceStack> command = dispatcher.register(new ConfigCommand().create(modConfigs.values().stream().map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig).toList(), buildContext).requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER)));
+        LiteralCommandNode<CommandSourceStack> command = dispatcher.register(new ConfigCommand().create(
+            modConfigs.values().stream()
+                .filter(modConfig -> modConfig.getSide().isOnServer())
+                .map(modConfig -> (ModConfigImpl<CommandSourceStack, CommandBuildContext, Component>) modConfig)
+                .toList(),
+            buildContext).requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER)));
         for (ModConfigImpl<?, ?, ?> modConfig : modConfigs.values()) {
             Set<String> commandAliases = modConfig.getCommandAliases();
             CommandNode<CommandSourceStack> modCommand = command.getChild(modConfig.getModId());
